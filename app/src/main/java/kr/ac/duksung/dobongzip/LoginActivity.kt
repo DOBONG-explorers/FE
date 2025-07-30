@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,5 +18,13 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             finish() // 로그인 화면 종료
         }
+        findViewById<TextView>(R.id.guest_login).setOnClickListener {
+            // 비회원 로그인 로직
+        }
+
+        findViewById<TextView>(R.id.find_id_pw).setOnClickListener {
+            // 아이디/비밀번호 찾기 이동
+        }
+
     }
 }

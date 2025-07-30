@@ -1,50 +1,112 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="24dp">
 
-    <EditText
-        android:id="@+id/editTextText"
-        android:layout_width="230dp"
+    <!-- 1. 위쪽 콘텐츠 영역 (EditTexts + 버튼 등) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <EditText
+            android:id="@+id/editTextText"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edittext_background"
+            android:inputType="text"
+            android:hint="아이디"
+            android:padding="15dp"
+            android:textColor="#000000"
+            android:textColorHint="#999999"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTextTextPassword"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/edittext_background"
+            android:inputType="textPassword"
+            android:hint="비밀번호"
+            android:padding="15dp"
+            android:textColor="#000000"
+            android:textColorHint="#999999"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_button"
+            style="@style/CustomLoginButton"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="로그인"
+            android:textSize="12sp" />
+
+        <!-- 한 줄 링크 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/guest_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/guest_login_text"
+                android:textColor="#999999"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@null"
+                android:paddingEnd="24dp" />
+
+            <TextView
+                android:id="@+id/find_id_pw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/find_id_pw_text"
+                android:textColor="#999999"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@null" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 2. 하단 회원가입 문구 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edittext_background"
-        android:ems="10"
-        android:inputType="text"
-        android:padding="15dp"
-        android:hint="아이디"
-        android:textColor="#000000"
-        android:textColorHint="#999999"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp">
 
+        <TextView
+            android:id="@+id/not_member_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="아직 회원이 아니신가요?"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:layout_marginEnd="10dp"/>
 
-    <EditText
-        android:id="@+id/editTextTextPassword"
-        android:layout_width="230dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:background="@drawable/edittext_background"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:padding="15dp"
-        android:hint="비밀번호"
-        android:textColor="#000000"
-        android:textColorHint="#999999"
-        android:textSize="12sp"
-        android:textStyle="bold" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/login_button"
-        style="@style/CustomLoginButton"
-        android:layout_width="230dp"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="로그인"
-        android:textSize="12sp" />
-
+        <TextView
+            android:id="@+id/signup_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/signup_text"
+            android:textColor="#f23030"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="@null"/>
+    </LinearLayout>
 </LinearLayout>
