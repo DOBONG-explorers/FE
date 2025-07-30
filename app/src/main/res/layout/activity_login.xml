@@ -4,7 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp">
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4" />
     <!-- 1. 위쪽 콘텐츠 영역 (EditTexts + 버튼 등) -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,8 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:background="@drawable/edittext_background"
-            android:inputType="text"
             android:hint="아이디"
+            android:inputType="text"
             android:padding="15dp"
             android:textColor="#000000"
             android:textColorHint="#999999"
