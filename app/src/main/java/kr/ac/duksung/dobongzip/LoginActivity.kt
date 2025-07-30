@@ -23,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.find_id_pw).setOnClickListener {
-            // 아이디/비밀번호 찾기 이동
+            // 아이디/비밀번호 찾기 이동  ......
         }
 
     }
