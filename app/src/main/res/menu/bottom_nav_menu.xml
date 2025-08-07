@@ -7,11 +7,7 @@
         android:title=""
         android:icon="@drawable/home" />
 
-    <item
-        android:id="@+id/navigation_dashboard"
 
-        android:title=""
-        android:icon="@drawable/message" />
 
     <item
         android:id="@+id/navigation_notifications"

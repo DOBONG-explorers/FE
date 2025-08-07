@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- 닉네임 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="닉네임"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <EditText
+        android:id="@+id/editTextNickname"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/edittext_background"
+        android:hint="닉네임을 입력하세요"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#999999"
+        android:textSize="12sp" />
+
+    <!-- 나이 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="나이"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <EditText
+        android:id="@+id/editTextAge"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/edittext_background"
+        android:hint="나이를 입력하세요"
+        android:inputType="number"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#999999"
+        android:textSize="12sp" />
+
+    <!-- 성별 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="성별"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerGender"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@drawable/spinner_background_rounded"
+        android:gravity="center_vertical"
+        android:drawableRight="@drawable/ic_arrow_down_blue" />
+
+    <!-- 생년월일 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="생년월일"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <EditText
+        android:id="@+id/editTextBirthdate"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/edittext_background"
+        android:hint="YYYY-MM-DD"
+        android:focusable="false"
+        android:clickable="true"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#999999"
+        android:textSize="12sp" />
+
+    <!-- 빈 공간 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- 가입하기 버튼 -->
+    <Button
+        android:id="@+id/completeSignupButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="가입하기"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="@drawable/rounded_button_gray"
+        android:enabled="false"
+        android:layout_marginTop="24dp"/>
+</LinearLayout>
