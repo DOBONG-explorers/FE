@@ -1,29 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="24dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
-   
-    <!-- 진행 상태바 -->
+
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginBottom="24dp">
 
-        <!-- 상태 진행 이미지 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
 
-        <ImageView
-            android:id="@+id/progressImage"
-            android:layout_width="276dp"
-            android:layout_height="53dp"
-            android:layout_marginBottom="1dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/re_1" />
+            <!-- 이미지 위치 상단에 딱 붙게 설정 -->
+            <ImageView
+                android:id="@+id/progressImage"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/re_1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.319"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- 프로그레스바는 아래에 위치 -->
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
             android:id="@+id/progressBar"
@@ -34,6 +47,7 @@
             android:progressDrawable="@drawable/progress_drawable"
             android:background="#E0E0E0" />
     </LinearLayout>
+
 
     <!-- 이메일 -->
     <TextView

@@ -1,6 +1,7 @@
 package kr.ac.duksung.dobongzip
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,9 @@ class SignupStep2Activity : AppCompatActivity() {
     private lateinit var genderSpinner: Spinner
     private lateinit var birthdateEditText: EditText
     private lateinit var completeSignupButton: Button
+    private lateinit var progressImage: ImageView
+    private lateinit var progressBar: ProgressBar
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,10 +27,20 @@ class SignupStep2Activity : AppCompatActivity() {
         genderSpinner = findViewById(R.id.spinnerGender)
         birthdateEditText = findViewById(R.id.editTextBirthdate)
         completeSignupButton = findViewById(R.id.completeSignupButton)
+        progressImage = findViewById(R.id.progressImage)
+        progressBar = findViewById(R.id.progressBar)
 
         setupGenderSpinner()
         setupBirthdatePicker()
         setupValidation()
+
+        completeSignupButton.setOnClickListener {
+            // 로그인 화면으로 이동
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish() // 회원가입 액티비티 종료 (뒤로가기 방지)
+        }
+
     }
 
     private fun setupGenderSpinner() {
@@ -85,5 +99,20 @@ class SignupStep2Activity : AppCompatActivity() {
         completeSignupButton.setBackgroundResource(
             if (isAllValid) R.drawable.rounded_button_blue else R.drawable.rounded_button_gray
         )
+
+        if (isAllValid) {
+            progressBar.progress = 100
+            progressImage.setImageResource(R.drawable.re_3)
+
+            val layoutParams = progressImage.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            layoutParams.horizontalBias = 1.0f
+            progressImage.layoutParams = layoutParams
+
+            // 오른쪽으로 20dp 이동 (픽셀 단위로 변환)
+            val scale = resources.displayMetrics.density
+            progressImage.translationX = 20 * scale
+        }
+
     }
+
 }
