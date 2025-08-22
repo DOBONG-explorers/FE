@@ -27,17 +27,17 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // 상단 앱바 구성을 위한 목적지 ID 설정
+        // ✅ 모든 프래그먼트를 AppBarConfiguration에 포함해야 함
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_dashboard,
-                R.id.navigation_notifications
+                R.id.navigation_notifications,
+                R.id.navigation_mypage  // ✅ 추가
             )
         )
 
         // 상단 앱바와 NavController 연결
-        setupActionBarWithNavController(navController, appBarConfiguration)
 
         // BottomNavigationView와 NavController 연결
         navView.setupWithNavController(navController)

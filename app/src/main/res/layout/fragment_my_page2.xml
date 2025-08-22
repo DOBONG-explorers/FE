@@ -154,40 +154,12 @@
         android:id="@+id/myPageButton"
         android:layout_width="140dp"
         android:layout_height="40dp"
-        android:text="개인정보 수정"
+        android:text="완료"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:background="@drawable/rounded_button_blue"
         android:layout_marginTop="20dp" />
 
-    <!-- 🚪 로그아웃 / 계정 탈퇴 박스 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/rounded_card"
-        android:padding="16dp"
-        android:layout_marginTop="100dp"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/logoutText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="로그아웃"
-            android:textColor="#808080"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/deleteAccountText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="계정 탈퇴"
-            android:textColor="#808080"
-            android:textSize="13sp" />
-    </LinearLayout>
 
 
 </LinearLayout>

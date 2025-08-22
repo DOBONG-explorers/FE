@@ -22,4 +22,12 @@
         android:name="kr.ac.duksung.dobongzip.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_mypage"
+        android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageFragment"
+        android:label="마이페이지"
+        tools:layout="@layout/fragment_my_page" />
+
+
 </navigation>

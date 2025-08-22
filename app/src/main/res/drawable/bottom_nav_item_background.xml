@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 선택됨 or 선택 안됨 → 모두 파란 배경 -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#0B79D0" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0B79D0" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+</selector>

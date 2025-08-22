@@ -1,12 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
+    android:id="@+id/mobile_navigation"
     app:startDestination="@id/navigation_home">
 
     <fragment
         android:id="@+id/navigation_home"
         android:name="kr.ac.duksung.dobongzip.ui.home.HomeFragment"
-        android:label="Home"
+        android:label="홈"
         tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_chat"
+        android:name="kr.ac.duksung.dobongzip.ui.chat.ChatFragment"
+        android:label="채팅"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="kr.ac.duksung.dobongzip.ui.notifications.NotificationsFragment"
+        android:label="관심"
+        tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_mypage"
+        android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageFragment"
+        android:label="마이페이지"
+        tools:layout="@layout/fragment_my_page" />
 </navigation>

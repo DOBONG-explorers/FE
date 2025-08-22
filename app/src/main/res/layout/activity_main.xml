@@ -6,19 +6,19 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- 콘텐츠 영역 -->
+
+    <!-- 📌 프래그먼트 컨테이너 -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         app:navGraph="@navigation/nav_graph"
         app:defaultNavHost="true"
-        android:name="androidx.navigation.fragment.NavHostFragment"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/nav_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
     <!-- 하단바 (둥글고 색 지정된 상태) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
@@ -31,9 +31,11 @@
         android:elevation="0dp"
         app:itemIconTint="@color/selector_nav_text"
         app:itemTextColor="@color/selector_nav_text"
+        app:itemBackground="@drawable/bottom_nav_item_background"
+        app:itemRippleColor="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_nav_menu" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
