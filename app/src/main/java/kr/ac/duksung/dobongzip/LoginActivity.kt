@@ -13,11 +13,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // 예: 로그인 버튼 클릭 시 MainActivity로 이동
         findViewById<Button>(R.id.login_button).setOnClickListener {
-            // 로그인 성공했다고 가정
             startActivity(Intent(this, MainActivity::class.java))
-            finish() // 로그인 화면 종료
+            finish() // 뒤로가기 눌러도 로그인 화면으로 안 돌아오게
         }
         findViewById<TextView>(R.id.guest_login).setOnClickListener {
             // 비회원 로그인 로직

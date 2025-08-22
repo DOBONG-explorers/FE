@@ -7,7 +7,10 @@
         android:title=""
         android:icon="@drawable/home" />
 
-
+    <item
+        android:id="@+id/navigation_mypage"
+        android:icon="@drawable/user"
+        android:title="마이페이지" />
 
     <item
         android:id="@+id/navigation_notifications"

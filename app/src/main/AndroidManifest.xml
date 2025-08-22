@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="kr.ac.duksung.dobongzip"
     xmlns:tools="http://schemas.android.com/tools">
+
 
     <application
         android:allowBackup="true"
@@ -24,6 +26,8 @@
         </activity>
         <activity android:name=".SignupActivity" />
         <activity android:name=".SignupStep2Activity" />
+        <activity android:name=".MainActivity" />
+
 
 
 
