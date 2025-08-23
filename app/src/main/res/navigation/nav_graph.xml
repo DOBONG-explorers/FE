@@ -5,6 +5,13 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@id/navigation_home">
 
+
+    <fragment
+        android:id="@+id/myPageEditFragment"
+        android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageEditFragment"
+        android:label="개인정보수정"
+        tools:layout="@layout/fragment_my_page2" />
+
     <fragment
         android:id="@+id/navigation_home"
         android:name="kr.ac.duksung.dobongzip.ui.home.HomeFragment"
