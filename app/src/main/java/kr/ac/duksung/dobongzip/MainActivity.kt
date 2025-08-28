@@ -1,11 +1,12 @@
 package kr.ac.duksung.dobongzip
 
+
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import kr.ac.duksung.dobongzip.databinding.ActivityMainBinding
 
@@ -14,6 +15,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // ✅ 다크모드 설정 적용 (onCreate 시작 전에 호출!)
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val isDarkMode = prefs.getBoolean("dark_mode", false)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         super.onCreate(savedInstanceState)
 
         // ViewBinding 초기화
@@ -27,19 +37,15 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // ✅ 모든 프래그먼트를 AppBarConfiguration에 포함해야 함
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_dashboard,
                 R.id.navigation_notifications,
-                R.id.navigation_mypage  // ✅ 추가
+                R.id.navigation_mypage
             )
         )
 
-        // 상단 앱바와 NavController 연결
-
-        // BottomNavigationView와 NavController 연결
         navView.setupWithNavController(navController)
     }
 }

@@ -1,18 +1,8 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
     <style name="Theme.Dobongzip" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <!-- themes.xml 또는 themes_material.xml -->
-        <item name="colorPrimary">#0B79D0</item> <!-- 앱 기본 색상 -->
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorPrimaryVariant">#085FA5</item>
-
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:windowBackground">@drawable/app_bg</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

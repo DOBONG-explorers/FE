@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--개인정보 관리 페이지2 수정페이지임 -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,10 +20,10 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:background="@drawable/round_button"
-            android:src="@drawable/back_btn"
+            android:src="@drawable/arrow"
             android:scaleType="centerInside"
             android:contentDescription="뒤로 가기" />
 

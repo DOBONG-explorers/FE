@@ -1,37 +1,58 @@
 package kr.ac.duksung.dobongzip.ui.mypage
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import kr.ac.duksung.dobongzip.R
-import kr.ac.duksung.dobongzip.databinding.FragmentMyPageBinding
 import androidx.navigation.fragment.findNavController
+import kr.ac.duksung.dobongzip.databinding.FragmentMyMageRealBinding
 
 class MyPageFragment : Fragment() {
 
-    private var _binding: FragmentMyPageBinding? = null
+    private var _binding: FragmentMyMageRealBinding? = null
     private val binding get() = _binding!!
+
+    private val prefsName = "app_prefs"
+    private val keyDark = "dark_mode_on"
+
+    // 초기 isChecked 세팅 시 콜백이 불지 않도록 막는 플래그
+    private var suppressDarkListener = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMyPageBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        _binding = FragmentMyMageRealBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        // ✅ "개인정보 수정" 버튼 클릭 시 EditFragment로 이동
-        binding.myPageButton.setOnClickListener {
-            findNavController().navigate(R.id.myPageEditFragment)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.backButton.setOnClickListener {
+            // 테마 변경 직후 백스택 조작은 충돌이 날 수 있어요 -> 필요 없으면 제거 권장
+            findNavController().popBackStack()
         }
 
-        return root
+        val sp = requireActivity().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        val isDarkSaved = sp.getBoolean(keyDark, false)
+
+
+
+        // 다른 카드들 (XML에 반드시 해당 id가 있어야 합니다)
+        binding.privacySettingCard.setOnClickListener { /* navigate if needed */ }
+        binding.securityCard.setOnClickListener { /* navigate if needed */ }
+        binding.supportCard.setOnClickListener { /* navigate if needed */ }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // 뷰 파괴 이후 콜백이 접근하지 않도록 플래그 재설정(안전)
+        suppressDarkListener = true
         _binding = null
     }
 }

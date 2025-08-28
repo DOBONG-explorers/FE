@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 다크: 검정 배경(원하면 진회색/그라데이션 가능) -->
+    <solid android:color="#FF000000"/>
+</shape>
