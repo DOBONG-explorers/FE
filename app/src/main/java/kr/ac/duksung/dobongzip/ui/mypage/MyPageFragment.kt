@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentMyMageRealBinding
 
 class MyPageFragment : Fragment() {
@@ -18,7 +18,7 @@ class MyPageFragment : Fragment() {
     private val prefsName = "app_prefs"
     private val keyDark = "dark_mode_on"
 
-    // 초기 isChecked 세팅 시 콜백이 불지 않도록 막는 플래그
+    // 초기 isChecked 세팅 시 콜백이 불지 않도록 막는 플래그 (현재 다크모드 스위치 미사용)
     private var suppressDarkListener = false
 
     override fun onCreateView(
@@ -34,24 +34,34 @@ class MyPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.backButton.setOnClickListener {
-            // 테마 변경 직후 백스택 조작은 충돌이 날 수 있어요 -> 필요 없으면 제거 권장
+            // 필요 없으면 제거해도 됩니다 (바텀탭 루트 화면이면 popBackStack()은 변화 없을 수 있음)
             findNavController().popBackStack()
         }
 
         val sp = requireActivity().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         val isDarkSaved = sp.getBoolean(keyDark, false)
+        // 다크모드 스위치 쓰실 때 여기서 복원 로직 연결하면 됩니다.
 
+        // ✅ 개인정보 관리 카드 → MyPageSetFragment 로 이동
+        binding.privacySettingCard.setOnClickListener {
+            // 방법 A: 목적지 ID로 바로 이동
+            findNavController().navigate(R.id.myPageSetFragment)
 
+            // 방법 B: nav_graph에 정의한 액션을 쓰고 싶다면 (id가 있을 때)
+            // findNavController().navigate(R.id.action_myPage_to_myPageSet)
+        }
 
-        // 다른 카드들 (XML에 반드시 해당 id가 있어야 합니다)
-        binding.privacySettingCard.setOnClickListener { /* navigate if needed */ }
-        binding.securityCard.setOnClickListener { /* navigate if needed */ }
-        binding.supportCard.setOnClickListener { /* navigate if needed */ }
+        // 필요 시 나머지 카드도 연결
+        binding.securityCard.setOnClickListener {
+            // findNavController().navigate(R.id.securityFragment) 같은 식으로 연결
+        }
+        binding.supportCard.setOnClickListener {
+            // findNavController().navigate(R.id.supportFragment) 또는 외부 링크 인텐트
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // 뷰 파괴 이후 콜백이 접근하지 않도록 플래그 재설정(안전)
         suppressDarkListener = true
         _binding = null
     }

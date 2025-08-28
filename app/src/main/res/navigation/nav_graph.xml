@@ -34,5 +34,12 @@
         android:id="@+id/navigation_mypage"
         android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageFragment"
         android:label="마이페이지"
-        tools:layout="@layout/fragment_my_page" />
+        tools:layout="@layout/fragment_my_mage_real" />
+
+
+    <fragment
+        android:id="@+id/myPageSetFragment"
+        android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageSetFragment"
+        android:label="개인정보 관리"
+        tools:layout="@layout/fragment_my_page"/>
 </navigation>

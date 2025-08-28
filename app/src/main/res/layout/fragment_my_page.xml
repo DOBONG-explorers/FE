@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:text="개인정보 관리"
             android:textColor="#000000"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:layout_marginStart="12dp" />
     </LinearLayout>
@@ -61,6 +61,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="프로필 사진 수정"
+        android:textStyle="bold"
+
         android:textSize="15sp"
         android:textColor="#333333"
         android:layout_gravity="center_horizontal"
@@ -175,7 +177,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/rounded_card"
         android:padding="16dp"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="250dp"
         android:layout_marginBottom="32dp"
 
         android:gravity="center">
@@ -184,7 +186,7 @@
             android:id="@+id/logoutText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="10dp"
             android:text="로그아웃"
             android:textColor="#808080"
             android:textSize="13sp" />

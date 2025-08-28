@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="개인정보 관리"
             android:textColor="#000000"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:layout_marginStart="12dp" />
     </LinearLayout>
@@ -92,7 +92,7 @@
                 android:text="홍길동"
                 android:background="@android:color/transparent"
                 android:textSize="13sp"
-                android:textColor="#333333"
+                android:textColor="#000000"
                 android:inputType="textPersonName" />
         </LinearLayout>
 
@@ -119,7 +119,7 @@
                 android:text="1990-01-01"
                 android:background="@android:color/transparent"
                 android:textSize="13sp"
-                android:textColor="#333333"
+                android:textColor="#000000"
                 android:inputType="date" />
         </LinearLayout>
 
@@ -145,7 +145,7 @@
                 android:text="user@example.com"
                 android:background="@android:color/transparent"
                 android:textSize="13sp"
-                android:textColor="#333333"
+                android:textColor="#000000"
                 android:inputType="textEmailAddress" />
         </LinearLayout>
 
