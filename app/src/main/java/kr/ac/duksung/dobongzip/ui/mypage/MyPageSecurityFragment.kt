@@ -9,6 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kr.ac.duksung.dobongzip.databinding.FragmentSecurityChangeBinding
 
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
+import android.widget.EditText
+import android.widget.ImageButton
+import kr.ac.duksung.dobongzip.R
+
 class MyPageSecurityFragment : Fragment() {
 
     private var _binding: FragmentSecurityChangeBinding? = null
@@ -23,6 +29,11 @@ class MyPageSecurityFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // ✅ 눈 토글 연결 (각 입력칸 + 아이콘)
+        wirePasswordToggle(binding.editCurrentPw, binding.btnToggleCurrent)
+        wirePasswordToggle(binding.editNewPw, binding.btnToggleNew)
+        wirePasswordToggle(binding.editConfirmPw, binding.btnToggleConfirm)
 
         // 뒤로가기
         binding.backButton.setOnClickListener { findNavController().popBackStack() }
@@ -62,5 +73,25 @@ class MyPageSecurityFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+// ✅ 눈 토글 로직
+private fun wirePasswordToggle(edit: EditText, btn: ImageButton) {
+    var visible = false // 기본: 숨김
+
+    btn.setOnClickListener {
+        visible = !visible
+        val cursor = edit.selectionStart
+
+        if (visible) {
+            edit.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            btn.setImageResource(R.drawable.ic_eye) // 보이는 상태 아이콘
+        } else {
+            edit.transformationMethod = PasswordTransformationMethod.getInstance()
+            btn.setImageResource(R.drawable.ic_eye_off) // 숨김 상태 아이콘
+        }
+        // 커서 위치 유지
+        edit.setSelection(if (cursor >= 0) cursor else edit.text?.length ?: 0)
     }
 }
