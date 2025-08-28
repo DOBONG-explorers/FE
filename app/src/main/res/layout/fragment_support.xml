@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_mypage"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- 상단바: 뒤로가기 + 타이틀 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/round_button"
+                android:src="@drawable/arrow"
+                android:scaleType="centerInside"
+                android:contentDescription="뒤로 가기" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="고객센터"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:layout_marginStart="12dp" />
+        </LinearLayout>
+
+        <!-- 안내 카드 -->
+        <LinearLayout
+            android:id="@+id/supportCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_marginTop="24dp">
+
+            <TextView
+                android:id="@+id/tvDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="서비스 이용 중 불편사항이나 문의사항이 있으시면\n아래 이메일로 연락주세요.\n최대한 빠르게 답변드릴게요."
+                android:textSize="13sp"
+                android:textColor="#333333"
+                android:gravity="center"
+                android:textAlignment="center" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="이메일"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:layout_weight="1" />
+
+                <!-- 클릭 시 메일앱 열리도록 mailto: 스킴을 data로 사용 가능 -->
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="dobongzip@gmail.com"
+                    android:textSize="13sp"
+                    android:textColor="#1E88E5" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="운영시간"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvHours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="평일 10:00 ~ 18:00"
+                    android:textSize="13sp"
+                    android:textColor="#333333" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 액션 버튼들 -->
+        <Button
+            android:id="@+id/btnEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="이메일로 문의하기"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:background="@drawable/rounded_button_blue"
+            android:layout_marginTop="20dp" />
+
+        <Button
+            android:id="@+id/btnGmailWeb"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="브라우저에서 Gmail 열기"
+            android:textColor="#1E88E5"
+            android:textSize="14sp"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</ScrollView>

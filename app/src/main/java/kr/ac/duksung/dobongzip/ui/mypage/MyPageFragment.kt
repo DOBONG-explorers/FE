@@ -39,25 +39,20 @@ class MyPageFragment : Fragment() {
 
         val sp = requireActivity().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         val isDarkSaved = sp.getBoolean(keyDark, false)
-        // 다크모드 스위치 쓰실 때 여기서 복원 로직 연결하면 됩니다.
 
-        // ✅ 개인정보 관리 카드 → MyPageSetFragment 로 이동
         binding.privacySettingCard.setOnClickListener {
-            // 방법 A: 목적지 ID로 바로 이동
             findNavController().navigate(R.id.myPageSetFragment)
 
-            // 방법 B: nav_graph에 정의한 액션을 쓰고 싶다면 (id가 있을 때)
-            // findNavController().navigate(R.id.action_myPage_to_myPageSet)
         }
 
-        // 필요 시 나머지 카드도 연결
         binding.securityCard.setOnClickListener {
             findNavController().navigate(R.id.securityFragment)
         }
 
-        binding.supportCard.setOnClickListener {
-            // findNavController().navigate(R.id.supportFragment) 또는 외부 링크 인텐트
-        }
+            binding.supportCard.setOnClickListener {
+                findNavController().navigate(R.id.supportFragment)
+            }
+
     }
 
     override fun onDestroyView() {
