@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import kr.ac.duksung.dobongzip.databinding.FragmentSupportBinding
 
 class MyPageSupportFragment : Fragment() {
@@ -20,7 +21,10 @@ class MyPageSupportFragment : Fragment() {
     private var _binding: FragmentSupportBinding? = null
     private val binding get() = _binding!!
 
-    private val supportEmail = "support@dobongzip.com"
+    private val supportEmail = "dobongzip@gmail.com"
+
+    private val prefsName = "support_prefs"
+    private val keyHintShown = "copy_hint_shown"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,18 +40,28 @@ class MyPageSupportFragment : Fragment() {
         // 뒤로가기
         binding.backButton.setOnClickListener { findNavController().popBackStack() }
 
-        // 이메일 텍스트 클릭: 메일앱 열기
-        //binding.tvEmail.setOnClickListener { openEmailClient() }
-
         // "이메일로 문의하기" 버튼: 메일앱 열기
         binding.btnEmail.setOnClickListener { openEmailClient() }
 
         // "브라우저에서 Gmail 열기" 버튼: Gmail 웹 열기
         binding.btnGmailWeb.setOnClickListener { openGmailInBrowser() }
 
-        // 길게 눌러 복사 (선택)
+        // 👉 앱 최초 진입 시 1회만 힌트 스낵바 노출
+        val sp = requireContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        if (!sp.getBoolean(keyHintShown, false)) {
+            Snackbar.make(binding.root, "이메일을 길게 누르면 복사됩니다.", Snackbar.LENGTH_LONG).show()
+            sp.edit().putBoolean(keyHintShown, true).apply()
+        }
+
+        // 👉 짧게 누르면 안내
+        binding.tvEmail.setOnClickListener {
+            Toast.makeText(requireContext(), "이메일을 길게 누르면 복사됩니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        // 👉 길게 눌러 복사
         binding.tvEmail.setOnLongClickListener {
             copyToClipboard(supportEmail)
+            Snackbar.make(binding.root, "이메일 주소가 복사되었습니다.", Toast.LENGTH_SHORT).show()
             true
         }
     }
@@ -70,7 +84,6 @@ class MyPageSupportFragment : Fragment() {
     }
 
     private fun openGmailInBrowser() {
-        // Gmail 웹 컴포즈 URL (to/subject를 미리 채움)
         val url =
             "https://mail.google.com/mail/?view=cm&fs=1&to=$supportEmail&su=${Uri.encode("고객센터 문의")}"
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -79,7 +92,6 @@ class MyPageSupportFragment : Fragment() {
     private fun copyToClipboard(text: String) {
         val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         cm.setPrimaryClip(ClipData.newPlainText("email", text))
-        Toast.makeText(requireContext(), "이메일 주소가 복사되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

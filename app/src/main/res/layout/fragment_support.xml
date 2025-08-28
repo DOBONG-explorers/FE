@@ -82,7 +82,11 @@
                     android:layout_height="wrap_content"
                     android:text="dobongzip@gmail.com"
                     android:textSize="13sp"
-                    android:textColor="#1E88E5" />
+                    android:textColor="#1E88E5"
+                    android:longClickable="true"
+                    android:tooltipText="길게 누르면 복사됩니다" />
+
+
             </LinearLayout>
 
             <LinearLayout
