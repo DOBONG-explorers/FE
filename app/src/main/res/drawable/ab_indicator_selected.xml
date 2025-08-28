@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <size android:width="3dp" android:height="3dp" />
+    <solid android:color="#1E88E5"/> <!-- 선택 점 색 -->
+</shape>

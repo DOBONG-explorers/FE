@@ -1,22 +1,282 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    android:fillViewport="true"
+    android:scrollbars="vertical">
 
-    <TextView
-        android:id="@+id/text_home"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 상단바 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <!-- 공지사항 -->
+            <ImageButton
+                android:id="@+id/btnNotice"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="6dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:contentDescription="공지사항"
+                android:src="@drawable/ic_notice"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- 중앙 로고 (이미지) -->
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo_"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- 검색 -->
+            <ImageButton
+                android:id="@+id/btnSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="6dp"
+                android:background="@null"
+                android:scaleType="centerInside"
+                android:contentDescription="검색"
+                android:src="@drawable/ic_search"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- 포스터 카드 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/posterCard"
+            android:layout_width="370dp"
+            android:layout_height="350dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/posterPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"/>
+
+                <LinearLayout
+                    android:id="@+id/overlayControls"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/bg_overlay_pill"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvCounter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="1/1"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 점 인디케이터 (뺴도 ㄱㅊ은 거 같음 위에 숫자있어서
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/pagerIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-20dp"
+        app:tabIndicator="@null"
+        app:tabIndicatorHeight="0dp"
+        app:tabGravity="center"
+        app:tabMode="fixed"
+            app:tabPaddingStart="3dp"
+            app:tabPaddingEnd="3dp"
+            app:tabContentStart="3dp"
+        app:tabRippleColor="@android:color/transparent"/>
+
+-->
+
+        <!-- 🔽 텍스트 -->
+        <TextView
+            android:id="@+id/tvExploreDobong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="    도봉구 살펴보기 🔎"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_gravity="left"/>
+
+        <!-- 2x2 정사각형 -->
+        <GridLayout
+            android:id="@+id/gridDobong"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:alignmentMode="alignMargins"
+            android:rowOrderPreserved="false">
+            <!-- 1. 지도 보고 주변 장소 찾기 -->
+
+            <LinearLayout
+                android:layout_width="165dp"
+                android:layout_height="165dp"
+                android:layout_margin="12dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_square_blue">
+
+                <ImageView
+                    android:src="@drawable/ic_map"
+                    android:contentDescription="지도"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"/>
+
+
+                <!-- 텍스트 (아래 왼쪽) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+
+                    android:layout_marginBottom="0dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="지도 보고\n주변 장소 찾기 >"
+                    android:textColor="@color/blue"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+            <!-- 2. 날씨에 맞는 장소 추천 -->
+            <LinearLayout
+                android:layout_width="165dp"
+                android:layout_height="165dp"
+                android:layout_margin="12dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_square_green">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:src="@drawable/ic_weather"
+                android:contentDescription="날씨"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+
+                    android:layout_marginBottom="0dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="날씨에 맞는\n장소 추천 받기 >"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 3. 실시간 인기 장소 살펴보기 -->
+            <LinearLayout
+                android:layout_width="165dp"
+                android:layout_height="165dp"
+                android:layout_margin="12dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_square_green">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:src="@drawable/ic_trending"
+                android:contentDescription="실시간 인기"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+
+                    android:layout_marginBottom="0dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="실시간 인기\n장소 살펴보기 >"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 4. 도봉문화유산 소개 -->
+            <LinearLayout
+                android:layout_width="165dp"
+                android:layout_height="165dp"
+                android:layout_margin="12dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_square_blue">
+
+                <ImageView
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:src="@drawable/ic_heritage"
+                android:contentDescription="문화유산"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="0dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="지도 보고\n주변 장소 찾기 >"
+                    android:textColor="@color/blue"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </GridLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
