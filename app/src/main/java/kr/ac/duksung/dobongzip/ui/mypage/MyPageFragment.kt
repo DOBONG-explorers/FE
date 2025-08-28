@@ -34,7 +34,6 @@ class MyPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.backButton.setOnClickListener {
-            // 필요 없으면 제거해도 됩니다 (바텀탭 루트 화면이면 popBackStack()은 변화 없을 수 있음)
             findNavController().popBackStack()
         }
 
@@ -53,8 +52,9 @@ class MyPageFragment : Fragment() {
 
         // 필요 시 나머지 카드도 연결
         binding.securityCard.setOnClickListener {
-            // findNavController().navigate(R.id.securityFragment) 같은 식으로 연결
+            findNavController().navigate(R.id.securityFragment)
         }
+
         binding.supportCard.setOnClickListener {
             // findNavController().navigate(R.id.supportFragment) 또는 외부 링크 인텐트
         }

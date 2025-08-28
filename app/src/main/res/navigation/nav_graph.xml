@@ -42,4 +42,10 @@
         android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageSetFragment"
         android:label="개인정보 관리"
         tools:layout="@layout/fragment_my_page"/>
+
+    <fragment
+        android:id="@+id/securityFragment"
+        android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageSecurityFragment"
+        android:label="비밀번호 변경"
+        tools:layout="@layout/fragment_security_change" />
 </navigation>

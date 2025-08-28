@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import kr.ac.duksung.dobongzip.databinding.FragmentMyPage2Binding
 
 class MyPageEditFragment : Fragment() {
@@ -19,6 +20,15 @@ class MyPageEditFragment : Fragment() {
     ): View {
         _binding = FragmentMyPage2Binding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // ✅ 뒤로가기 버튼 → 이전 화면으로 이동
+        binding.backButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     override fun onDestroyView() {

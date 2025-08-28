@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_mypage"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- 상단바: 뒤로가기 + 타이틀 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:background="@drawable/round_button"
+                android:src="@drawable/arrow"
+                android:scaleType="centerInside"
+                android:contentDescription="뒤로 가기" />
+
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="비밀번호 변경"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:layout_marginStart="12dp" />
+        </LinearLayout>
+
+        <!-- 📦 비밀번호 변경 카드 -->
+        <LinearLayout
+            android:id="@+id/securityCardBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_marginTop="24dp">
+
+            <!-- 현재 비밀번호 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="현재 비밀번호"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:id="@+id/editCurrentPw"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:hint="••••••••"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <!-- 새 비밀번호 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="새 비밀번호"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:id="@+id/editNewPw"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:hint="영문+숫자 8자↑"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <!-- 새 비밀번호 확인 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호 확인"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:id="@+id/editConfirmPw"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:textSize="13sp"
+                    android:textColor="#000000"
+                    android:hint="다시 입력"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 완료 버튼 (기존 스타일 유지) -->
+        <Button
+            android:id="@+id/btnChange"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:text="완료"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:background="@drawable/rounded_button_blue"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+</ScrollView>
