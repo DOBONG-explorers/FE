@@ -10,7 +10,8 @@
         android:layout_height="36dp"
         android:src="@drawable/prf"
         android:scaleType="centerCrop"
-        android:background="@drawable/round_image_bg"
+
+        android:clipToOutline="true"
         android:layout_marginEnd="8dp"/>
 
     <!-- 말풍선 -->

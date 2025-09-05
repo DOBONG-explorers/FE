@@ -35,6 +35,20 @@ class ChatFragment : Fragment() {
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
 
+        // ✅ 첫 진입 시 챗봇 환영 메시지
+        val welcomeMessage = """
+        안녕하세요! 
+        저는 당신의 장소 탐험을 도와줄 
+        AI 챗봇 ‘AI도봉’입니다 😊  
+        어떤 분위기나 장소를 찾고 계신가요?
+
+        궁금한 걸 자유롭게 물어보세요.  
+        리뷰와 3D 화면까지 함께 보여드릴게요!
+    """.trimIndent()
+
+        adapter.addMessage(ChatMessage(welcomeMessage, false))
+        binding.chatRecyclerView.scrollToPosition(messages.size - 1)
+
         // ✅ 전송 버튼 클릭 이벤트
         binding.btnSend.setOnClickListener {
             val text = binding.inputMessage.text.toString().trim()
@@ -53,7 +67,7 @@ class ChatFragment : Fragment() {
             }
         }
 
-        // ✅ 인셋(IME/네비게이션 바) 안전 처리
+        // ✅ 인셋 처리 (IME/네비게이션 바)
         val root = view.findViewById<View>(R.id.chatRoot) ?: binding.root
         val recycler = view.findViewById<View>(R.id.chatRecyclerView)
         val inputBar = view.findViewById<View>(R.id.inputBar)
@@ -61,8 +75,6 @@ class ChatFragment : Fragment() {
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-
-            // 키보드(IME)와 시스템 바 중 더 큰 값을 하단 패딩으로 사용
             val bottomInset = max(sys.bottom, ime.bottom)
 
             if (recycler != null && inputBar != null) {
@@ -83,6 +95,7 @@ class ChatFragment : Fragment() {
             insets
         }
     }
+
 
     override fun onDestroyView() {
         _binding = null
