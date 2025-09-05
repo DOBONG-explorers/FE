@@ -4,7 +4,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="guest_login_text"><u>비회원으로 로그인</u></string>
-    <string name="find_id_pw_text"><u>아이디 · 비밀번호 찾기</u></string>
+    <string name="find_id_pw_text"><u>비밀번호 재설정</u></string>
 
     <string name="signup_text"><u>회원가입</u></string>
 
