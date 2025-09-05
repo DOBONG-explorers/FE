@@ -1,0 +1,12 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- 배경색 -->
+    <solid android:color="@android:color/white" />
+
+    <!-- 둥글기 60dp -->
+    <corners android:radius="60dp" />
+
+    <!-- 그림자 대신 elevation 효과 -->
+    <padding android:left="12dp" android:top="12dp"
+        android:right="12dp" android:bottom="12dp" />
+</shape>

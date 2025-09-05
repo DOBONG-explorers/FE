@@ -21,8 +21,8 @@
             android:layout_height="wrap_content"
             android:text="AI 도봉"
             android:textStyle="bold"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -50,29 +50,29 @@
         android:padding="6dp"
         android:orientation="horizontal"
         android:background="@drawable/bg_input"
-        android:elevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    android:elevation="8dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/inputMessage"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:hint="메시지를 입력하세요"
-            android:paddingHorizontal="14dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"/>
+    <EditText
+        android:id="@+id/inputMessage"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:hint="메시지를 입력하세요"
+        android:paddingHorizontal="14dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"/>
 
-        <ImageButton
-            android:id="@+id/btnSend"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/send"
-            android:contentDescription="전송"/>
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/btnSend"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/send"
+        android:contentDescription="전송"/>
+</LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

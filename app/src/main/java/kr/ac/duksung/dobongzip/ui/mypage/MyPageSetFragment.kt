@@ -48,7 +48,7 @@ class MyPageSetFragment : Fragment() {
         }
 
         // ✅ 프로필 사진/텍스트 클릭 → 사진 선택
-        binding.editProfileText.setOnClickListener { openPhotoPicker() }
+        //binding.editProfileText.setOnClickListener { openPhotoPicker() }
         binding.profileImage.setOnClickListener { openPhotoPicker() }
 
         // (선택) 뒤로가기 버튼

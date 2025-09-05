@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="    도봉구 살펴보기 🔎"
-            android:textSize="18sp"
+            android:textSize="21sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
             android:layout_gravity="left"/>
@@ -206,7 +206,7 @@
 
                     android:layout_marginBottom="0dp"
                     android:fontFamily="sans-serif-black"
-                    android:text="날씨에 맞는\n장소 추천 받기 >"
+                    android:text="랜덤으로 \n장소 추천 받기 >"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />

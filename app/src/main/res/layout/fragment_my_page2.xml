@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="개인정보 관리"
             android:textColor="#000000"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             android:layout_marginStart="12dp" />
     </LinearLayout>
