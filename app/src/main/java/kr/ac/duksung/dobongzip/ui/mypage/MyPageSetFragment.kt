@@ -1,39 +1,28 @@
 package kr.ac.duksung.dobongzip.ui.mypage
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentMyPageBinding
+import kr.ac.duksung.dobongzip.ui.common.ProfileViewModel
 
 class MyPageSetFragment : Fragment() {
 
     private var _binding: FragmentMyPageBinding? = null
     private val binding get() = _binding!!
 
-    // 1) AndroidX Photo Picker 등록: 이미지 1장
-    private val pickImage =
-        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
-            if (uri != null) {
-                // 2) 즉시 미리보기 반영 (Glide 권장)
-                Glide.with(this)
-                    .load(uri)
-                    .centerCrop()
-                    .placeholder(R.drawable.prf3)
-                    .into(binding.profileImage)
-
-                // 3) (선택) 서버 업로드용으로 ViewModel/Repository에 전달하거나
-                //    앱 캐시에 복사한 후 업로드 로직을 부르세요.
-                // uploadProfileImage(uri)
-            }
-        }
+    // ✅ 전역 프로필 상태 (Activity 스코프)
+    private val profileViewModel: ProfileViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,26 +31,41 @@ class MyPageSetFragment : Fragment() {
     ): View {
         _binding = FragmentMyPageBinding.inflate(inflater, container, false)
 
-        // ✅ "개인정보 수정" 버튼 → 수정 화면 이동
+        // "개인정보 수정" → 편집 화면 이동
         binding.myPageButton.setOnClickListener {
             findNavController().navigate(R.id.myPageEditFragment)
         }
 
-        // ✅ 프로필 사진/텍스트 클릭 → 사진 선택
-        //binding.editProfileText.setOnClickListener { openPhotoPicker() }
-        binding.profileImage.setOnClickListener { openPhotoPicker() }
-
-        // (선택) 뒤로가기 버튼
+        // ✅ 뒤로가기 버튼 (XML의 @+id/backButton 와 연결)
         binding.backButton.setOnClickListener { findNavController().popBackStack() }
 
         return binding.root
     }
 
-    private fun openPhotoPicker() {
-        // 이미지만 선택하도록 필터링
-        pickImage.launch(
-            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-        )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // ✅ 전역 상태 구독 → 이미지/텍스트 뷰 반영
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                profileViewModel.profileState.collect { state ->
+                    // 프로필 이미지
+                    if (state.uri == null) {
+                        binding.profileImage.setImageResource(R.drawable.prf3)
+                    } else {
+                        Glide.with(this@MyPageSetFragment)
+                            .load(state.uri)
+                            .centerCrop()
+                            .into(binding.profileImage)
+                    }
+
+                    // 닉네임/생년월일/이메일 (이 페이지는 TextView)
+                    binding.editNickname.text = state.nickname ?: "홍길동"
+                    binding.editBirthday.text = state.birthday ?: "1990-01-01"
+                    binding.editEmail.text    = state.email ?: "user@example.com"
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
