@@ -23,14 +23,14 @@
             <!-- 이미지 위치 상단에 딱 붙게 설정 -->
             <ImageView
                 android:id="@+id/progressImage"
-                android:layout_width="200dp"
+                android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/re_1"
+                android:src="@drawable/re_0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.319"
+                app:layout_constraintHorizontal_bias="0.01"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
@@ -42,7 +42,7 @@
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:progress="33"
+            android:progress="2"
             android:max="100"
             android:progressDrawable="@drawable/progress_drawable"
             android:background="#E0E0E0" />
@@ -53,10 +53,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="이메일 입력"
+        android:text="이메일"
         android:textColor="#000000"
         android:layout_marginTop="30dp"
-        android:textSize="12sp"
+        android:textSize="14sp"
+        android:textStyle="bold"
         android:layout_marginBottom="4dp"/>
 
     <EditText
@@ -78,6 +79,7 @@
         android:text="비밀번호"
         android:textColor="#000000"
         android:textSize="14sp"
+        android:textStyle="bold"
         android:layout_marginBottom="4dp"/>
 
     <EditText
@@ -116,6 +118,7 @@
         android:text="6-20자 / 영문 대문자, 소문자, 특수문자 중 2가지 이상 조합"
         android:textColor="#000000"
         android:textSize="9sp"
+        android:textStyle="bold"
         android:layout_marginBottom="35dp"/>
 
     <!-- 휴대폰 번호 -->
@@ -125,6 +128,7 @@
         android:text="휴대폰 번호"
         android:textColor="#000000"
         android:textSize="14sp"
+        android:textStyle="bold"
         android:layout_marginBottom="4dp"/>
 
     <EditText
@@ -149,12 +153,13 @@
     <!-- 가입하기 버튼 -->
     <Button
         android:id="@+id/nextButton"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
+        android:layout_gravity="center"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_button_gray"
         android:enabled="false"
-        android:text="가입하기"
+        android:text="다음"
         android:textColor="#FFFFFF"
         android:textSize="14sp" />
 </LinearLayout>

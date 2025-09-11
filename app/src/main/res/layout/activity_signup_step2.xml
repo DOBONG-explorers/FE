@@ -33,7 +33,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- 프로그레스바는 아래에 위치 -->
@@ -45,21 +45,36 @@
             android:progress="66"
             android:max="100"
             android:progressDrawable="@drawable/progress_drawable"
-            android:background="#E0E0E0" />
-    </LinearLayout>
+            android:background="#E0E0E0" /></LinearLayout>
 
 
+    <!-- 프로필사진 -->
 
-    <!-- 닉네임 -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/profileImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="닉네임"
-        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        >
 
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:layout_marginBottom="4dp"/>
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:src="@drawable/profileimage" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="프로필 수정"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingBottom="20dp"
+            android:layout_marginTop="10dp"
+            />
+
+    </LinearLayout>
 
     <EditText
         android:id="@+id/editTextNickname"
@@ -67,20 +82,14 @@
         android:layout_height="50dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/edittext_background"
-        android:hint="닉네임을 입력하세요"
+        android:hint="닉네임"
         android:padding="12dp"
         android:textColor="#000000"
         android:textColorHint="#999999"
         android:textSize="12sp" />
 
     <!-- 나이 -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="나이"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:layout_marginBottom="4dp"/>
+
 
     <EditText
         android:id="@+id/editTextAge"
@@ -96,13 +105,7 @@
         android:textSize="12sp" />
 
     <!-- 성별 -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="성별"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:layout_marginBottom="4dp"/>
+
 
     <Spinner
         android:id="@+id/spinnerGender"
@@ -116,13 +119,7 @@
         android:drawableRight="@drawable/ic_arrow_down_blue" />
 
     <!-- 생년월일 -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="생년월일"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:layout_marginBottom="4dp"/>
+
 
     <EditText
         android:id="@+id/editTextBirthdate"
@@ -130,7 +127,7 @@
         android:layout_height="50dp"
         android:layout_marginBottom="0dp"
         android:background="@drawable/edittext_background"
-        android:hint="YYYY-MM-DD"
+        android:hint="생년월일"
         android:focusable="false"
         android:clickable="true"
         android:padding="12dp"
@@ -147,12 +144,14 @@
     <!-- 가입하기 버튼 -->
     <Button
         android:id="@+id/completeSignupButton"
-        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:text="가입하기"
+        android:text="다음"
         android:textColor="#FFFFFF"
         android:textSize="14sp"
         android:background="@drawable/rounded_button_gray"
         android:enabled="false"
         android:layout_marginTop="24dp"/>
+
 </LinearLayout>

@@ -113,7 +113,7 @@
                 <ImageView
                     android:layout_width="26dp"
                     android:layout_height="26dp"
-                    android:src="@drawable/profile"
+                    android:src="@drawable/profileimage"
                     android:contentDescription="개인정보 아이콘"
                     android:layout_marginEnd="16dp" />
 
