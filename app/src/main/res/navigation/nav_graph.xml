@@ -24,11 +24,6 @@
         android:label="채팅"
         tools:layout="@layout/fragment_chat" />
 
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="kr.ac.duksung.dobongzip.ui.notifications.NotificationsFragment"
-        android:label="관심"
-        tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_mypage"
@@ -54,5 +49,12 @@
         android:name="kr.ac.duksung.dobongzip.ui.mypage.MyPageSupportFragment"
         android:label="고객센터"
         tools:layout="@layout/fragment_support" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="kr.ac.duksung.dobongzip.ui.like.LikesFragment"
+        android:label="관심"
+        tools:layout="@layout/fragment_likes" />
+
 
 </navigation>

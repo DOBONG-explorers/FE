@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <!-- #0B79D0 에 10% 투명: #1A0B79D0  (1A = 10% Alpha) -->
+    <solid android:color="#1A0B79D0"/>
+    <corners android:radius="30dp"/>
+</shape>

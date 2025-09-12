@@ -1,0 +1,8 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- 배경색: #0B79D0, 투명도 10% -->
+    <solid android:color="#1A0B79D0"/> <!-- 1A = 약 10% 투명도 -->
+
+    <!-- 둥글기 -->
+    <corners android:radius="40dp" />
+</shape>
