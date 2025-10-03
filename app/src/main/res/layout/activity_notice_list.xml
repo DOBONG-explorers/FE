@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- 상단바 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="0dp"
+        android:paddingBottom="5dp">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:background="@drawable/round_button"
+            android:src="@drawable/arrow"
+            android:scaleType="centerInside"
+            android:contentDescription="뒤로 가기" />
+
+        <TextView
+            android:id="@+id/NoticeList"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="공지사항"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+    <!-- 카테고리 -->
+    <LinearLayout
+        android:id="@+id/categoryBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAll"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="전체"
+            android:textSize="15sp"
+            android:textColor="#000000"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="999dp"
+            app:backgroundTint="#E8F4FF"
+
+             />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="행사"
+            android:textSize="15sp"
+            android:textColor="#000000"
+            app:cornerRadius="999dp"
+            app:backgroundTint="#E8F4FF"
+
+             />
+    </LinearLayout>
+
+
+
+
+    <!-- 리스트 -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/noticeListContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="18dp"
+        app:cardBackgroundColor="#E8F4FF"
+
+        android:padding="12dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNotice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:clipToPadding="false"/>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

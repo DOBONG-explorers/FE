@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "kr.ac.duksung.dobongzip"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "kr.ac.duksung.dobongzip"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
