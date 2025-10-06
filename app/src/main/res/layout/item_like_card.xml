@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:padding="10dp">
 
-        <!-- 사진 (180 x 60, radius 30) -->
+        <!-- 사진  -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivPhoto"
             android:layout_width="0dp"
@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rounded30" />
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rounded20" />
 
         <!-- 장소 이름 -->
         <TextView
