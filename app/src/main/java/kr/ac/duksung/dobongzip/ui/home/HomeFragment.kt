@@ -1,5 +1,6 @@
 package kr.ac.duksung.dobongzip.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentHomeBinding
 import kr.ac.duksung.dobongzip.databinding.ItemPosterBinding
+import kr.ac.duksung.dobongzip.ui.notice.NoticeListActivity
 import kotlin.math.abs
 
 class HomeFragment : Fragment() {
@@ -89,6 +91,12 @@ class HomeFragment : Fragment() {
             }
         })
         updateCounterByAdapterPos(start)
+
+        // 공지사항 버튼 클릭 -> 공지사항으로 이동
+        b.btnNotice.setOnClickListener {
+            val intent = Intent(requireContext(), NoticeListActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private val autoSlide = object : Runnable {

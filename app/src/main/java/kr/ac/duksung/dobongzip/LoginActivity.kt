@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import kr.ac.duksung.dobongzip.SignupActivity
+import kr.ac.duksung.dobongzip.ui.password.PasswordResetActivity
 
 
 class LoginActivity : AppCompatActivity() {
@@ -22,7 +23,8 @@ class LoginActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.find_id_pw).setOnClickListener {
-            // 아이디/비밀번호 찾기 이동  ....   ..
+            startActivity(Intent(this, PasswordResetActivity::class.java))
+            // 비밀번호 재설정 이동  ....   ..
         }
         findViewById<TextView>(R.id.signup_text).setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
