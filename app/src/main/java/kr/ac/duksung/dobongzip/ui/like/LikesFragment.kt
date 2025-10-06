@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,9 +25,8 @@ class LikesFragment : Fragment() {
         val layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.layoutManager = layoutManager
 
-        // ✅ 카드 간격 완전히 밀착 (인스타그램 스타일)
-        val horizontalSpacing = 0
-        val verticalSpacing = 0
+        val horizontalSpacing = ( 12* resources.displayMetrics.density).toInt() // 좌우 여유
+        val verticalSpacing = (10 * resources.displayMetrics.density).toInt()   // 위아래 여유
         recyclerView.setPadding(horizontalSpacing, verticalSpacing, horizontalSpacing, verticalSpacing)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(
@@ -38,15 +38,26 @@ class LikesFragment : Fragment() {
             )
         )
 
-        // ✅ 예시 데이터
-        val dummyList = listOf(
-            LikeItem("서울문화유산", R.drawable.chagdong),
-            LikeItem("도봉산 생태공원", R.drawable.chagdong),
-            LikeItem("창포원", R.drawable.chagdong),
-            LikeItem("둘리뮤지엄", R.drawable.chagdong)
+        // ✅ 예시 데이터 (Mutable)
+        val dummyList = mutableListOf(
+            LikeItem(placeName = "서울문화유산", imageResId = R.drawable.chagdong),
+            LikeItem(placeName = "도봉산 생태공원", imageResId = R.drawable.chagdong),
+            LikeItem(placeName = "창포원", imageResId = R.drawable.chagdong),
+            LikeItem(placeName = "창포원", imageResId = R.drawable.chagdong),
+            LikeItem(placeName = "창포원", imageResId = R.drawable.chagdong),
+            LikeItem(placeName = "창포원", imageResId = R.drawable.chagdong),
+
+            LikeItem(placeName = "둘리뮤지엄", imageResId = R.drawable.chagdong) ,
+            LikeItem(placeName = "둘리뮤지엄", imageResId = R.drawable.chagdong)
+
         )
 
-        recyclerView.adapter = LikesAdapter(dummyList)
+        recyclerView.adapter = LikesAdapter(dummyList) { removed ->
+            // 필요 시 서버에 좋아요 취소 API 호출 자리
+            // viewLifecycleOwner.lifecycleScope.launch { repository.unlike(removed.id) ... }
+
+            Toast.makeText(requireContext(), " ${removed.placeName}이(가) 목록에서 삭제되었어요", Toast.LENGTH_SHORT).show()
+        }
 
         return view
     }
