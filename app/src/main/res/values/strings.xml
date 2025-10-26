@@ -7,6 +7,7 @@
     <string name="find_id_pw_text"><u>비밀번호 재설정</u></string>
 
     <string name="signup_text"><u>회원가입</u></string>
+    <string name="kakao_native_app_key">820287f1ad6ef4c97a1bb080f013dafd</string>
 
 
 </resources>

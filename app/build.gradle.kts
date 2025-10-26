@@ -67,4 +67,10 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation ( "com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.14")
+    implementation ("io.coil-kt:coil:2.6.0")
+    implementation("com.kakao.maps.open:android:2.9.5")
+
 }
