@@ -14,6 +14,8 @@ object ApiClient {
 
     private val logger = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
+        redactHeader("Authorization") // 🔒 토큰 로그 노출 방지
+
     }
 
     private val authHeaderInterceptor = Interceptor { chain ->
@@ -40,6 +42,6 @@ object ApiClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
+    val myPageService: MyPageService by lazy { retrofit.create(MyPageService::class.java) }
     val authService: AuthService by lazy { retrofit.create(AuthService::class.java) }
 }

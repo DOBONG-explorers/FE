@@ -1,9 +1,14 @@
+// kr/ac/duksung/dobongzip/ui/mypage/MyPageSetFragment.kt
 package kr.ac.duksung.dobongzip.ui.mypage
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -13,63 +18,79 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.R
-import kr.ac.duksung.dobongzip.databinding.FragmentMyPageBinding
 import kr.ac.duksung.dobongzip.ui.common.ProfileViewModel
 
 class MyPageSetFragment : Fragment() {
 
-    private var _binding: FragmentMyPageBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var profileImage: ImageView
+    private lateinit var tvNickname: TextView
+    private lateinit var tvBirth: TextView
+    private lateinit var tvEmail: TextView
+    private lateinit var btnBack: ImageButton
+    private lateinit var btnToEdit: Button
 
-    // ✅ 전역 프로필 상태 (Activity 스코프)
     private val profileViewModel: ProfileViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMyPageBinding.inflate(inflater, container, false)
+        // ⚠️ 레이아웃 파일명에 맞춰서 선택하세요:
+        // - XML 파일이 fragment_mypage.xml 이면 → R.layout.fragment_mypage
+        // - XML 파일이 fragment_my_page.xml 이면 → R.layout.fragment_my_page
+        val v = inflater.inflate(R.layout.fragment_my_page, container, false)
 
-        // "개인정보 수정" → 편집 화면 이동
-        binding.myPageButton.setOnClickListener {
+        // XML id 연결
+        profileImage = v.findViewById(R.id.profileImage)
+        tvNickname   = v.findViewById(R.id.editNickname)
+        tvBirth      = v.findViewById(R.id.editBirthday)
+        tvEmail      = v.findViewById(R.id.editEmail)
+        btnBack      = v.findViewById(R.id.backButton)
+        btnToEdit    = v.findViewById(R.id.myPageButton)
+
+        // 뒤로가기
+        btnBack.setOnClickListener { findNavController().popBackStack() }
+
+        // "개인정보 수정" → 편집 화면 이동 (fragment_mypage2.xml 사용하는 프래그먼트)
+        btnToEdit.setOnClickListener {
             findNavController().navigate(R.id.myPageEditFragment)
         }
 
-        // ✅ 뒤로가기 버튼 (XML의 @+id/backButton 와 연결)
-        binding.backButton.setOnClickListener { findNavController().popBackStack() }
-
-        return binding.root
+        return v
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ✅ 전역 상태 구독 → 이미지/텍스트 뷰 반영
+        // 진입 시 서버 최신값 로드 (Authorization 헤더가 붙도록 토큰 세팅 필요)
+        profileViewModel.loadProfileAll()
+
+        // 상태 구독 → UI 반영
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 profileViewModel.profileState.collect { state ->
-                    // 프로필 이미지
-                    if (state.uri == null) {
-                        binding.profileImage.setImageResource(R.drawable.prf3)
-                    } else {
-                        Glide.with(this@MyPageSetFragment)
-                            .load(state.uri)
-                            .centerCrop()
-                            .into(binding.profileImage)
+                    // 1) 프로필 이미지: 서버 URL 우선 → 로컬 uri → 기본 이미지
+                    when {
+                        !state.imageUrl.isNullOrBlank() -> {
+                            Glide.with(this@MyPageSetFragment)
+                                .load(state.imageUrl)
+                                .centerCrop()
+                                .into(profileImage)
+                        }
+                        state.uri != null -> {
+                            Glide.with(this@MyPageSetFragment)
+                                .load(state.uri)
+                                .centerCrop()
+                                .into(profileImage)
+                        }
+                        else -> profileImage.setImageResource(R.drawable.prf3)
                     }
 
-                    // 닉네임/생년월일/이메일 (이 페이지는 TextView)
-                    binding.editNickname.text = state.nickname ?: "홍길동"
-                    binding.editBirthday.text = state.birthday ?: "1990-01-01"
-                    binding.editEmail.text    = state.email ?: "user@example.com"
+                    // 2) 텍스트 정보
+                    tvNickname.text = state.nickname ?: "-"
+                    tvBirth.text    = state.birthday ?: "-"
+                    tvEmail.text    = state.email ?: "-"
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

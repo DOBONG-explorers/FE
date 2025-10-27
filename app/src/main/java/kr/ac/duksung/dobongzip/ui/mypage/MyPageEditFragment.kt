@@ -1,5 +1,12 @@
 package kr.ac.duksung.dobongzip.ui.mypage
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.io.FileOutputStream
+import android.webkit.MimeTypeMap
+
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -16,10 +23,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kr.ac.duksung.dobongzip.databinding.FragmentMyPage2Binding
 import kr.ac.duksung.dobongzip.ui.common.ProfileViewModel
 import kr.ac.duksung.dobongzip.ui.common.loadProfile
+
+// ▼ API 호출에 필요한 것들
+import kr.ac.duksung.dobongzip.data.api.ApiClient
+import kr.ac.duksung.dobongzip.data.api.MyPageProfilePatchReq
+import kr.ac.duksung.dobongzip.data.api.ImageObjectKey
 
 class MyPageEditFragment : Fragment() {
 
@@ -135,38 +149,127 @@ class MyPageEditFragment : Fragment() {
             }
         })
 
-
         binding.editEmail.addTextChangedListener(simpleWatcher { s ->
             pendingEmail = s
             syncEnableState()
         })
 
-        // ✅ 완료 버튼: 이때만 전역 저장 적용
+        // ✅ 완료 버튼: 텍스트 저장 + 이미지 업로드 2단계(필요 시)
         binding.myPageButton.setOnClickListener {
-            val current = profileViewModel.profileState.value
-            val changedImage   = pendingUri != null && pendingUri != current.uri
-            val changedName    = (pendingNickname ?: binding.editNickname.text?.toString())?.trim() != (current.nickname ?: "")
-            val changedBirth   = (pendingBirthday ?: binding.editBirthday.text?.toString())?.trim() != (current.birthday ?: "")
-            val changedEmail   = (pendingEmail ?: binding.editEmail.text?.toString())?.trim() != (current.email ?: "")
+            onClickSave()
+        }
+    }
 
-            if (changedImage || changedName || changedBirth || changedEmail) {
-                if (changedImage) profileViewModel.updateProfileUri(pendingUri)
-                if (changedName)  profileViewModel.updateNickname((pendingNickname ?: binding.editNickname.text?.toString())?.trim())
-                if (changedBirth) profileViewModel.updateBirthday((pendingBirthday ?: binding.editBirthday.text?.toString())?.trim())
-                if (changedEmail) profileViewModel.updateEmail((pendingEmail ?: binding.editEmail.text?.toString())?.trim())
+    /** 저장(완료) 버튼 클릭 처리: 텍스트 저장 → 이미지 업로드(임시→최종) */
+    private fun onClickSave() {
+        val current = profileViewModel.profileState.value
 
+        val newName  = (pendingNickname ?: binding.editNickname.text?.toString())?.trim()
+        val newBirth = (pendingBirthday ?: binding.editBirthday.text?.toString())?.trim()
+        val newEmail = (pendingEmail ?: binding.editEmail.text?.toString())?.trim()
+        val changedText = (newName != current.nickname) || (newBirth != current.birthday) || (newEmail != current.email)
+
+        val changedImage = pendingUri != null && pendingUri != current.uri
+
+        // 버튼 잠금
+        val btn = binding.myPageButton
+        val originalText = btn.text
+        btn.isEnabled = false
+        btn.text = "저장 중..."
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            var textOk = true
+            var imageOk = true
+
+            // 1) 텍스트 저장 (변경 시)
+            if (changedText) {
+                textOk = saveTextProfile(newName, newBirth, newEmail)
+            }
+
+            // 2) 이미지 업로드 2단계 (변경 시)
+            if (changedImage) {
+                imageOk = uploadImageTwoSteps(pendingUri!!)
+            }
+
+            if (textOk && imageOk) {
                 Toast.makeText(requireContext(), "정보가 업데이트되었습니다.", Toast.LENGTH_SHORT).show()
-
-                // 펜딩 초기화
+                // 성공 시 펜딩 초기화
                 pendingUri = null
                 pendingNickname = null
                 pendingBirthday = null
                 pendingEmail = null
+                // 최신값 다시 로드 (보기 화면에서도 즉시 반영되게)
+                profileViewModel.loadProfileAll()
+            }
 
-                // 즉시 뒤로 가고 싶다면:
-                // findNavController().popBackStack()
-            } else {
-                Toast.makeText(requireContext(), "변경된 내용이 없습니다.", Toast.LENGTH_SHORT).show()
+            // 버튼 복구
+            btn.isEnabled = true
+            btn.text = originalText
+            syncEnableState()
+        }
+    }
+
+    /** 텍스트 프로필 저장 */
+    private suspend fun saveTextProfile(nickname: String?, birth: String?, email: String?): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val res = ApiClient.myPageService.patchProfile(
+                    MyPageProfilePatchReq(nickname, birth, email)
+                )
+                res.success
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "프로필 저장 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+                false
+            }
+        }
+    }
+
+    /** 이미지 업로드 2단계(임시 업로드 → objectKey → 최종 반영) */
+    private suspend fun uploadImageTwoSteps(uri: Uri): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                // 1) Uri → Multipart 변환
+                val part = makeImagePartFromUri(uri, "file") ?: run {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "이미지 처리 실패", Toast.LENGTH_SHORT).show()
+                    }
+                    return@withContext false
+                }
+
+                // 2) 1단계: 임시 업로드 → objectKey
+                val step1 = ApiClient.myPageService.uploadProfileImageStage1(part)
+                if (step1.success != true || step1.data?.objectKey.isNullOrBlank()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), step1.message.ifBlank { "이미지 업로드 실패" }, Toast.LENGTH_SHORT).show()
+                    }
+                    return@withContext false
+                }
+
+                val objectKey = step1.data!!.objectKey
+
+                // 3) 2단계: 최종 반영 → imageUrl
+                val step2 = ApiClient.myPageService.finalizeProfileImage(ImageObjectKey(objectKey))
+                if (step2.success != true) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), step2.message.ifBlank { "이미지 반영 실패" }, Toast.LENGTH_SHORT).show()
+                    }
+                    return@withContext false
+                }
+
+                // 미리보기는 이미 로컬 uri로 되어있지만, 서버 URL도 상태에 반영되도록 ViewModel 갱신
+                withContext(Dispatchers.Main) {
+                    profileViewModel.updateProfileUri(null) // 로컬 미리보기 제거
+                    // 서버에서 최신 이미지 로드
+                    profileViewModel.loadProfileAll()
+                }
+                true
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "이미지 업로드 오류: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+                false
             }
         }
     }
@@ -210,7 +313,6 @@ class MyPageEditFragment : Fragment() {
                 ((candidateBirth ?: "").trim() != (globalBirth ?: "")) ||
                 ((candidateEmail ?: "").trim() != (globalEmail ?: ""))
         binding.myPageButton.isEnabled = changed
-        // binding.myPageButton.alpha = if (changed) 1f else 0.5f
     }
 
     private fun simpleWatcher(onChanged: (String) -> Unit) = object : TextWatcher {
@@ -219,6 +321,28 @@ class MyPageEditFragment : Fragment() {
             onChanged(s?.toString() ?: "")
         }
         override fun afterTextChanged(s: Editable?) {}
+    }
+
+    /** Uri → MultipartBody.Part 변환 (임시파일 사용) */
+    private suspend fun makeImagePartFromUri(uri: Uri, partName: String): MultipartBody.Part? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val cr = requireContext().contentResolver
+                val mime = cr.getType(uri) ?: "image/jpeg"
+                val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime) ?: "jpg"
+
+                val input = cr.openInputStream(uri) ?: return@withContext null
+                val tempFile = File.createTempFile("profile_", ".$ext", requireContext().cacheDir).apply {
+                    deleteOnExit()
+                }
+                FileOutputStream(tempFile).use { out -> input.copyTo(out) }
+
+                val reqBody = RequestBody.create(mime.toMediaTypeOrNull(), tempFile)
+                MultipartBody.Part.createFormData(partName, "profile.$ext", reqBody)
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
