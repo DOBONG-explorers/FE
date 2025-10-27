@@ -1,58 +1,58 @@
+// ui/like/LikesAdapter.kt
 package kr.ac.duksung.dobongzip.ui.like
 
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import kr.ac.duksung.dobongzip.R
 
 class LikesAdapter(
-    private val items: MutableList<LikeItem>,
-    private val onRemoved: (LikeItem) -> Unit = {}
-) : RecyclerView.Adapter<LikesAdapter.ViewHolder>() {
+    private val onClickUnlike: (LikeItemUi) -> Unit
+) : ListAdapter<LikeItemUi, LikesAdapter.VH>(Diff) {
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    object Diff : DiffUtil.ItemCallback<LikeItemUi>() {
+        override fun areItemsTheSame(oldItem: LikeItemUi, newItem: LikeItemUi) =
+            oldItem.placeId == newItem.placeId
+        override fun areContentsTheSame(oldItem: LikeItemUi, newItem: LikeItemUi) =
+            oldItem == newItem
+    }
+
+    inner class VH(view: View) : RecyclerView.ViewHolder(view) {
         val ivPhoto: ShapeableImageView = view.findViewById(R.id.ivPhoto)
         val tvPlace: TextView = view.findViewById(R.id.tvPlace)
         val ivHeart: ImageView = view.findViewById(R.id.ivHeart)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_like_card, parent, false)
         (view.layoutParams as? ViewGroup.MarginLayoutParams)?.setMargins(0, 0, 0, 0)
-        return ViewHolder(view)
+        return VH(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = items[position]
-        holder.ivPhoto.setImageResource(item.imageResId)
-        holder.tvPlace.text = item.placeName
+    override fun onBindViewHolder(h: VH, position: Int) {
+        val item = getItem(position)
 
-        // 기본은 꽉 찬 하트
-        holder.ivHeart.setImageResource(R.drawable.love_fill)
+        Glide.with(h.ivPhoto)
+            .load(item.imageUrl)
+            //.placeholder(R.drawable.bg_image_placeholder) // 없으면 제거해도 됨
+            .centerCrop()
+            .into(h.ivPhoto)
 
-        holder.ivHeart.setOnClickListener {
-            val pos = holder.adapterPosition
-            if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
+        h.tvPlace.text = item.placeName
+        h.ivHeart.setImageResource(R.drawable.love_fill)
 
-            // 하트 외곽선으로 변경
-            holder.ivHeart.setImageResource(R.drawable.love_outline)
-
-            // 목록에서 제거
-            val removed = items.removeAt(pos)
-            notifyItemRemoved(pos)
-            // 깜빡임 줄이고 싶으면 (선택)
-            // notifyItemRangeChanged(pos, itemCount - pos)
-
-            onRemoved(removed)
+        h.ivHeart.setOnClickListener {
+            // 낙관적 UI: 아이콘 먼저 변경 후 콜백으로 서버 요청
+            h.ivHeart.setImageResource(R.drawable.love)
+            onClickUnlike(item)
         }
     }
-
-    override fun getItemCount(): Int = items.size
 }

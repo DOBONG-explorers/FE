@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="30dp"/>
+    <!-- 흰색 90% 투명도: #E6FFFFFF (원하면 더 투명하게 #CCFFFFFF 등으로) -->
+    <solid android:color="#E6FFFFFF"/>
+</shape>

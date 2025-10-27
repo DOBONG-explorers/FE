@@ -7,40 +7,51 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.R
+import kr.ac.duksung.dobongzip.data.network.RetrofitProvider
+import kr.ac.duksung.dobongzip.data.repository.LikeRepository
 
 class LikesFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: LikesAdapter
     private lateinit var actvSort: MaterialAutoCompleteTextView
+    private lateinit var adapter: LikesAdapter
 
-    private val dummyList = mutableListOf(
-        LikeItem(placeName = "서울문화유산", imageResId = R.drawable.chagdong),
-        LikeItem(placeName = "도봉산 생태공원", imageResId = R.drawable.chagdong),
-        LikeItem(placeName = "창포원", imageResId = R.drawable.chagdong),
-        LikeItem(placeName = "둘리뮤지엄", imageResId = R.drawable.chagdong),
-        LikeItem(placeName = "광장시장", imageResId = R.drawable.chagdong),
-        LikeItem(placeName = "북서울미술관", imageResId = R.drawable.chagdong)
-    )
+    // ✅ ViewModel 생성 (Hilt 없이 팩토리 직접 생성)
+    private val vm: LikesViewModel by viewModels(factoryProducer = {
+        val api = RetrofitProvider.placeLikeApi
+        val repo = LikeRepository(api)
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return LikesViewModel(repo) as T
+            }
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_likes, container, false)
         recyclerView = view.findViewById(R.id.rvLikes)
         actvSort = view.findViewById(R.id.actvSort)
 
-        // ✅ 드롭다운 메뉴 설정
+        // ✅ 드롭다운 메뉴
         val sortOptions = listOf("최신순", "오래된순", "가나다순")
         val sortAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_list_item_1,   // ✅ 기본 item 레이아웃 사용
+            android.R.layout.simple_list_item_1,
             sortOptions
         )
         actvSort.setAdapter(sortAdapter)
@@ -60,41 +71,51 @@ class LikesFragment : Fragment() {
             )
         )
 
-        adapter = LikesAdapter(dummyList) { removed ->
-            Toast.makeText(requireContext(), "‘${removed.placeName}’이(가) 삭제되었어요", Toast.LENGTH_SHORT).show()
+        // ✅ Adapter (URL 기반 이미지 + 하트 해제 기능)
+        adapter = LikesAdapter { item ->
+            vm.unlike(item.placeId) {
+                Toast.makeText(requireContext(), "해제 실패: 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+            }
         }
         recyclerView.adapter = adapter
 
-        // ✅ 정렬 선택 시 이벤트
+        // ✅ 정렬 이벤트 → API 호출 or 클라이언트 정렬
         actvSort.setOnItemClickListener { _, _, position, _ ->
             when (position) {
-                0 -> sortByRecent()
-                1 -> sortByOldest()
-                2 -> sortByName()
+                0 -> vm.load(order = "latest") // 최신순 (기본)
+                1 -> vm.load(order = "oldest") // 오래된순
+                2 -> { // 가나다순은 서버 지원 없음 → 클라 정렬
+                    vm.load(order = "latest")
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        vm.items.collectLatest { list ->
+                            adapter.submitList(list.sortedBy { it.placeName })
+                        }
+                    }
+                    return@setOnItemClickListener
+                }
             }
         }
 
+        // ✅ 데이터 옵저빙
+        viewLifecycleOwner.lifecycleScope.launch {
+            vm.items.collectLatest { list ->
+                if (list.isEmpty()) {
+                    adapter.submitList(
+                        listOf(
+                            LikeItemUi("1", "북서울미술관", "https://picsum.photos/300?random=3"),
+                            LikeItemUi("2", "둘리뮤지엄", "https://picsum.photos/300?random=4")
+                        )
+                    )
+                } else {
+                    adapter.submitList(list)
+                }
+            }
+        }
+
+
+        // ✅ 처음 진입 시 데이터 로드
+        vm.load(order = "latest", size = 30)
+
         return view
-    }
-
-    // ✅ 최신순 (여기서는 단순히 리스트 역순)
-    private fun sortByRecent() {
-        dummyList.reverse()
-        adapter.notifyDataSetChanged()
-        Toast.makeText(requireContext(), "최신순으로 정렬했어요", Toast.LENGTH_SHORT).show()
-    }
-
-    // ✅ 오래된순 (그냥 원래 순서)
-    private fun sortByOldest() {
-        dummyList.sortBy { it.id }
-        adapter.notifyDataSetChanged()
-        Toast.makeText(requireContext(), "오래된순으로 정렬했어요", Toast.LENGTH_SHORT).show()
-    }
-
-    // ✅ 가나다순 (한글 이름 오름차순)
-    private fun sortByName() {
-        dummyList.sortBy { it.placeName }
-        adapter.notifyDataSetChanged()
-        Toast.makeText(requireContext(), "가나다순으로 정렬했어요", Toast.LENGTH_SHORT).show()
     }
 }

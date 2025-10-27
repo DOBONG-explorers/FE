@@ -4,7 +4,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         // ✅ 카카오맵 SDK 저장소
-        maven { url = uri("https://devrepo.kakao.com/nexus/content/groups/public/") }
+        maven(url = "https://devrepo.kakao.com/nexus/repository/kakaomap-releases/")
     }
 }
 dependencyResolutionManagement {
@@ -12,8 +12,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // ✅ 카카오맵 SDK 저장소
-        maven { url = uri("https://devrepo.kakao.com/nexus/content/groups/public/") }
+        maven(url = "https://devrepo.kakao.com/nexus/repository/kakaomap-releases/")
     }
 }
 rootProject.name = "dobongzip"
