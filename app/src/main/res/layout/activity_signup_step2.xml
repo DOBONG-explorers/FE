@@ -58,13 +58,16 @@
         >
 
         <ImageView
+            android:id="@+id/ivProfile"
+
             android:layout_width="100dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
             android:src="@drawable/profileimage" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tvEditProfile"
+        android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="프로필 수정"
