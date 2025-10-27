@@ -1,3 +1,4 @@
+// kr/ac/duksung/dobongzip/SignupStep2Activity.kt
 package kr.ac.duksung.dobongzip
 
 import android.app.DatePickerDialog
@@ -5,7 +6,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import java.util.*
+import kotlinx.coroutines.launch
+import kr.ac.duksung.dobongzip.data.api.ApiClient
+import kr.ac.duksung.dobongzip.data.api.ProfileRequest
+import kr.ac.duksung.dobongzip.data.local.TokenStore
 
 class SignupStep2Activity : AppCompatActivity() {
 
@@ -17,13 +23,16 @@ class SignupStep2Activity : AppCompatActivity() {
     private lateinit var progressImage: ImageView
     private lateinit var progressBar: ProgressBar
 
+    private lateinit var tokenStore: TokenStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_signup_step2) // XML 파일 이름에 맞게 변경
+        setContentView(R.layout.activity_signup_step2)
+
+        tokenStore = TokenStore(this)
 
         nicknameEditText = findViewById(R.id.editTextNickname)
-        ageEditText = findViewById(R.id.editTextAge)
+        ageEditText = findViewById(R.id.editTextAge) // 서버에는 안보내지만 클라이언트 표시용
         genderSpinner = findViewById(R.id.spinnerGender)
         birthdateEditText = findViewById(R.id.editTextBirthdate)
         completeSignupButton = findViewById(R.id.completeSignupButton)
@@ -35,12 +44,9 @@ class SignupStep2Activity : AppCompatActivity() {
         setupValidation()
 
         completeSignupButton.setOnClickListener {
-            // 로그인 화면으로 이동
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish() // 회원가입 액티비티 종료 (뒤로가기 방지)
+            // 서버로 프로필 제출
+            submitProfile()
         }
-
     }
 
     private fun setupGenderSpinner() {
@@ -49,7 +55,6 @@ class SignupStep2Activity : AppCompatActivity() {
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         genderSpinner.adapter = adapter
     }
-
 
     private fun setupBirthdatePicker() {
         birthdateEditText.setOnClickListener {
@@ -82,7 +87,6 @@ class SignupStep2Activity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: android.view.View, position: Int, id: Long) {
                 validateInputs()
             }
-
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
@@ -103,16 +107,51 @@ class SignupStep2Activity : AppCompatActivity() {
         if (isAllValid) {
             progressBar.progress = 100
             progressImage.setImageResource(R.drawable.re_3)
-
-            val layoutParams = progressImage.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
-            layoutParams.horizontalBias = 1.0f
-            progressImage.layoutParams = layoutParams
-
-            // 오른쪽으로 20dp 이동 (픽셀 단위로 변환)
-            val scale = resources.displayMetrics.density
-            progressImage.translationX = 20 * scale
         }
-
     }
 
+    private fun submitProfile() {
+        val nickname = nicknameEditText.text.toString().trim()
+        val birth = birthdateEditText.text.toString().trim()
+        val genderSpinnerText = genderSpinner.selectedItem.toString()
+        val gender = when (genderSpinnerText) {
+            "여성" -> "FEMALE"
+            "남성" -> "MALE"
+            else -> "UNKNOWN"
+        }
+
+        lifecycleScope.launch {
+            try {
+                val email = tokenStore.getSignupEmail() ?: run {
+                    Toast.makeText(this@SignupStep2Activity, "이메일 정보를 찾을 수 없습니다. 처음부터 다시 진행해주세요.", Toast.LENGTH_LONG).show()
+                    return@launch
+                }
+
+                // 서버 스펙: name, nickname, gender, birth 필요
+                // name은 필수이므로 일단 nickname으로 채워 보낸다 (필요 시 별도 입력 필드 추가)
+                val req = ProfileRequest(
+                    name = nickname,
+                    nickname = nickname,
+                    gender = gender,
+                    birth = birth
+                )
+
+                val res = ApiClient.authService.submitProfile(
+                    email = email,
+                    loginType = "APP",
+                    body = req
+                )
+
+                if (res.success) {
+                    Toast.makeText(this@SignupStep2Activity, "프로필이 저장되었습니다.", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@SignupStep2Activity, LoginActivity::class.java))
+                    finish()
+                } else {
+                    Toast.makeText(this@SignupStep2Activity, res.message.ifBlank { "프로필 저장 실패" }, Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@SignupStep2Activity, "오류: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 }
