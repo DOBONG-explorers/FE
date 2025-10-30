@@ -2,28 +2,21 @@
 package kr.ac.duksung.dobongzip
 
 import android.app.DatePickerDialog
-import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kr.ac.duksung.dobongzip.data.api.ApiClient
 import kr.ac.duksung.dobongzip.data.api.ProfileRequest
+import kr.ac.duksung.dobongzip.data.auth.TokenHolder
 import kr.ac.duksung.dobongzip.data.local.TokenStore
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import kr.ac.duksung.dobongzip.signup.uploadProfileImageAfterSignup
 import retrofit2.HttpException
-import java.io.File
-import java.io.FileOutputStream
 import java.util.Calendar
 
 class SignupStep2Activity : AppCompatActivity() {
@@ -43,9 +36,12 @@ class SignupStep2Activity : AppCompatActivity() {
     // "프로필 수정" 버튼(TextView)
     private lateinit var tvEditProfile: TextView
 
+    // 선택된 이미지 Uri (제출 시 업로드에 사용)
+    private var selectedImageUri: Uri? = null
+
     // 갤러리에서 이미지 선택
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { handlePickedImage(it) }
+        if (uri != null) handlePickedImage(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,22 +59,20 @@ class SignupStep2Activity : AppCompatActivity() {
         progressImage = findViewById(R.id.progressImage)
         progressBar = findViewById(R.id.progressBar)
 
-        // 추가된 id
-        ivProfile = findViewById(R.id.ivProfile)       // ⬅ XML에서 추가 필요
-        tvEditProfile = findViewById(R.id.tvEditProfile) // ⬅ XML에서 추가 필요
+        // XML에 ivProfile, tvEditProfile 존재해야 함
+        ivProfile = findViewById(R.id.ivProfile)
+        tvEditProfile = findViewById(R.id.tvEditProfile)
 
         setupGenderSpinner()
         setupBirthdatePicker()
         setupValidation()
 
-        // 프로필 이미지 수정(선택) 버튼
-        tvEditProfile.setOnClickListener {
-            pickImage.launch("image/*")
-        }
+        // 프로필 이미지 선택
+        tvEditProfile.setOnClickListener { pickImage.launch("image/*") }
 
-        // 프로필 제출
+        // “완료” 클릭 → [이미지 업로드 2단계] → [프로필 저장] 모두 수행
         completeSignupButton.setOnClickListener {
-            submitProfile()
+            submitAllAndFinish()
         }
     }
 
@@ -141,71 +135,15 @@ class SignupStep2Activity : AppCompatActivity() {
         }
     }
 
-    /** 갤러리에서 선택된 이미지를 미리보기 & 서버 업로드 */
+    /** 이미지 선택: 미리보기 + Uri 저장(제출 시 업로드) */
     private fun handlePickedImage(uri: Uri) {
-        // 미리보기
+        selectedImageUri = uri
         ivProfile.setImageURI(uri)
-
-        // 업로드 진행
-        lifecycleScope.launch {
-            val part = withContext(Dispatchers.IO) { makeImagePartFromUri(uri, "file") }
-            if (part == null) {
-                toast("이미지 처리에 실패했습니다.")
-                return@launch
-            }
-
-            // 버튼/문구 잠깐 비활성화
-            val originalText = tvEditProfile.text
-            tvEditProfile.isEnabled = false
-            tvEditProfile.text = "업로드 중..."
-
-            try {
-                val res = ApiClient.authService.uploadProfileImage(part)
-                if (res.success) {
-                    toast("프로필 이미지가 업로드되었습니다.")
-                    // 서버에서 이미지 URL을 내려주면 Glide로 로드 (선택)
-                    res.data?.let { url ->
-                        Glide.with(this@SignupStep2Activity)
-                            .load(url)
-                            .into(ivProfile)
-                    }
-                } else {
-                    toast(res.message.ifBlank { "이미지 업로드 실패" })
-                }
-            } catch (e: Exception) {
-                val msg = when (e) {
-                    is HttpException -> "업로드 오류(${e.code()}): ${e.message()}"
-                    else -> "업로드 오류: ${e.message}"
-                }
-                toast(msg)
-            } finally {
-                tvEditProfile.isEnabled = true
-                tvEditProfile.text = originalText
-            }
-        }
+        toast("이미지를 선택했습니다. 완료 버튼을 눌러 저장하세요.")
     }
 
-    /** Uri → MultipartBody.Part 변환 (캐시 임시파일로 복사) */
-    private fun makeImagePartFromUri(uri: Uri, partName: String): MultipartBody.Part? {
-        return try {
-            val cr: ContentResolver = contentResolver
-            val mime = cr.getType(uri) ?: "image/jpeg"
-            val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime) ?: "jpg"
-
-            val input = cr.openInputStream(uri) ?: return null
-            val tempFile = File.createTempFile("profile_", ".$ext", cacheDir).apply { deleteOnExit() }
-            FileOutputStream(tempFile).use { out -> input.copyTo(out) }
-
-            val reqBody = RequestBody.create(mime.toMediaTypeOrNull(), tempFile)
-            MultipartBody.Part.createFormData(partName, "profile.$ext", reqBody)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    /** 프로필 정보 제출 */
-    private fun submitProfile() {
+    /** 이미지 + 프로필을 모두 서버에 저장하고 완료 처리 */
+    private fun submitAllAndFinish() {
         val nickname = nicknameEditText.text.toString().trim()
         val birth = birthdateEditText.text.toString().trim()
         val genderSpinnerText = genderSpinner.selectedItem.toString()
@@ -215,15 +153,33 @@ class SignupStep2Activity : AppCompatActivity() {
             else -> "UNKNOWN"
         }
 
+        if (!completeSignupButton.isEnabled) return
+        val originalText = completeSignupButton.text
+        completeSignupButton.isEnabled = false
+        completeSignupButton.text = "저장 중..."
+
         lifecycleScope.launch {
             try {
+                // 0) 토큰 확인
+                val token = TokenHolder.accessToken
+                if (token.isNullOrBlank()) {
+                    toast("인증 토큰이 없습니다. 다시 로그인해주세요.")
+                    return@launch
+                }
+
+                // 1) (선택) 이미지가 있으면 2단계 업로드 수행: upload → finalize
+                selectedImageUri?.let { uri ->
+                    uploadProfileImageAfterSignup(this@SignupStep2Activity, uri)
+                }
+
+                // 2) 프로필 정보 저장
                 val email = tokenStore.getSignupEmail() ?: run {
                     toast("이메일 정보를 찾을 수 없습니다. 처음부터 다시 진행해주세요.")
                     return@launch
                 }
 
                 val req = ProfileRequest(
-                    name = nickname,          // name 입력칸이 없으므로 임시로 nickname 사용
+                    name = nickname,          // name 입력칸이 없으므로 닉네임 사용
                     nickname = nickname,
                     gender = gender,
                     birth = birth
@@ -235,13 +191,25 @@ class SignupStep2Activity : AppCompatActivity() {
                     body = req
                 )
 
-                if (res.success) {
-                    toast("프로필이 저장되었습니다.")
-                    startActivity(Intent(this@SignupStep2Activity, LoginActivity::class.java))
-                    finish()
-                } else {
+                if (!res.success) {
                     toast(res.message.ifBlank { "프로필 저장 실패" })
+                    return@launch
                 }
+
+                // 3) (선택) 서버 최종 이미지 URL 재조회해 미리보기 반영
+                runCatching { ApiClient.myPageService.getProfileImage() }
+                    .getOrNull()
+                    ?.data
+                    ?.imageUrl
+                    ?.takeIf { it?.isNotBlank() == true }
+                    ?.let { url ->
+                        Glide.with(this@SignupStep2Activity).load(url).into(ivProfile)
+                    }
+
+                toast("모든 정보가 저장되었습니다.")
+                startActivity(Intent(this@SignupStep2Activity, LoginActivity::class.java))
+                finish()
+
             } catch (e: Exception) {
                 val msg = when (e) {
                     is HttpException -> {
@@ -256,6 +224,9 @@ class SignupStep2Activity : AppCompatActivity() {
                     else -> "네트워크 오류: ${e.message}"
                 }
                 toast(msg)
+            } finally {
+                completeSignupButton.isEnabled = true
+                completeSignupButton.text = originalText
             }
         }
     }

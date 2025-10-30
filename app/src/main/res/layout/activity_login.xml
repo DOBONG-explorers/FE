@@ -4,10 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp">
-    <View
+    <ImageView
+        android:id="@+id/login_top_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.4" />
+        android:layout_weight="0.4"
+        android:src="@drawable/logo_f"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:padding="60dp" />
+
+
 
     <!-- 1. 위쪽 콘텐츠 영역 (EditTexts + 버튼 등) -->
     <LinearLayout
@@ -18,13 +25,13 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/editTextEmail"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:background="@drawable/edittext_background"
             android:baselineAligned="false"
-            android:hint="아이디"
+            android:hint="이메일"
             android:inputType="text"
             android:padding="15dp"
             android:textColor="#000000"
@@ -33,7 +40,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/editTextPassword"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
@@ -45,6 +52,14 @@
             android:textColorHint="#999999"
             android:textSize="12sp"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="13sp"
+            android:visibility="gone"
+            android:layout_marginTop="6dp"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/login_button"

@@ -1,12 +1,7 @@
 package kr.ac.duksung.dobongzip.ui.mypage
 
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
-import java.io.FileOutputStream
-import android.webkit.MimeTypeMap
-
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -14,6 +9,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,11 +22,21 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okio.buffer
+import okio.sink
+import java.io.File
+import java.io.FileOutputStream
 import kr.ac.duksung.dobongzip.databinding.FragmentMyPage2Binding
 import kr.ac.duksung.dobongzip.ui.common.ProfileViewModel
 import kr.ac.duksung.dobongzip.ui.common.loadProfile
+import kr.ac.duksung.dobongzip.ui.common.loadProfileUrl
 
-// ▼ API 호출에 필요한 것들
+// ▼ API
 import kr.ac.duksung.dobongzip.data.api.ApiClient
 import kr.ac.duksung.dobongzip.data.api.MyPageProfilePatchReq
 import kr.ac.duksung.dobongzip.data.api.ImageObjectKey
@@ -73,14 +79,21 @@ class MyPageEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 편집 화면 진입 시에도 서버 최신값 로드(토큰 필수)
+        profileViewModel.loadProfileAll()
+
         pendingUri = savedInstanceState?.getString(STATE_PENDING_URI)?.let { Uri.parse(it) }
 
         // ✅ 전역 상태 구독 → 초기값 표시 (펜딩이 있으면 펜딩 우선)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 profileViewModel.profileState.collect { state ->
-                    val shownUri = pendingUri ?: state.uri
-                    binding.profileImage.loadProfile(shownUri)
+                    // 이미지: pendingUri > 서버 url > 기본
+                    when {
+                        pendingUri != null -> binding.profileImage.loadProfile(pendingUri)
+                        !state.imageUrl.isNullOrBlank() -> binding.profileImage.loadProfileUrl(state.imageUrl)
+                        else -> binding.profileImage.loadProfile(null)
+                    }
 
                     // EditText 초기값 (사용자가 이미 편집중이면 펜딩을 우선 표시)
                     if (pendingNickname == null) binding.editNickname.setText(state.nickname ?: "")
@@ -106,7 +119,6 @@ class MyPageEditFragment : Fragment() {
 
         // 사진 선택
         binding.editProfileText.setOnClickListener { openPicker() }
-        // binding.profileImage.setOnClickListener { openPicker() } // 원하면 사용
 
         // ✅ 텍스트 변경 감지 (완료 버튼 활성화 갱신)
         binding.editNickname.addTextChangedListener(simpleWatcher { s ->
@@ -115,7 +127,6 @@ class MyPageEditFragment : Fragment() {
         })
         // 생년월일: yyyy-MM-dd 형식 강제 + 최대 10자
         binding.editBirthday.filters = arrayOf(android.text.InputFilter.LengthFilter(10))
-
         binding.editBirthday.addTextChangedListener(object : TextWatcher {
             private var isEditing = false
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -125,13 +136,11 @@ class MyPageEditFragment : Fragment() {
                 isEditing = true
 
                 val raw = s?.toString().orEmpty()
-                val digits = raw.replace("-", "")           // 숫자만
+                val digits = raw.replace("-", "")
                 val builder = StringBuilder()
-
-                // yyyy-MM-dd 포맷팅
                 for (i in digits.indices) {
                     builder.append(digits[i])
-                    if (i == 3 || i == 5) builder.append("-") // 4번째, 6번째 뒤에 '-'
+                    if (i == 3 || i == 5) builder.append("-")
                 }
                 var formatted = builder.toString()
                 if (formatted.length > 10) formatted = formatted.substring(0, 10)
@@ -141,10 +150,8 @@ class MyPageEditFragment : Fragment() {
                     binding.editBirthday.setSelection(formatted.length)
                 }
 
-                // ✅ 변경사항 반영: pendingBirthday 갱신 + 버튼 상태 갱신
                 pendingBirthday = formatted
                 syncEnableState()
-
                 isEditing = false
             }
         })
@@ -187,7 +194,7 @@ class MyPageEditFragment : Fragment() {
             }
 
             // 2) 이미지 업로드 2단계 (변경 시)
-            if (changedImage) {
+            if (changedImage && pendingUri != null) {
                 imageOk = uploadImageTwoSteps(pendingUri!!)
             }
 
@@ -198,7 +205,7 @@ class MyPageEditFragment : Fragment() {
                 pendingNickname = null
                 pendingBirthday = null
                 pendingEmail = null
-                // 최신값 다시 로드 (보기 화면에서도 즉시 반영되게)
+                // 최신값 다시 로드
                 profileViewModel.loadProfileAll()
             }
 
@@ -230,8 +237,8 @@ class MyPageEditFragment : Fragment() {
     private suspend fun uploadImageTwoSteps(uri: Uri): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                // 1) Uri → Multipart 변환
-                val part = makeImagePartFromUri(uri, "file") ?: run {
+                // 1) Uri → PNG Multipart 변환 (서버가 PNG만 받는 경우 대비)
+                val part = makePngPartFromUri(uri, "file") ?: run {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "이미지 처리 실패", Toast.LENGTH_SHORT).show()
                     }
@@ -242,32 +249,32 @@ class MyPageEditFragment : Fragment() {
                 val step1 = ApiClient.myPageService.uploadProfileImageStage1(part)
                 if (step1.success != true || step1.data?.objectKey.isNullOrBlank()) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), step1.message.ifBlank { "이미지 업로드 실패" }, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),
+                            "1단계 실패(${step1.httpStatus}): ${step1.message}", Toast.LENGTH_LONG).show()
                     }
                     return@withContext false
                 }
-
                 val objectKey = step1.data!!.objectKey
 
                 // 3) 2단계: 최종 반영 → imageUrl
                 val step2 = ApiClient.myPageService.finalizeProfileImage(ImageObjectKey(objectKey))
                 if (step2.success != true) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), step2.message.ifBlank { "이미지 반영 실패" }, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),
+                            "2단계 실패(${step2.httpStatus}): ${step2.message}", Toast.LENGTH_LONG).show()
                     }
                     return@withContext false
                 }
 
-                // 미리보기는 이미 로컬 uri로 되어있지만, 서버 URL도 상태에 반영되도록 ViewModel 갱신
+                // 성공: 서버 최신 이미지 다시 로드
                 withContext(Dispatchers.Main) {
                     profileViewModel.updateProfileUri(null) // 로컬 미리보기 제거
-                    // 서버에서 최신 이미지 로드
                     profileViewModel.loadProfileAll()
                 }
                 true
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "이미지 업로드 오류: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "이미지 업로드 오류: ${e.message}", Toast.LENGTH_LONG).show()
                 }
                 false
             }
@@ -323,7 +330,38 @@ class MyPageEditFragment : Fragment() {
         override fun afterTextChanged(s: Editable?) {}
     }
 
-    /** Uri → MultipartBody.Part 변환 (임시파일 사용) */
+    /** Uri → PNG 파일로 변환 후 MultipartBody.Part 생성 */
+    private suspend fun makePngPartFromUri(uri: Uri, partName: String): MultipartBody.Part? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val cr = requireContext().contentResolver
+                val input = cr.openInputStream(uri) ?: return@withContext null
+
+                // 1) Bitmap으로 디코딩
+                val bmp = BitmapFactory.decodeStream(input)
+                input.close()
+                if (bmp == null) return@withContext null
+
+                // 2) PNG 임시 파일 생성
+                val pngFile = File.createTempFile("profile_", ".png", requireContext().cacheDir).apply {
+                    deleteOnExit()
+                }
+                pngFile.sink().buffer().use { sink ->
+                    val ok = bmp.compress(Bitmap.CompressFormat.PNG, 100, sink.outputStream())
+                    if (!ok) return@withContext null
+                }
+
+                // 3) image/png 으로 RequestBody 생성
+                val reqBody = pngFile.asRequestBody("image/png".toMediaType())
+                MultipartBody.Part.createFormData(partName, "profile.png", reqBody)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    // (이전 JPEG/원본 확장자 업로드 함수는 더 이상 사용하지 않지만, 필요하면 참고로 남겨둘 수 있습니다)
+    @Suppress("unused")
     private suspend fun makeImagePartFromUri(uri: Uri, partName: String): MultipartBody.Part? {
         return withContext(Dispatchers.IO) {
             try {

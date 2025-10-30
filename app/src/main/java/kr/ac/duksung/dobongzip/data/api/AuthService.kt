@@ -12,12 +12,12 @@ data class CommonResponse<T>(
     val data: T?
 )
 
-/** 회원가입 Step1 응답 데이터 */
+/** 회원가입 Step1 응답 데이터 (로그인 응답도 동일 구조 사용) */
 data class SignupData(
     val accessToken: String?,
     val name: String?,
     val nickname: String?,
-    val loginType: String?,       // "APP"
+    val loginType: String?,       // "APP" | "KAKAO" | "GOOGLE"
     val profileCompleted: Boolean
 )
 
@@ -26,6 +26,12 @@ data class SignupRequest(
     val email: String,
     val password: String,
     val phoneNumber: String
+)
+
+/** ✅ 로그인 요청 */
+data class LoginRequest(
+    val email: String,
+    val password: String
 )
 
 /** 프로필 등록(공통) 요청 */
@@ -41,6 +47,10 @@ interface AuthService {
     /** 앱 회원가입 */
     @POST("/api/v1/auth/signup")
     suspend fun signup(@Body body: SignupRequest): CommonResponse<SignupData>
+
+    /** ✅ 일반 로그인 */
+    @POST("/api/v1/auth/login")
+    suspend fun login(@Body body: LoginRequest): CommonResponse<SignupData>
 
     /** 회원가입 공통 (앱/소셜) - 프로필 입력 */
     @POST("/api/v1/auth/profile")

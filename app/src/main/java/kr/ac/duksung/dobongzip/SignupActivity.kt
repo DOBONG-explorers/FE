@@ -1,6 +1,7 @@
 package kr.ac.duksung.dobongzip
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +15,7 @@ import kr.ac.duksung.dobongzip.data.api.ApiClient
 import kr.ac.duksung.dobongzip.data.api.SignupRequest
 import kr.ac.duksung.dobongzip.data.auth.TokenHolder
 import kr.ac.duksung.dobongzip.data.local.TokenStore
+import kr.ac.duksung.dobongzip.signup.uploadProfileImageAfterSignup
 import retrofit2.HttpException
 
 class SignupActivity : AppCompatActivity() {
@@ -25,6 +27,9 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var nextButton: Button
 
     private lateinit var tokenStore: TokenStore
+
+    // Step1에서 이미 이미지를 골랐다면 여기에 담아둔다 (기본 null)
+    private var selectedImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +50,7 @@ class SignupActivity : AppCompatActivity() {
         applyTextWatcher(confirmPasswordEditText)
         applyTextWatcher(phoneEditText)
 
-        // 다음 스텝(= 회원가입 API 호출 후)으로 이동
+        // 회원가입 → (이미지 있으면) 서버 업로드까지 완료 → 다음 스텝
         nextButton.setOnClickListener {
             if (!isValidInput(showToast = true)) return@setOnClickListener
 
@@ -66,21 +71,37 @@ class SignupActivity : AppCompatActivity() {
                     if (res.success) {
                         val accessToken = res.data?.accessToken.orEmpty()
                         if (accessToken.isNotEmpty()) {
-                            // DataStore + 메모리 캐시 모두 저장
+                            // 1) 토큰을 로컬/메모리에 저장 (Authorization 헤더 자동 부착용)
                             tokenStore.saveAccessToken(accessToken)
                             TokenHolder.accessToken = accessToken
                         }
-                        tokenStore.saveSignupEmail(email) // step2에서 email 필요
 
+                        // 2) Step2에서 이메일 필요하면 저장
+                        tokenStore.saveSignupEmail(email)
+
+                        // 3) 프로필이 이미 끝난 계정이면 바로 로그인 화면으로
                         val profileCompleted = res.data?.profileCompleted == true
                         if (profileCompleted) {
                             Toast.makeText(this@SignupActivity, "회원가입 완료!", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this@SignupActivity, LoginActivity::class.java))
                             finish()
-                        } else {
-                            // 프로필 입력 단계로 이동
-                            startActivity(Intent(this@SignupActivity, SignupStep2Activity::class.java))
+                            return@launch
                         }
+
+                        // 4) ✨ 이미지가 있다면 여기서 서버에 '확실히' 저장하고 넘어감
+                        selectedImageUri?.let { uri ->
+                            // Uri → Multipart → /upload → objectKey → /finalize (서버 저장 완료까지 대기)
+                            uploadProfileImageAfterSignup(this@SignupActivity, uri)
+                            Toast.makeText(this@SignupActivity, "프로필 이미지가 서버에 저장되었습니다.", Toast.LENGTH_SHORT).show()
+                        }
+
+                        // 5) 다음 스텝으로 이동 (프로필 닉네임/생일/성별은 Step2에서 저장)
+                        val intent = Intent(this@SignupActivity, SignupStep2Activity::class.java).apply {
+                            // 선택 이미지를 Step2 미리보기에 보여주고 싶다면 전달
+                            putExtra("profileUri", selectedImageUri?.toString())
+                        }
+                        startActivity(intent)
+
                     } else {
                         Toast.makeText(
                             this@SignupActivity,
