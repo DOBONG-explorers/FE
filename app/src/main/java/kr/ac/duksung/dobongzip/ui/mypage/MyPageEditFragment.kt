@@ -52,7 +52,7 @@ class MyPageEditFragment : Fragment() {
     private var pendingUri: Uri? = null
     private var pendingNickname: String? = null
     private var pendingBirthday: String? = null
-    private var pendingEmail: String? = null
+    // 🔒 이메일 읽기 전용: pendingEmail 제거
 
     companion object { private const val STATE_PENDING_URI = "state_pending_uri" }
 
@@ -84,6 +84,15 @@ class MyPageEditFragment : Fragment() {
 
         pendingUri = savedInstanceState?.getString(STATE_PENDING_URI)?.let { Uri.parse(it) }
 
+        // 🔒 이메일 읽기 전용 UI 설정
+        binding.editEmail.apply {
+            isEnabled = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+            isCursorVisible = false
+            keyListener = null
+        }
+
         // ✅ 전역 상태 구독 → 초기값 표시 (펜딩이 있으면 펜딩 우선)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -98,7 +107,8 @@ class MyPageEditFragment : Fragment() {
                     // EditText 초기값 (사용자가 이미 편집중이면 펜딩을 우선 표시)
                     if (pendingNickname == null) binding.editNickname.setText(state.nickname ?: "")
                     if (pendingBirthday == null) binding.editBirthday.setText(state.birthday ?: "")
-                    if (pendingEmail == null)    binding.editEmail.setText(state.email ?: "")
+                    // 🔒 이메일은 항상 서버 값만 표시
+                    binding.editEmail.setText(state.email ?: "")
 
                     updateDoneButtonEnabled(
                         candidateUri = pendingUri,
@@ -106,9 +116,7 @@ class MyPageEditFragment : Fragment() {
                         candidateName = pendingNickname ?: binding.editNickname.text?.toString(),
                         globalName = state.nickname,
                         candidateBirth = pendingBirthday ?: binding.editBirthday.text?.toString(),
-                        globalBirth = state.birthday,
-                        candidateEmail = pendingEmail ?: binding.editEmail.text?.toString(),
-                        globalEmail = state.email
+                        globalBirth = state.birthday
                     )
                 }
             }
@@ -125,6 +133,7 @@ class MyPageEditFragment : Fragment() {
             pendingNickname = s
             syncEnableState()
         })
+
         // 생년월일: yyyy-MM-dd 형식 강제 + 최대 10자
         binding.editBirthday.filters = arrayOf(android.text.InputFilter.LengthFilter(10))
         binding.editBirthday.addTextChangedListener(object : TextWatcher {
@@ -156,10 +165,8 @@ class MyPageEditFragment : Fragment() {
             }
         })
 
-        binding.editEmail.addTextChangedListener(simpleWatcher { s ->
-            pendingEmail = s
-            syncEnableState()
-        })
+        // 🔒 이메일 읽기 전용: 변경 리스너 제거
+        // binding.editEmail.addTextChangedListener(...)
 
         // ✅ 완료 버튼: 텍스트 저장 + 이미지 업로드 2단계(필요 시)
         binding.myPageButton.setOnClickListener {
@@ -173,8 +180,8 @@ class MyPageEditFragment : Fragment() {
 
         val newName  = (pendingNickname ?: binding.editNickname.text?.toString())?.trim()
         val newBirth = (pendingBirthday ?: binding.editBirthday.text?.toString())?.trim()
-        val newEmail = (pendingEmail ?: binding.editEmail.text?.toString())?.trim()
-        val changedText = (newName != current.nickname) || (newBirth != current.birthday) || (newEmail != current.email)
+        // 🔒 이메일은 저장 대상에서 제외
+        val changedText = (newName != current.nickname) || (newBirth != current.birthday)
 
         val changedImage = pendingUri != null && pendingUri != current.uri
 
@@ -190,7 +197,7 @@ class MyPageEditFragment : Fragment() {
 
             // 1) 텍스트 저장 (변경 시)
             if (changedText) {
-                textOk = saveTextProfile(newName, newBirth, newEmail)
+                textOk = saveTextProfile(newName, newBirth) // 🔒 이메일 제외
             }
 
             // 2) 이미지 업로드 2단계 (변경 시)
@@ -204,7 +211,7 @@ class MyPageEditFragment : Fragment() {
                 pendingUri = null
                 pendingNickname = null
                 pendingBirthday = null
-                pendingEmail = null
+                // 🔒 pendingEmail 제거
                 // 최신값 다시 로드
                 profileViewModel.loadProfileAll()
             }
@@ -216,12 +223,13 @@ class MyPageEditFragment : Fragment() {
         }
     }
 
-    /** 텍스트 프로필 저장 */
-    private suspend fun saveTextProfile(nickname: String?, birth: String?, email: String?): Boolean {
+    /** 텍스트 프로필 저장 (이메일은 항상 null로 보내 변경 불가) */
+    private suspend fun saveTextProfile(nickname: String?, birth: String?): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val res = ApiClient.myPageService.patchProfile(
-                    MyPageProfilePatchReq(nickname, birth, email)
+                    // 🔒 이메일 필드는 null로 고정 → 서버가 값 미지정 필드는 그대로 유지
+                    MyPageProfilePatchReq(nickname, birth, null)
                 )
                 res.success
             } catch (e: Exception) {
@@ -303,22 +311,18 @@ class MyPageEditFragment : Fragment() {
             candidateName = pendingNickname ?: binding.editNickname.text?.toString(),
             globalName = state.nickname,
             candidateBirth = pendingBirthday ?: binding.editBirthday.text?.toString(),
-            globalBirth = state.birthday,
-            candidateEmail = pendingEmail ?: binding.editEmail.text?.toString(),
-            globalEmail = state.email
+            globalBirth = state.birthday
         )
     }
 
     private fun updateDoneButtonEnabled(
         candidateUri: Uri?, globalUri: Uri?,
         candidateName: String?, globalName: String?,
-        candidateBirth: String?, globalBirth: String?,
-        candidateEmail: String?, globalEmail: String?
+        candidateBirth: String?, globalBirth: String?
     ) {
         val changed = (candidateUri != null && candidateUri != globalUri) ||
                 ((candidateName ?: "").trim()  != (globalName ?: "")) ||
-                ((candidateBirth ?: "").trim() != (globalBirth ?: "")) ||
-                ((candidateEmail ?: "").trim() != (globalEmail ?: ""))
+                ((candidateBirth ?: "").trim() != (globalBirth ?: ""))
         binding.myPageButton.isEnabled = changed
     }
 
@@ -360,7 +364,7 @@ class MyPageEditFragment : Fragment() {
         }
     }
 
-    // (이전 JPEG/원본 확장자 업로드 함수는 더 이상 사용하지 않지만, 필요하면 참고로 남겨둘 수 있습니다)
+    // (이전 JPEG/원본 확장자 업로드 함수는 참고용)
     @Suppress("unused")
     private suspend fun makeImagePartFromUri(uri: Uri, partName: String): MultipartBody.Part? {
         return withContext(Dispatchers.IO) {

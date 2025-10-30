@@ -98,7 +98,7 @@ class HomeFragment : Fragment() {
         }
 
         // 주변장소 찾기 → MapActivity
-        b.cardNearby.setOnClickListener {
+        b.btnNearbyCard.setOnClickListener {
             startActivity(Intent(requireContext(), MapActivity::class.java))
         }
     }
