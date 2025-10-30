@@ -44,4 +44,20 @@ class LikesViewModel(private val repo: LikeRepository) : ViewModel() {
                 }
         }
     }
+
+    fun likeFirstAndRefresh(lat: Double, lng: Double, onFail: (Throwable) -> Unit = {}) {
+        viewModelScope.launch {
+            runCatching {
+                // PlacesRepository 주입이 없다면 repo를 전달받도록 생성자 확장하세요.
+                // 아래 예시는 LikeRepository만 있는 현재 구조 기준으로 별도 PlacesRepository 인스턴스를 만들어 씀
+                val placesRepo = kr.ac.duksung.dobongzip.data.repository.PlacesRepository()
+                placesRepo.likeFirstPlaceFromServer(lat, lng)
+            }.onSuccess {
+                // 성공 시 최신순으로 다시 로드
+                load(order = "latest")
+            }.onFailure {
+                onFail(it)
+            }
+        }
+    }
 }

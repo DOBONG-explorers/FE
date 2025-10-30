@@ -1,5 +1,7 @@
+// data/repository/LikeRepository.kt
 package kr.ac.duksung.dobongzip.data.repository
 
+import android.util.Log
 import kr.ac.duksung.dobongzip.data.models.LikeCardDto
 import kr.ac.duksung.dobongzip.data.network.PlaceLikeApi
 
@@ -8,14 +10,23 @@ class LikeRepository(
 ) {
     suspend fun getMyLikes(size: Int, order: String): List<LikeCardDto> {
         val res = api.getMyLikes(size = size, order = order)
-        return res.data ?: emptyList()
+        return res.data ?: run {
+            Log.w("LikeRepository", "getMyLikes() returned null data")
+            emptyList()
+        }
     }
 
     suspend fun like(placeId: String) {
-        api.like(placeId)
+        val res = api.like(placeId)
+        if (res.success != true) {
+            throw IllegalStateException(res.message ?: "Failed to like: $placeId")
+        }
     }
 
     suspend fun unlike(placeId: String) {
-        api.unlike(placeId)
+        val res = api.unlike(placeId)
+        if (res.success != true) {
+            throw IllegalStateException(res.message ?: "Failed to unlike: $placeId")
+        }
     }
 }

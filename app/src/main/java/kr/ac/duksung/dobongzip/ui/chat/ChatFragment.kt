@@ -9,10 +9,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentChatBinding
 import kotlin.math.max
+
 
 class ChatFragment : Fragment() {
 
@@ -30,6 +32,8 @@ class ChatFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         // ✅ RecyclerView & Adapter 세팅
         adapter = ChatAdapter(messages)
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -53,52 +57,67 @@ class ChatFragment : Fragment() {
         binding.btnSend.setOnClickListener {
             val text = binding.inputMessage.text.toString().trim()
             if (text.isNotEmpty()) {
-                // 사용자 메시지 추가
                 adapter.addMessage(ChatMessage(text, true))
                 binding.chatRecyclerView.scrollToPosition(messages.size - 1)
-
                 binding.inputMessage.setText("")
 
-                // 챗봇 응답 (예시)
                 adapter.addMessage(ChatMessage("AI 도봉: \"$text\" 잘 받았어요!", false))
                 binding.chatRecyclerView.scrollToPosition(messages.size - 1)
             } else {
                 Toast.makeText(requireContext(), "메시지를 입력하세요", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // ✅ 인셋 처리 (IME/네비게이션 바)
+// ✅ 인셋 처리 (IME/시스템바 + 앱 하단바 높이 보정)
         val root = view.findViewById<View>(R.id.chatRoot) ?: binding.root
-        val recycler = view.findViewById<View>(R.id.chatRecyclerView)
-        val inputBar = view.findViewById<View>(R.id.inputBar)
+        val recycler = binding.chatRecyclerView
+        val inputBar = binding.inputBar
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            // 시스템바/IME 중 큰 값
             val bottomInset = max(sys.bottom, ime.bottom)
 
-            if (recycler != null && inputBar != null) {
-                recycler.updatePadding(
-                    left = recycler.paddingLeft,
-                    top = recycler.paddingTop,
-                    right = recycler.paddingRight,
-                    bottom = bottomInset + inputBar.height
-                )
-            } else {
-                root.updatePadding(
-                    left = root.paddingLeft,
-                    top = root.paddingTop,
-                    right = root.paddingRight,
-                    bottom = bottomInset
-                )
-            }
+            // 🔹 앱 하단 네비게이션뷰 높이: 실측값이 0이면 fallback 사용
+            val navView = activity?.findViewById<BottomNavigationView>(R.id.mobile_navigation)
+            val fallbackNavH =
+                resources.getDimensionPixelSize(R.dimen.bottom_nav_height) // ex) 56dp
+            val appNavH =
+                if (navView != null && navView.height > 0) navView.height else fallbackNavH
+
+            // 입력바 높이도 초기엔 0일 수 있으니 안전하게 보정
+            val inputBarH = if (inputBar.height > 0) inputBar.height
+            else inputBar.measuredHeight.takeIf { it > 0 } ?: 0
+
+            recycler.updatePadding(
+                left = recycler.paddingLeft,
+                top = recycler.paddingTop,
+                right = recycler.paddingRight,
+                bottom = bottomInset + appNavH + inputBarH
+            )
+
+            // 루트에도 하단 패딩 추가(겹침 방지)
+            root.updatePadding(
+                left = root.paddingLeft,
+                top = root.paddingTop,
+                right = root.paddingRight,
+                bottom = appNavH
+            )
+
             insets
         }
-    }
 
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
+// 🔹 전환 직후/레이아웃 이후 한 번 더 인셋 재요청 (지도→채팅 높이 0 이슈 방지)
+        root.post { ViewCompat.requestApplyInsets(root) }
+        activity?.findViewById<BottomNavigationView>(R.id.mobile_navigation)?.let { nav ->
+            nav.viewTreeObserver.addOnGlobalLayoutListener {
+                ViewCompat.requestApplyInsets(root)
+            }
+        }
     }
-}
+        override fun onDestroyView() {
+            _binding = null
+            super.onDestroyView()
+        }
+    }

@@ -1,35 +1,35 @@
+// ui/like/LikesFragment.kt
 package kr.ac.duksung.dobongzip.ui.like
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.data.network.RetrofitProvider
 import kr.ac.duksung.dobongzip.data.repository.LikeRepository
+import kr.ac.duksung.dobongzip.databinding.FragmentLikesBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class LikesFragment : Fragment() {
+class LikesFragment : Fragment(R.layout.fragment_likes) {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var actvSort: MaterialAutoCompleteTextView
+    private var _binding: FragmentLikesBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var adapter: LikesAdapter
+    private var currentOrder: String = "latest"   // latest | oldest | (client: 가나다)
 
-    // ✅ ViewModel 생성 (Hilt 없이 팩토리 직접 생성)
     private val vm: LikesViewModel by viewModels(factoryProducer = {
-        val api = RetrofitProvider.placeLikeApi
-        val repo = LikeRepository(api)
+        val repo = LikeRepository(RetrofitProvider.placeLikeApi)
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
@@ -38,84 +38,89 @@ class LikesFragment : Fragment() {
         }
     })
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val view = inflater.inflate(R.layout.fragment_likes, container, false)
-        recyclerView = view.findViewById(R.id.rvLikes)
-        actvSort = view.findViewById(R.id.actvSort)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentLikesBinding.bind(view)
 
-        // ✅ 드롭다운 메뉴
+        // 정렬 드롭다운
         val sortOptions = listOf("최신순", "오래된순", "가나다순")
-        val sortAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_list_item_1,
-            sortOptions
+        binding.actvSort.setAdapter(
+            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, sortOptions)
         )
-        actvSort.setAdapter(sortAdapter)
+        binding.actvSort.setText("최신순", false)
 
-        // ✅ RecyclerView 설정
-        recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
-        val horizontalSpacing = (12 * resources.displayMetrics.density).toInt()
-        val verticalSpacing = (10 * resources.displayMetrics.density).toInt()
-        recyclerView.setPadding(horizontalSpacing, verticalSpacing, horizontalSpacing, verticalSpacing)
-        recyclerView.clipToPadding = false
-        recyclerView.addItemDecoration(
-            GridSpacingItemDecoration(
-                spanCount = 2,
-                horizontalSpacingPx = horizontalSpacing,
-                verticalSpacingPx = verticalSpacing,
-                includeEdge = false
-            )
+        // RecyclerView
+        val span = 2
+        val h = (12 * resources.displayMetrics.density).toInt()
+        val v = (10 * resources.displayMetrics.density).toInt()
+        binding.rvLikes.layoutManager = GridLayoutManager(requireContext(), span)
+        binding.rvLikes.setPadding(h, v, h, v)
+        binding.rvLikes.clipToPadding = false
+        binding.rvLikes.addItemDecoration(
+            GridSpacingItemDecoration(spanCount = span, horizontalSpacingPx = h, verticalSpacingPx = v, includeEdge = false)
         )
 
-        // ✅ Adapter (URL 기반 이미지 + 하트 해제 기능)
         adapter = LikesAdapter { item ->
+            // 낙관적 해제
             vm.unlike(item.placeId) {
                 Toast.makeText(requireContext(), "해제 실패: 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
         }
-        recyclerView.adapter = adapter
+        binding.rvLikes.adapter = adapter
 
-        // ✅ 정렬 이벤트 → API 호출 or 클라이언트 정렬
-        actvSort.setOnItemClickListener { _, _, position, _ ->
-            when (position) {
-                0 -> vm.load(order = "latest") // 최신순 (기본)
-                1 -> vm.load(order = "oldest") // 오래된순
-                2 -> { // 가나다순은 서버 지원 없음 → 클라 정렬
+        // 정렬 선택
+        binding.actvSort.setOnItemClickListener { _, _, pos, _ ->
+            when (pos) {
+                0 -> { // 최신순
+                    currentOrder = "latest"
                     vm.load(order = "latest")
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        vm.items.collectLatest { list ->
-                            adapter.submitList(list.sortedBy { it.placeName })
-                        }
-                    }
-                    return@setOnItemClickListener
+                }
+                1 -> { // 오래된순
+                    currentOrder = "oldest"
+                    vm.load(order = "oldest")
+                }
+                2 -> { // 가나다(클라 정렬)
+                    currentOrder = "latest" // 서버 콜은 최신으로 받아오고
+                    vm.load(order = "latest")
                 }
             }
         }
 
-        // ✅ 데이터 옵저빙
+        // 수집
         viewLifecycleOwner.lifecycleScope.launch {
-            vm.items.collectLatest { list ->
-                if (list.isEmpty()) {
-                    adapter.submitList(
-                        listOf(
-                            LikeItemUi("1", "북서울미술관", "https://picsum.photos/300?random=3"),
-                            LikeItemUi("2", "둘리뮤지엄", "https://picsum.photos/300?random=4")
-                        )
-                    )
-                } else {
-                    adapter.submitList(list)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.items.collectLatest { list ->
+                    val out = if (binding.actvSort.text.toString() == "가나다순") {
+                        list.sortedBy { it.placeName }
+                    } else list
+                    adapter.submitList(out)
                 }
             }
         }
 
-
-        // ✅ 처음 진입 시 데이터 로드
+        // 최초 로드
         vm.load(order = "latest", size = 30)
 
-        return view
+        // 예: onViewCreated 끝부분에 임시 실행 (실서비스에선 버튼에 묶어 호출!)
+        val defaultDobongLat = 37.668    // 도봉구 중심 근사값 예시
+        val defaultDobongLng = 127.031
+        vm.likeFirstAndRefresh(defaultDobongLat, defaultDobongLng) {
+            Toast.makeText(requireContext(), "첫 장소 좋아요 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 맵에서 좋아요 토글 후 복귀 시 최신 동기화
+        when (binding.actvSort.text.toString()) {
+            "최신순"   -> vm.load(order = "latest")
+            "오래된순" -> vm.load(order = "oldest")
+            "가나다순" -> vm.load(order = "latest")
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -21,10 +21,15 @@ import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -38,26 +43,17 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.data.models.PlaceDto
-import kr.ac.duksung.dobongzip.databinding.ActivityMapBinding
 import kr.ac.duksung.dobongzip.data.repository.PlacesRepository
+import kr.ac.duksung.dobongzip.databinding.ActivityMapBinding
 import kr.ac.duksung.dobongzip.ui.chat.ChatFragment
-import kr.ac.duksung.dobongzip.ui.home.HomeFragment
 import kr.ac.duksung.dobongzip.ui.like.LikesFragment
 import kr.ac.duksung.dobongzip.ui.mypage.MyPageFragment
-import kotlin.math.pow
-
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import kotlin.math.max
-
-
+import kotlin.math.pow
 
 class MapActivity : AppCompatActivity() {
 
@@ -100,10 +96,6 @@ class MapActivity : AppCompatActivity() {
     private val placeLabels = mutableListOf<Label>()
     private var myLabel: Label? = null
 
-    // ---------- Coroutine ----------
-    private val job = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + job)
-
     // ---------- Constants ----------
     private val PLACES_LAYER_ID = "places_layer"
     private val MY_LAYER_ID = "me_layer"
@@ -131,10 +123,9 @@ class MapActivity : AppCompatActivity() {
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ 바텀시트 초기화
+        // 바텀시트 초기화
         sheetBehavior = BottomSheetBehavior.from(findViewById(R.id.placeSheet)).apply {
             isDraggable = true
-           // halfExpandedRatio = 0.33f
             peekHeight = (120 * resources.displayMetrics.density).toInt()
             state = BottomSheetBehavior.STATE_COLLAPSED
         }
@@ -143,61 +134,54 @@ class MapActivity : AppCompatActivity() {
             alpha = 1f
         }
 
-        // 하단 네비게이션
+// ---------- 하단 네비게이션 ----------
         val navView: BottomNavigationView = binding.navView
         navView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
+                    // 홈으로 전환
                     binding.mapContainer.isVisible = true
                     findViewById<View>(R.id.placeSheet).isVisible = true
                     binding.contentContainer.isVisible = false
-                    supportFragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     true
                 }
                 R.id.navigation_chat -> {
+                    // 채팅 화면으로 전환 (하단바는 그대로 보여줌)
                     openContent(ChatFragment())
                     true
                 }
                 R.id.navigation_notifications -> {
-                    openContent(LikesFragment())
-                    true
+                    openContent(LikesFragment()); true
                 }
                 R.id.navigation_mypage -> {
-                    openContent(MyPageFragment())
-                    true
+                    openContent(MyPageFragment()); true
                 }
                 else -> false
             }
         }
         navView.selectedItemId = R.id.navigation_home
 
+
         printKeyHash()
         initMap()
         setupContentContainerInsets()
-
     }
+
     private fun setupContentContainerInsets() {
-        // contentContainer가 표시될 때, IME(키보드)나 시스템바, 그리고 BottomNav 높이만큼 아래 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentContainer) { v, insets ->
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            // 하단바 실제 높이
             val navH = binding.navView.height
-            // 바텀 시트는 콘텐츠 모드에선 숨김이니 nav만 고려
-            val base = max(sys.bottom, navH + dp(12)) // 여유 12dp
-
-            // 키보드가 올라오면 ime.bottom이 더 크므로, 그걸 우선
+            val base = max(sys.bottom, navH + dp(12))
             val bottom = max(base, ime.bottom)
-
             v.updatePadding(bottom = bottom)
             insets
         }
     }
 
-    // dp → px 헬퍼
     private fun dp(value: Int): Int =
         (value * resources.displayMetrics.density).toInt()
+
     private fun openContent(fragment: Fragment) {
         binding.mapContainer.isVisible = false
         findViewById<View>(R.id.placeSheet).isVisible = false
@@ -227,6 +211,14 @@ class MapActivity : AppCompatActivity() {
                     map.moveCamera(CameraUpdateFactory.newCenterPosition(dobongCenter))
                     map.moveCamera(CameraUpdateFactory.zoomTo(15))
 
+                    // ✅ 라벨 클릭 리스너: onMapReady에서 한 번만
+                    map.setOnLabelClickListener { _, label, _ ->
+                        (label.tag as? PlaceDto)?.let {
+                            showPlaceSheet(it)
+                            true
+                        } ?: false
+                    }
+
                     val lm = map.labelManager
                     if (lm != null) {
                         placesLayer = lm.getLayer(PLACES_LAYER_ID)
@@ -240,8 +232,7 @@ class MapActivity : AppCompatActivity() {
                         return
                     }
 
-                    addTestLabel(dobongCenter, "DEBUG PIN")
-                    debugDropOneLabelAtCenter()
+                    addDebugLabel(dobongCenter, "DEBUG PIN")
                     pingBackendOnce()
                     ensureLocationAndMove()
                     loadPlacesAndRender(dobongCenter, limit = 10)
@@ -254,23 +245,6 @@ class MapActivity : AppCompatActivity() {
     }
 
     // ---------- Labels ----------
-    private fun debugDropOneLabelAtCenter() {
-        val layer = debugLayer ?: return
-        val map = kakaoMap ?: return
-        val center = map.cameraPosition?.position ?: dobongCenter
-
-        layer.isClickable = true
-        layer.isVisible = true
-        layer.removeAll()
-
-        val opt = LabelOptions.from(center)
-            .setStyles(debugPinStyle)
-            .setTexts(LabelTextBuilder().setTexts("DEBUG PIN"))
-
-        val label = layer.addLabel(opt)
-        Log.d("PLACES", "DEBUG label added? ${label != null}")
-    }
-
     private fun addMyLocationMarker(here: LatLng) {
         val layer = myLayer ?: return
         layer.isClickable = false
@@ -282,14 +256,18 @@ class MapActivity : AppCompatActivity() {
         myLabel = layer.addLabel(opt)
     }
 
-    private fun addTestLabel(position: LatLng, text: String) {
-        val layer = placesLayer ?: return
-        layer.isClickable = true
+    // ✅ 디버그 라벨은 debugLayer로, 실제 장소 레이어 건드리지 않음
+    private fun addDebugLabel(position: LatLng, text: String) {
+        val layer = debugLayer ?: return
+        layer.isClickable = false
         layer.isVisible = true
         layer.removeAll()
+
         val opt = LabelOptions.from(position)
-            .setStyles(placePinStyle)
+            .setStyles(debugPinStyle)
             .setTexts(LabelTextBuilder().setTexts(text))
+            .setClickable(false)
+
         layer.addLabel(opt)
     }
 
@@ -298,32 +276,35 @@ class MapActivity : AppCompatActivity() {
         layer.isClickable = true
         layer.isVisible = true
 
+        // 기존 라벨 제거
         placeLabels.forEach { it.remove() }
         placeLabels.clear()
 
+        // 장소 라벨 추가
         places.forEach { p ->
             val position = LatLng.from(p.latitude, p.longitude)
             val title = p.name.takeIf { it.isNotBlank() } ?: "이름 없음"
+
             val opt = LabelOptions.from(position)
                 .setStyles(placePinStyle)
                 .setTexts(LabelTextBuilder().setTexts(title))
-            val label = layer.addLabel(opt)
-            label?.tag = p
-            if (label != null) placeLabels += label
-        }
+                .setClickable(true) // ✅ 중요: 옵션에서 클릭 가능
 
-        map.setOnLabelClickListener { _, label, _ ->
-            (label.tag as? PlaceDto)?.let { showPlaceSheet(it) }
-            true
+            val label = layer.addLabel(opt)
+            label?.apply {
+                tag = p
+                isClickable = true // ✅ 중요: 라벨에서도 클릭 가능
+                placeLabels += this
+            }
         }
     }
 
     private fun showPlaceSheet(place: PlaceDto) {
-        val img = findViewById<android.widget.ImageView>(R.id.imgPlace)
-        val name = findViewById<android.widget.TextView>(R.id.txtPlaceName)
-        val dist = findViewById<android.widget.TextView>(R.id.txtDistance)
-        val phone = findViewById<android.widget.TextView>(R.id.txtPhone)
-        val btn3d = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnView3D)
+        val img = findViewById<ImageView>(R.id.imgPlace)
+        val name = findViewById<TextView>(R.id.txtPlaceName)
+        val dist = findViewById<TextView>(R.id.txtDistance)
+        val phone = findViewById<TextView>(R.id.txtPhone)
+        val btn3d = findViewById<MaterialButton>(R.id.btnView3D)
 
         name.text = place.name
         phone.text = place.phone ?: "전화번호 없음"
@@ -345,7 +326,9 @@ class MapActivity : AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
         }
 
-        // 바텀시트를 1/3 지점으로 올리기
+        // ✅ 바텀시트 보이기
+        findViewById<View>(R.id.placeSheet).isVisible = true
+        sheetBehavior.isHideable = true
         sheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
@@ -362,9 +345,7 @@ class MapActivity : AppCompatActivity() {
         return R * c
     }
 
-    // ---------- Location / API / Cleanup ----------
-
-// ---------- Permission helpers ----------
+    // ---------- Permission helpers ----------
     private fun hasLocationPermission(): Boolean {
         val fine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
         val coarse = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -504,6 +485,7 @@ class MapActivity : AppCompatActivity() {
         val wPx = (hPx * ratio).toInt()
         val scaled: Bitmap = Bitmap.createScaledBitmap(src, wPx, hPx, true)
         if (scaled != src) src.recycle()
+        // 앵커는 중앙 하단이 자연스러움
         return LabelStyle.from(scaled).setAnchorPoint(0.5f, 1.0f)
     }
 
@@ -591,7 +573,6 @@ class MapActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        // 진행 중인 one-shot 업데이트가 있으면 해제
         oneShotCallback?.let {
             locationClient.removeLocationUpdates(it)
             oneShotCallback = null
@@ -619,7 +600,6 @@ class MapActivity : AppCompatActivity() {
         myLayer = null
         debugLayer = null
 
-        job.cancel()
         kakaoMap = null
         super.onDestroy()
     }
@@ -635,14 +615,14 @@ class MapActivity : AppCompatActivity() {
                 renderPlaceMarkers(map, places)
                 if (places.isEmpty()) {
                     Toast.makeText(this@MapActivity, "서버 응답은 성공, 하지만 0건", Toast.LENGTH_SHORT).show()
-                    addTestLabel(center, "TEST(0건)")
+                    addDebugLabel(center, "TEST(0건)")
                 } else {
                     Toast.makeText(this@MapActivity, "명소 ${places.size}개 표시", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Log.e("PLACES", "API 실패: ${e.message}", e)
                 Toast.makeText(this@MapActivity, "장소 로드 실패: ${e.message}", Toast.LENGTH_LONG).show()
-                addTestLabel(center, "API FAIL")
+                addDebugLabel(center, "API FAIL")
             }
         }
     }
