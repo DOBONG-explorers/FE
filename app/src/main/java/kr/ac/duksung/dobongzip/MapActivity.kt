@@ -605,7 +605,7 @@ class MapActivity : AppCompatActivity() {
     }
 
     // ---------- Places fetch & render ----------
-    private fun loadPlacesAndRender(center: LatLng, limit: Int = 10) {
+    private fun loadPlacesAndRender(center: LatLng, limit: Int = 30) {
         val map = kakaoMap ?: return
         Log.d("PLACES", "→ API call lat=${center.latitude}, lng=${center.longitude}, limit=$limit")
         lifecycleScope.launch {
