@@ -2,6 +2,7 @@ package kr.ac.duksung.dobongzip
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -26,6 +27,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var tvSignup: TextView
 
     private lateinit var tokenStore: TokenStore
+    private val TAG = "Login"
+
+    // ✅ 공개 클라이언트 사용(Authorization 미첨부)
+    private val authService by lazy { ApiClient.authServicePublic }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +47,9 @@ class LoginActivity : AppCompatActivity() {
 
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
-            val pw = etPassword.text.toString()
+            val pw = etPassword.text.toString().trim() // ✅ 공백 제거
+
+            Log.d(TAG, "click login: emailLen=${email.length}, pwLen=${pw.length}")
 
             if (email.isEmpty() || pw.isEmpty()) {
                 showError("이메일/비밀번호를 입력하세요.")
@@ -54,7 +61,10 @@ class LoginActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val res = ApiClient.authService.login(LoginRequest(email, pw))
+                    // ✅ 공개 클라이언트로 로그인 요청
+                    val res = authService.login(LoginRequest(email, pw))
+                    Log.d(TAG, "resp: success=${res.success}, msg=${res.message}")
+
                     if (!res.success) {
                         showError(res.message.ifBlank { "이메일 또는 비밀번호가 올바르지 않습니다." })
                         return@launch
@@ -67,8 +77,10 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     // ✅ 로그인 성공 → 토큰 저장 (DataStore + 메모리)
+                    // 기존 세션 정리 후 저장하는 것이 안전
+                    TokenHolder.accessToken = null
                     tokenStore.saveAccessToken(accessToken)
-                    TokenHolder.accessToken = accessToken // 선택(보조 캐시)
+                    TokenHolder.accessToken = accessToken
 
                     // 프로필 완료 여부에 따라 분기
                     val profileCompleted = res.data?.profileCompleted == true
@@ -81,12 +93,15 @@ class LoginActivity : AppCompatActivity() {
                     finish()
 
                 } catch (e: HttpException) {
+                    val body = e.response()?.errorBody()?.string()
+                    Log.e(TAG, "HttpException: code=${e.code()} body=$body", e)
                     when (e.code()) {
                         404 -> showError("가입된 계정을 찾을 수 없습니다.")
-                        401 -> showError("이메일 또는 비밀번호가 올바르지 않습니다.")
+                        401 -> showError(body ?: "이메일 또는 비밀번호가 올바르지 않습니다.")
                         else -> showError("서버 오류(${e.code()})")
                     }
                 } catch (e: Exception) {
+                    Log.e(TAG, "Exception: ${e.message}", e)
                     showError("네트워크 오류: ${e.message}")
                 } finally {
                     btnLogin.isEnabled = true

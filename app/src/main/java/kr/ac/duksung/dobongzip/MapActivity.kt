@@ -235,7 +235,7 @@ class MapActivity : AppCompatActivity() {
                     addDebugLabel(dobongCenter, "DEBUG PIN")
                     pingBackendOnce()
                     ensureLocationAndMove()
-                    loadPlacesAndRender(dobongCenter, limit = 10)
+                    loadPlacesAndRender(dobongCenter, limit = 30)
                 }
 
                 override fun getPosition(): LatLng = dobongCenter
