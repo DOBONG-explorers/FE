@@ -35,7 +35,7 @@ object RetrofitProvider {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    // ✅ 모두 object 내부에 둡니다.
+
     val dobongApi: DobongApi by lazy {
         retrofit.create(DobongApi::class.java)
     }

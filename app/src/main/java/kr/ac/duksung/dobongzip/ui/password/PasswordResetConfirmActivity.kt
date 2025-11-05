@@ -48,7 +48,7 @@ class PasswordResetConfirmActivity : AppCompatActivity() {
         back.setOnClickListener { finish() }
 
         btn.setOnClickListener {
-            // 🔹 여기에 trim() 적용 (요청 직전)
+            // 여기에 trim() 적용 (요청 직전)
             val pw  = etPw.text.toString().trim()
             val pw2 = etPw2.text.toString().trim()
 

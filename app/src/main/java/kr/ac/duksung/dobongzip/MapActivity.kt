@@ -134,7 +134,7 @@ class MapActivity : AppCompatActivity() {
             alpha = 1f
         }
 
-// ---------- 하단 네비게이션 ----------
+// ---------- 하단 네비게이션 ---------- -> 이부분 다시 수정하기
         val navView: BottomNavigationView = binding.navView
         navView.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -235,7 +235,7 @@ class MapActivity : AppCompatActivity() {
                     addDebugLabel(dobongCenter, "DEBUG PIN")
                     pingBackendOnce()
                     ensureLocationAndMove()
-                    loadPlacesAndRender(dobongCenter, limit = 30)
+                    loadPlacesAndRender(dobongCenter, limit = 30) //핀 최대개수임
                 }
 
                 override fun getPosition(): LatLng = dobongCenter
@@ -256,7 +256,6 @@ class MapActivity : AppCompatActivity() {
         myLabel = layer.addLabel(opt)
     }
 
-    // ✅ 디버그 라벨은 debugLayer로, 실제 장소 레이어 건드리지 않음
     private fun addDebugLabel(position: LatLng, text: String) {
         val layer = debugLayer ?: return
         layer.isClickable = false
@@ -547,7 +546,7 @@ class MapActivity : AppCompatActivity() {
                 md.update(signature.toByteArray())
                 val keyHash = Base64.encodeToString(md.digest(), Base64.NO_WRAP)
                 Log.i("Dobongzip", "✅ KeyHash: $keyHash")
-                Toast.makeText(this, "KeyHash: $keyHash", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "KeyHash: $keyHash", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Log.e("Dobongzip", "❌ KeyHash error", e)

@@ -24,7 +24,6 @@ class PlacesRepository {
     /** 명소 상세 (GET /api/v1/map/getPlaceDetail?placeId=) */
     suspend fun fetchPlaceDetail(placeId: String): PlaceDetailDto =
         withContext(Dispatchers.IO) {
-            // dobongApi.getPlaceDetail(...) 이 Call<ApiResponse<PlaceDetailDto>> 라고 가정
             val resp = dobongApi.getPlaceDetail(placeId).execute()
             val body = resp.body()
             if (!resp.isSuccessful || body?.data == null) {
@@ -49,8 +48,6 @@ class PlacesRepository {
         val res: ApiResponse<List<PlaceDto>> = placesApi.getPlaces(lat = lat, lng = lng, limit = 1)
         val first = res.data?.firstOrNull() ?: return@withContext null
 
-        // PlaceDto에 식별자가 무엇인지에 따라 맞춰주세요.
-        // 보통 placeId 또는 id를 씁니다.
         val placeId = first.placeId  // ← 필드명이 다르면 first.id 등으로 교체
 
         likeApi.like(placeId)        // 서버에 좋아요 등록

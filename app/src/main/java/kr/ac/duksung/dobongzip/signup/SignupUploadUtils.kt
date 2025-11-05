@@ -76,7 +76,7 @@ suspend fun makeImagePartFromUriPNG(
             } ?: return@withContext null
         }
 
-        // 2) PNG로 임시 파일 저장
+        // 2) PNG로 임시 파일 저장 -> 이미지 형식 다 가능하게 수정하기
         val tempFile = File.createTempFile("profile_", ".png", context.cacheDir).apply {
             deleteOnExit()
         }
