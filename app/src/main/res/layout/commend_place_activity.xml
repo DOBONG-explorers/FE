@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_mypage">
@@ -51,27 +52,50 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- 초기 화면: 챗봇 캐릭터 + 버튼 -->
+
+        <!-- 추천 결과 화면: 장소 카드 -->
         <LinearLayout
             android:id="@+id/initialView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="24dp"
-            android:visibility="visible">
+            android:visibility="visible"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp">
 
-            <!-- 캐릭터 -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="둘리쌍문근린공원"
+                android:textSize="24sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                />
+
+            <!-- 챗봇 캐릭터 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="top|center_horizontal"
-                android:layout_marginBottom="32dp">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_margin="20dp">
 
                 <ImageView
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:src="@drawable/prf" />
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:src="@drawable/park" />
+
+
+            </LinearLayout>
+
+
+            <!-- 넘어가기 버튼 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"
@@ -84,43 +108,25 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="버튼을 클릭해\n오늘의 추천 장소를 확인해봐요!"
+                        android:padding="15dp"
+                        android:text="이 장소는 어떠신가요?\n바로가기 >>"
                         android:textColor="#111111"
                         android:textSize="15sp"
-                        android:padding="14dp"/>
+                        />
                 </com.google.android.material.card.MaterialCardView>
+
+
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/prf" />
+
             </LinearLayout>
 
 
-
-
-
-
-            <!-- 장소 추천받기 버튼 -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRecommend"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:text="장소 추천받기"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:paddingStart="40dp"
-                android:paddingEnd="40dp"
-                app:cornerRadius="30dp"
-                app:backgroundTint="#BFE6FF"
-                app:elevation="4dp"/>
-
-            <!-- 손가락 이모지 (선택사항) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="👆"
-                android:textSize="40sp"
-                android:layout_marginTop="8dp" />
         </LinearLayout>
 
-        <!-- 추천 결과 화면: 장소 카드 -->
         <ScrollView
             android:id="@+id/resultView"
             android:layout_width="match_parent"
@@ -241,24 +247,4 @@
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- 하단 네비게이션 바 -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/nav_background"
-        android:elevation="10dp"
-        app:itemIconTint="@color/selector_nav_text"
-        app:itemTextColor="@color/selector_nav_text"
-        app:itemBackground="@drawable/bottom_nav_item_background"
-        app:itemRippleColor="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_nav_menu"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

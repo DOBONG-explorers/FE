@@ -109,21 +109,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 하단바 -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/nav_background"
-        android:elevation="10dp"
-        app:itemIconTint="@color/selector_nav_text"
-        app:itemTextColor="@color/selector_nav_text"
-        app:itemBackground="@drawable/bottom_nav_item_background"
-        app:itemRippleColor="@android:color/transparent"
-        android:layout_gravity="bottom"
-        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
