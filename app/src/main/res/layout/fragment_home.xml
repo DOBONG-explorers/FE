@@ -185,6 +185,7 @@
             </LinearLayout>
             <!-- 2. 날씨에 맞는 장소 추천 -->
             <LinearLayout
+                android:id="@+id/btn_random_recommend"
                 android:layout_width="165dp"
                 android:layout_height="165dp"
                 android:layout_margin="12dp"

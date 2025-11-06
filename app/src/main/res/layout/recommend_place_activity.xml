@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_mypage">
+
+    <!-- 상단바 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/round_button"
+            android:src="@drawable/arrow"
+            android:scaleType="centerInside"
+            android:contentDescription="뒤로 가기"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오늘의 추천 장소"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contentArea"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 초기 화면: 챗봇 캐릭터 + 버튼 -->
+        <LinearLayout
+            android:id="@+id/initialView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"
+            android:visibility="visible">
+
+            <!-- 챗봇 캐릭터 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="top|center_horizontal"
+                android:layout_marginBottom="32dp">
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/prf"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginBottom="100dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="2dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="버튼을 클릭해\n오늘의 추천 장소를 확인해봐요!"
+                        android:textColor="#111111"
+                        android:textSize="15sp"
+                        android:padding="14dp"/>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- 장소 추천받기 버튼 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRecommend"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:text="장소 추천받기"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:paddingStart="40dp"
+                android:paddingEnd="40dp"
+                app:cornerRadius="30dp"
+                app:backgroundTint="#BFE6FF"
+                app:elevation="4dp"/>
+
+            <!-- 손가락 이모지 (선택사항) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👆"
+                android:textSize="40sp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- 추천 결과 화면: 장소 카드 -->
+        <ScrollView
+            android:id="@+id/resultView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:gravity="center_horizontal">
+
+                <!-- 장소 카드 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/placeCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="8dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    android:layout_marginBottom="24dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp">
+
+                        <!-- 장소 이름 -->
+                        <TextView
+                            android:id="@+id/tvPlaceName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="돌리쌍문근린공원"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:gravity="center"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <!-- 장소 이미지 -->
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivPlaceImage"
+                            android:layout_width="0dp"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/placeholder"
+                            android:layout_marginTop="16dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rounded20"
+                            app:layout_constraintTop_toBottomOf="@id/tvPlaceName"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <!-- 하단 액션 영역 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintTop_toBottomOf="@id/ivPlaceImage"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <!-- 챗봇 아이콘 -->
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/prf"
+                                android:layout_marginEnd="16dp"/>
+
+                            <!-- 질문 말풍선 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="20dp"
+                                app:cardElevation="2dp"
+                                app:cardBackgroundColor="#F5F5F5">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="이 장소는 어떠신가요?\n바로가기 >>"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black"
+                                    android:padding="16dp"
+                                    android:gravity="center"/>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- 손가락 이모지 -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="👆"
+                                android:textSize="32sp"
+                                android:layout_marginStart="8dp"/>
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,7 +16,12 @@
         android:id="@+id/navigation_home"
         android:name="kr.ac.duksung.dobongzip.ui.home.HomeFragment"
         android:label="홈"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+
+        <action
+            android:id="@+id/action_home_to_recommend"
+            app:destination="@id/navigation_recommend" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_chat"
@@ -56,5 +61,21 @@
         android:label="관심"
         tools:layout="@layout/fragment_likes" />
 
+    <fragment
+        android:id="@+id/navigation_recommend"
+        android:name="kr.ac.duksung.dobongzip.ui.recommend.RecommendFragment"
+        android:label="오늘의 추천 장소"
+        tools:layout="@layout/recommend_place_activity">
+        
+        <action
+            android:id="@+id/action_recommend_to_commend"
+            app:destination="@id/commend_place_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/commend_place_fragment"
+        android:name="kr.ac.duksung.dobongzip.ui.recommend.CommendPlaceFragment"
+        android:label="추천 장소"
+        tools:layout="@layout/commend_place_activity" />
 
 </navigation>

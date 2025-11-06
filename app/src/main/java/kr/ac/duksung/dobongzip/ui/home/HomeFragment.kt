@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
@@ -33,6 +34,12 @@ class HomeFragment : Fragment() {
             val next = b.posterPager.currentItem + 1
             b.posterPager.setCurrentItem(next, true)
             autoHandler.postDelayed(this, autoIntervalMs)
+        }
+    }
+
+    private fun setupListeners() {
+        _b?.btnRandomRecommend?.setOnClickListener {
+            findNavController().navigate(R.id.action_home_to_recommend)
         }
     }
 
@@ -92,15 +99,16 @@ class HomeFragment : Fragment() {
         })
         updateCounterByAdapterPos(start)
 
-        // 공지사항
         b.btnNotice.setOnClickListener {
             startActivity(Intent(requireContext(), NoticeListActivity::class.java))
         }
 
-        // 주변장소 찾기 → MapActivity
         b.btnNearbyCard.setOnClickListener {
             startActivity(Intent(requireContext(), MapActivity::class.java))
         }
+
+        // ✅ [수정됨] setupListeners() 함수를 여기서 호출해야 합니다.
+        setupListeners()
     }
 
     override fun onResume() {
