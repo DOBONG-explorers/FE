@@ -78,4 +78,13 @@
         android:label="추천 장소"
         tools:layout="@layout/commend_place_activity" />
 
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="kr.ac.duksung.dobongzip.ui.map.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map"/>
+    <action
+        android:id="@+id/action_home_to_mapFragment"
+        app:destination="@id/mapFragment" />
+
 </navigation>

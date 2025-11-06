@@ -16,6 +16,7 @@ import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentHomeBinding
 import kr.ac.duksung.dobongzip.databinding.ItemPosterBinding
 import kr.ac.duksung.dobongzip.ui.map.MapActivity
+import kr.ac.duksung.dobongzip.ui.map.MapFragment
 import kr.ac.duksung.dobongzip.ui.notice.NoticeListActivity
 import kotlin.math.abs
 
@@ -104,12 +105,11 @@ class HomeFragment : Fragment() {
         }
 
         b.btnNearbyCard.setOnClickListener {
-            startActivity(Intent(requireContext(), MapActivity::class.java))
+            findNavController().navigate(R.id.action_home_to_mapFragment)
         }
-
-        // ✅ [수정됨] setupListeners() 함수를 여기서 호출해야 합니다.
-        setupListeners()
     }
+
+
 
     override fun onResume() {
         super.onResume()

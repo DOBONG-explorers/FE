@@ -43,7 +43,6 @@
         <activity android:name=".SignupActivity" />
         <activity android:name=".SignupStep2Activity" />
         <activity android:name=".MainActivity" />
-        <activity android:name="kr.ac.duksung.dobongzip.ui.map.MapActivity"   android:hardwareAccelerated="true" android:exported="false" />
 
 
         <meta-data
