@@ -58,7 +58,9 @@ class CommendPlaceFragment : Fragment() {
         setupClickListeners()
         observeViewModel()
 
-        requestLocationAndRecommend()
+        if (viewModel.recommendedPlace.value == null) {
+            requestLocationAndRecommend()
+        }
     }
 
     private fun observeViewModel() {
@@ -88,23 +90,27 @@ class CommendPlaceFragment : Fragment() {
             if (place != null) {
                 binding.tvPlaceNameInitial.text = place.name
                 
-                val distanceInKm = place.distanceMeters?.let { "%.1fkm".format(it / 1000.0) } ?: "거리 정보 없음"
-                binding.tvDistanceInitial.text = "내 거리로부터: $distanceInKm"
-                
-                Glide.with(requireContext())
-                    .load(place.imageUrl)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder)
-                    .into(binding.ivPlaceImageInitial)
+                if (!place.imageUrl.isNullOrBlank() && place.imageUrl != "null") {
+                    Glide.with(requireContext())
+                        .load(place.imageUrl)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.placeholder)
+                        .into(binding.ivPlaceImageInitial)
+                } else {
+                    binding.ivPlaceImageInitial.setImageResource(R.drawable.placeholder)
+                }
 
                 binding.tvPlaceName.text = place.name
-                binding.tvDistance.text = "내 거리로부터: $distanceInKm"
 
-                Glide.with(requireContext())
-                    .load(place.imageUrl)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder)
-                    .into(binding.ivPlaceImage)
+                if (!place.imageUrl.isNullOrBlank() && place.imageUrl != "null") {
+                    Glide.with(requireContext())
+                        .load(place.imageUrl)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.placeholder)
+                        .into(binding.ivPlaceImage)
+                } else {
+                    binding.ivPlaceImage.setImageResource(R.drawable.placeholder)
+                }
             }
         }
     }

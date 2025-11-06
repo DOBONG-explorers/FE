@@ -31,6 +31,8 @@ class RecommendFragment : Fragment() {
 
     private val viewModel: RecommendViewModel by viewModels()
     
+    private var hasNavigated = false
+    
     private val locationClient by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
     
     private val requestLocationPermissionLauncher = registerForActivityResult(
@@ -59,6 +61,8 @@ class RecommendFragment : Fragment() {
 
         setupClickListeners()
         observeViewModel()
+        hasNavigated = false
+        viewModel.resetToInitial()
     }
 
     private fun observeViewModel() {
@@ -87,14 +91,20 @@ class RecommendFragment : Fragment() {
         }
 
         viewModel.recommendedPlace.observe(viewLifecycleOwner) { place ->
-            if (place != null) {
+            if (place != null && hasNavigated) {
                 binding.tvPlaceName.text = place.name
 
-                Glide.with(requireContext())
-                    .load(place.imageUrl)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder)
-                    .into(binding.ivPlaceImage)
+                if (!place.imageUrl.isNullOrBlank() && place.imageUrl != "null") {
+                    Glide.with(requireContext())
+                        .load(place.imageUrl)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.placeholder)
+                        .into(binding.ivPlaceImage)
+                } else {
+                    binding.ivPlaceImage.setImageResource(R.drawable.placeholder)
+                }
+                
+                findNavController().navigate(R.id.action_recommend_to_commend)
             }
         }
     }
@@ -105,7 +115,10 @@ class RecommendFragment : Fragment() {
         }
 
         binding.btnRecommend.setOnClickListener {
-            findNavController().navigate(R.id.action_recommend_to_commend)
+            if (!hasNavigated) {
+                hasNavigated = true
+                requestLocationAndRecommend()
+            }
         }
 
         binding.placeCard.setOnClickListener {

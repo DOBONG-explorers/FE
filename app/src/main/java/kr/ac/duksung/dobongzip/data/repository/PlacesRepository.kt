@@ -8,6 +8,7 @@ import retrofit2.HttpException
 import kr.ac.duksung.dobongzip.data.PlaceDetailDto
 import kr.ac.duksung.dobongzip.data.models.ApiResponse
 import kr.ac.duksung.dobongzip.data.models.PlaceDto
+import kr.ac.duksung.dobongzip.data.models.RandomPlaceDto
 import kr.ac.duksung.dobongzip.data.network.RetrofitProvider
 
 class PlacesRepository {
@@ -36,28 +37,43 @@ class PlacesRepository {
             body.data!!
         }
 
-    /** 추천 장소 가져오기 - /api/v1/places/dobong 엔드포인트 사용 */
+    /** 추천 장소 가져오기 - /api/v1/mainpage/random-place 엔드포인트 사용 */
     suspend fun getRecommendedPlace(lat: Double, lng: Double): PlaceDto? =
         withContext(Dispatchers.IO) {
             try {
                 lastErrorMessage = null
-                Log.d("PlacesRepository", "Requesting recommended place from dobong API: lat=$lat, lng=$lng")
+                Log.d("PlacesRepository", "Requesting recommended place from random-place API")
                 
-                // limit을 충분히 크게 설정하여 여러 장소 중에서 선택
-                val limit = 20
-                val response = placesApi.getPlaces(lat, lng, limit)
+                val response = placesApi.getRandomPlaces()
                 
-                Log.d("PlacesRepository", "Response received: success=${response.success}, data count=${response.data?.size}, message=${response.message}")
+                Log.d("PlacesRepository", "Response received: success=${response.success}, data=${response.data}, message=${response.message}")
                 
-                if (response.success && !response.data.isNullOrEmpty()) {
-                    // 리스트에서 랜덤하게 하나 선택
-                    val places = response.data
-                    val randomPlace = places.random()
-                    Log.d("PlacesRepository", "Selected random place: ${randomPlace.name} (from ${places.size} places)")
-                    randomPlace
-                } else if (response.success && response.data.isNullOrEmpty()) {
+                if (response.success && response.data != null) {
+                    val randomPlace = response.data
+                    Log.d("PlacesRepository", "Random place received: ${randomPlace.name}")
+                    
+                    val imageUrl = randomPlace.imageUrl?.takeIf { it.isNotBlank() && it != "null" }
+                    
+                    PlaceDto(
+                        placeId = randomPlace.placeId,
+                        name = randomPlace.name,
+                        address = randomPlace.address,
+                        latitude = randomPlace.latitude ?: 0.0,
+                        longitude = randomPlace.longitude ?: 0.0,
+                        distanceMeters = randomPlace.distanceMeters,
+                        distanceText = randomPlace.distanceText,
+                        imageUrl = imageUrl,
+                        description = null,
+                        openingHours = null,
+                        priceLevel = null,
+                        mapsUrl = null,
+                        phone = randomPlace.phone,
+                        rating = randomPlace.rating,
+                        reviewCount = randomPlace.reviewCount
+                    )
+                } else if (response.success && response.data == null) {
                     lastErrorMessage = response.message ?: "추천할 장소가 없습니다."
-                    Log.e("PlacesRepository", "API returned empty list: message=$lastErrorMessage")
+                    Log.e("PlacesRepository", "API returned null data: message=$lastErrorMessage")
                     null
                 } else {
                     lastErrorMessage = response.message ?: "서버에서 추천 장소를 반환하지 않았습니다."

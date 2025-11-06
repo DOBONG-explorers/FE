@@ -2,6 +2,7 @@ package kr.ac.duksung.dobongzip.data.network
 
 import kr.ac.duksung.dobongzip.data.models.ApiResponse
 import kr.ac.duksung.dobongzip.data.models.PlaceDto
+import kr.ac.duksung.dobongzip.data.models.RandomPlaceDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,4 +13,7 @@ interface PlacesApi {
         @Query("lng") lng: Double,
         @Query("limit") limit: Int = 10
     ): ApiResponse<List<PlaceDto>>
+
+    @GET("/api/v1/mainpage/random-place")
+    suspend fun getRandomPlaces(): ApiResponse<RandomPlaceDto>
 }

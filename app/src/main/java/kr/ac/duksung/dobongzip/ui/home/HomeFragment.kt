@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        _b?.btnRandomRecommend?.setOnClickListener {
+        b.btnRandomRecommend.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_recommend)
         }
     }
@@ -107,6 +107,8 @@ class HomeFragment : Fragment() {
         b.btnNearbyCard.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_mapFragment)
         }
+
+        setupListeners()
     }
 
 

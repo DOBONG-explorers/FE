@@ -74,6 +74,10 @@ class RecommendViewModel(application: Application) : AndroidViewModel(applicatio
     fun handleLocationError(message: String) {
         _uiState.value = UiState.Error(message)
     }
+    
+    fun resetToInitial() {
+        _uiState.value = UiState.Initial
+    }
 }
 
 sealed class UiState {
