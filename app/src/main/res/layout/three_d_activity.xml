@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- 상단 탭바 (뒤로가기, 제목) -->
+    <!-- 상단 헤더바 (뒤로가기, 제목) -->
     <LinearLayout
         android:id="@+id/header_bar"
         android:layout_width="match_parent"
@@ -72,8 +72,8 @@
         <!-- 하트 버튼 (오른쪽 아래) -->
         <ImageButton
             android:id="@+id/btn_heart"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_margin="16dp"
             android:layout_gravity="bottom|end"
             android:background="@drawable/heart_button_bg"
@@ -88,7 +88,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         style="@style/Widget.Material3.TabLayout"
         android:background="@android:color/white"
         app:tabTextColor="@android:color/darker_gray"
@@ -97,32 +97,10 @@
         app:tabIndicatorHeight="4dp"
         app:layout_constraintTop_toBottomOf="@id/webview_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="장소 소개" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이용 시간" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이용 금액" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="리뷰" />
-
-    </com.google.android.material.tabs.TabLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 스크롤 가능한 컨텐츠 영역 -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -133,127 +111,13 @@
         app:layout_constraintBottom_toTopOf="@id/nav_view">
 
         <LinearLayout
+            android:id="@+id/tab_content_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp" />
 
-            <!-- 장소 소개 탭 -->
-            <LinearLayout
-                android:id="@+id/tab_content_intro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="장소 소개"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="서울도봉시 도봉구 노해로69길 132"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="서울특별시 강북구 우이동에 소재한 공원. 삼양로 서편에 위치해있으며 서울 경전철 우이신설선 4.19민주묘지역과 솔밭공원역 사이에 있다. 서울 유일의 평지형 소나무 군락지로 약 100년생 1,000여주가 집단적으로 자생하고 있다. 북서울꿈의숲과 함께 강북구를 대표하는 공원이다. 원래 사유지였으나 1990년, 아파트 개발지로 선정되면서 훼손 위기에 봉착했다. 그러나 주민과 지자체가 한마음 한뜻으로 이곳을 보존하려는 운동을 벌였고 1997년, 서울시와 강북구가 사유지인 솔밭을 매입해 2004년 1월 솔밭근린공원으로 개장하였다. 지하철로 서울 경전철 우이신설선을 타고 4.19민주묘지역에서 솔밭공원역에 내려서 4~5분 정도 걸어가면 된다. 주차 시설은 협소하며 서라벌중학교 근처에 있는 공영주차장이 가장 가깝다."
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:lineSpacingExtra="4dp" />
-
-            </LinearLayout>
-
-            <!-- 이용 시간 탭 -->
-            <LinearLayout
-                android:id="@+id/tab_content_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="이용 시간"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="• 평일: 06:00 ~ 22:00\n• 주말: 06:00 ~ 23:00\n• 휴무일: 없음"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:lineSpacingExtra="8dp" />
-
-            </LinearLayout>
-
-            <!-- 이용 금액 탭 -->
-            <LinearLayout
-                android:id="@+id/tab_content_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="이용 금액"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="무료"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black" />
-
-            </LinearLayout>
-
-            <!-- 리뷰 탭 -->
-            <LinearLayout
-                android:id="@+id/tab_content_review"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="리뷰"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="리뷰 내용이 여기에 표시됩니다."
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- 하단바 (둥글고 색 지정된 상태) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

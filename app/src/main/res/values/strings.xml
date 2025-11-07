@@ -9,5 +9,9 @@
     <string name="signup_text"><u>회원가입</u></string>
     <string name="kakao_native_app_key">820287f1ad6ef4c97a1bb080f013dafd</string>
 
+    <string name="content_desc_like">좋아요 추가</string>
+    <string name="content_desc_unlike">좋아요 취소</string>
+    <string name="message_missing_place">필수 데이터가 없어 화면을 종료합니다.</string>
+
 
 </resources>

@@ -2,11 +2,14 @@ package kr.ac.duksung.dobongzip.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -32,6 +36,7 @@ import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.data.models.PlaceDto
 import kr.ac.duksung.dobongzip.data.repository.PlacesRepository
 import kr.ac.duksung.dobongzip.databinding.FragmentMapBinding
+import kr.ac.duksung.dobongzip.ui.threed.ThreeDActivity
 import kotlin.math.pow
 import kotlin.math.sin
 
@@ -50,6 +55,10 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     private var debugLayer: LabelLayer? = null
     private val placeLabels = mutableListOf<LodLabel>() // 🔁 LodLabel 리스트로 보관
     private var myLabel: Label? = null
+
+    private var focusPlaceId: String? = null
+    private var focusLatLng: Pair<Double, Double>? = null
+    private val threeDPlaceIds = mutableSetOf<String>()
 
     private lateinit var sheetBehavior: BottomSheetBehavior<MaterialCardView>
 
@@ -75,6 +84,39 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) ensureLocationSettings { moveToMyLocation() }
         else Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            arguments?.let {
+                focusPlaceId = it.getString(ARG_FOCUS_PLACE_ID)
+
+                if (it.containsKey(ARG_FOCUS_LAT) && it.containsKey(ARG_FOCUS_LNG)) {
+                    val lat = it.getDouble(ARG_FOCUS_LAT)
+                    val lng = it.getDouble(ARG_FOCUS_LNG)
+                    if (!lat.isNaN() && !lng.isNaN()) {
+                        focusLatLng = lat to lng
+                    }
+                }
+
+                val fromArgs = it.getStringArrayList(ARG_THREE_D_PLACE_IDS)
+                if (!fromArgs.isNullOrEmpty()) {
+                    threeDPlaceIds.addAll(fromArgs.filter { it.isNotBlank() })
+                }
+            }
+        } else {
+            focusPlaceId = savedInstanceState.getString(ARG_FOCUS_PLACE_ID)
+            val lat = savedInstanceState.getDouble(ARG_FOCUS_LAT, Double.NaN)
+            val lng = savedInstanceState.getDouble(ARG_FOCUS_LNG, Double.NaN)
+            if (!lat.isNaN() && !lng.isNaN()) {
+                focusLatLng = lat to lng
+            }
+            val savedList = savedInstanceState.getStringArrayList(ARG_THREE_D_PLACE_IDS)
+            if (!savedList.isNullOrEmpty()) {
+                threeDPlaceIds.addAll(savedList.filter { it.isNotBlank() })
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -137,7 +179,8 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
                     // 위치 & 장소 로드
                     ensureLocationAndMove()
-                    loadPlacesAndRender(dobongCenter, limit = 30)
+                    val initialCenter = focusLatLng?.let { LatLng.from(it.first, it.second) } ?: dobongCenter
+                    loadPlacesAndRender(initialCenter, limit = 30)
                 }
 
                 override fun getPosition(): LatLng = dobongCenter
@@ -153,6 +196,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             try {
                 val places = PlacesRepository().fetchPlaces(center.latitude, center.longitude, limit)
                 renderPlaceMarkers(map, places)
+                focusOnTarget(places)
                 if (places.isEmpty()) {
                     Toast.makeText(requireContext(), "서버 응답 성공, 하지만 0건", Toast.LENGTH_SHORT).show()
                     addDebugLabel(center, "0 places")
@@ -181,10 +225,12 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         places.forEachIndexed { idx, p ->
             val position = LatLng.from(p.latitude, p.longitude)
             val title = p.name.takeIf { it.isNotBlank() } ?: "이름 없음"
+            val hasThreeD = hasThreeDPlace(p)
+            val style = if (hasThreeD) threeDPinStyle else placePinStyle
 
             // LodLabel 은 id 가 필요 (고유)
             val options = LabelOptions.from("place_$idx", position)
-                .setStyles(placePinStyle)
+                .setStyles(style)
                 .setTexts(LabelTextBuilder().setTexts(title))
                 .setClickable(true)
                 .setTag(p) // 클릭시 꺼낼 PlaceDto
@@ -192,6 +238,29 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             val lodLabel = layer.addLodLabel(options)
             lodLabel?.let { placeLabels += it }
         }
+    }
+
+    private fun focusOnTarget(places: List<PlaceDto>) {
+        val map = kakaoMap ?: return
+        val target = focusPlaceId?.let { id -> places.firstOrNull { it.placeId == id } }
+        val targetLatLng = target?.let { LatLng.from(it.latitude, it.longitude) }
+            ?: focusLatLng?.let { LatLng.from(it.first, it.second) }
+
+        if (targetLatLng != null) {
+            map.moveCamera(CameraUpdateFactory.newCenterPosition(targetLatLng))
+            map.moveCamera(CameraUpdateFactory.zoomTo(17))
+            target?.let { showPlaceSheet(it) }
+            focusPlaceId = null
+            focusLatLng = null
+        }
+    }
+
+    private fun hasThreeDPlace(place: PlaceDto): Boolean {
+        if (threeDPlaceIds.contains(place.placeId)) return true
+        val url = place.mapsUrl
+        val matches = url?.contains(THREE_D_WEB_HOST, ignoreCase = true) == true
+        if (matches) threeDPlaceIds.add(place.placeId)
+        return matches
     }
 
     // BottomSheet: place detail
@@ -215,9 +284,29 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         if (!place.imageUrl.isNullOrBlank()) Glide.with(this).load(place.imageUrl).into(img)
         else img.setImageResource(R.drawable.placeholder)
 
-        btn3d.setOnClickListener {
-            val url = place.mapsUrl ?: "https://maps.google.com/?q=${place.latitude},${place.longitude}"
-            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+        val hasThreeD = hasThreeDPlace(place)
+        btn3d.isVisible = hasThreeD
+        if (hasThreeD) {
+            btn3d.setOnClickListener {
+                val ctx = requireContext()
+                val intent = ThreeDActivity.createIntent(
+                    context = ctx,
+                    placeId = place.placeId,
+                    placeName = place.name,
+                    latitude = place.latitude,
+                    longitude = place.longitude,
+                    address = place.address,
+                    description = place.description,
+                    openingHours = place.openingHours?.let { ArrayList(it) },
+                    priceLevel = place.priceLevel,
+                    rating = place.rating,
+                    reviewCount = place.reviewCount,
+                    phone = place.phone
+                )
+                startActivity(intent)
+            }
+        } else {
+            btn3d.setOnClickListener(null)
         }
 
         b.placeSheet.isVisible = true
@@ -321,7 +410,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     }
 
     // Pin styles (dp sizing)
-    private fun makePinStyleDp(targetHeightDp: Int): LabelStyle {
+    private fun makePinStyleDp(targetHeightDp: Int, @ColorInt tint: Int? = null): LabelStyle {
         val dm = resources.displayMetrics
         val hPx = (targetHeightDp * dm.density + 0.5f).toInt()
         val src = BitmapFactory.decodeResource(resources, R.drawable.pin)
@@ -329,11 +418,40 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         val wPx = (hPx * ratio).toInt()
         val scaled: Bitmap = Bitmap.createScaledBitmap(src, wPx, hPx, true)
         if (scaled != src) src.recycle()
-        return LabelStyle.from(scaled).setAnchorPoint(0.5f, 1.0f)
+        val finalBitmap = tint?.let {
+            val tinted = scaled.tint(it)
+            if (tinted !== scaled) scaled.recycle()
+            tinted
+        } ?: scaled
+        return LabelStyle.from(finalBitmap).setAnchorPoint(0.5f, 1.0f)
     }
     private val placePinStyle by lazy { makePinStyleDp(18) }
     private val myPinStyle    by lazy { makePinStyleDp(20) }
     private val debugPinStyle by lazy { makePinStyleDp(16) }
+    private val threeDPinStyle by lazy {
+        makePinStyleDp(20, ContextCompat.getColor(requireContext(), R.color.map_marker_three_d))
+    }
+
+    private fun Bitmap.tint(@ColorInt color: Int): Bitmap {
+        val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(result)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        paint.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(this, 0f, 0f, paint)
+        return result
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        focusPlaceId?.let { outState.putString(ARG_FOCUS_PLACE_ID, it) }
+        focusLatLng?.let {
+            outState.putDouble(ARG_FOCUS_LAT, it.first)
+            outState.putDouble(ARG_FOCUS_LNG, it.second)
+        }
+        if (threeDPlaceIds.isNotEmpty()) {
+            outState.putStringArrayList(ARG_THREE_D_PLACE_IDS, ArrayList(threeDPlaceIds))
+        }
+    }
 
     // Lifecycle
     override fun onResume() {
@@ -360,5 +478,13 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         kakaoMap = null
         _b = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val ARG_FOCUS_PLACE_ID = "focus_place_id"
+        const val ARG_FOCUS_LAT = "focus_lat"
+        const val ARG_FOCUS_LNG = "focus_lng"
+        const val ARG_THREE_D_PLACE_IDS = "three_d_place_ids"
+        private const val THREE_D_WEB_HOST = "dobongvillage-5f531.web.app"
     }
 }
