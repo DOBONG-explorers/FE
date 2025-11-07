@@ -49,4 +49,8 @@ object RetrofitProvider {
         retrofit.create(PlaceLikeApi::class.java)
     }
 
+    val heritageApi: HeritageApi by lazy {
+        retrofit.create(HeritageApi::class.java)
+    }
+
 }

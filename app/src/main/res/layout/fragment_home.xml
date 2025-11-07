@@ -252,11 +252,15 @@
 
             <!-- 4. 도봉문화유산 소개 -->
             <LinearLayout
+                android:id="@+id/btnHeritage"
                 android:layout_width="165dp"
                 android:layout_height="165dp"
                 android:layout_margin="12dp"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:background="@drawable/bg_square_blue">
 
                 <ImageView

@@ -13,16 +13,63 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">30dp</item>
     </style>
+
     <style name="ShapeAppearanceOverlay.Rounded30" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">30dp</item>
     </style>
+
     <style name="ShapeAppearanceOverlay.Rounded20" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">20dp</item>
     </style>
+
     <style name="ShapeAppearanceOverlay.Circular" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <!-- TabLayout 스타일 (텍스트 볼드체) -->
+    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/TabTextStyle</item>
+        <item name="tabSelectedTextColor">#2687D4</item>
+        <item name="tabTextColor">@android:color/darker_gray</item>
+    </style>
+
+    <!-- 탭 텍스트 스타일 (볼드체) -->
+    <style name="TabTextStyle" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <!-- 헤더바 제목 스타일 -->
+    <style name="HeaderTitleStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- 콘텐츠 제목 스타일 (볼드체) -->
+    <style name="ContentTitleStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <!-- 주소 텍스트 스타일 -->
+    <style name="AddressTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <!-- 본문 텍스트 스타일 -->
+    <style name="BodyTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
 </resources>

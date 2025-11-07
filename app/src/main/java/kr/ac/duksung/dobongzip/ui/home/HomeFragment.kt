@@ -18,6 +18,7 @@ import kr.ac.duksung.dobongzip.databinding.ItemPosterBinding
 import kr.ac.duksung.dobongzip.ui.map.MapActivity
 import kr.ac.duksung.dobongzip.ui.map.MapFragment
 import kr.ac.duksung.dobongzip.ui.notice.NoticeListActivity
+import kr.ac.duksung.dobongzip.ui.heritage.CulturalHeritageActivity
 import kotlin.math.abs
 
 class HomeFragment : Fragment() {
@@ -106,6 +107,10 @@ class HomeFragment : Fragment() {
 
         b.btnNearbyCard.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_mapFragment)
+        }
+
+        b.btnHeritage.setOnClickListener {
+            startActivity(Intent(requireContext(), CulturalHeritageActivity::class.java))
         }
 
         setupListeners()
