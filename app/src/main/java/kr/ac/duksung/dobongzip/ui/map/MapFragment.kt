@@ -151,8 +151,6 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
         places.forEach { p ->
             val position = LatLng.from(p.latitude, p.longitude)
-
-            // 핀 스타일 설정 (예: placePinStyle 사용)
             val pinStyle = placePinStyle
 
             val opt = LabelOptions.from(position)
@@ -211,37 +209,28 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         // 내 위치 마커 스타일 설정 (myPinStyle)
         val opt = LabelOptions.from(here)
             .setStyles(myPinStyle)
-            .setTexts(LabelTextBuilder().setTexts("내 위치")) // "내 위치"라는 텍스트 설정
+            .setTexts(LabelTextBuilder().setTexts("내 위치"))
         myLabel = layer.addLabel(opt) // 레이어에 마커 추가
     }
 
     // ---------- Small pin styles ----------
     private fun makePinStyleDp(targetHeightDp: Int): LabelStyle {
         val dm = resources.displayMetrics
-        // Convert dp to pixels (height)
         val hPx = (targetHeightDp * dm.density + 0.5f).toInt()
-
-        // Get the bitmap for the pin (ensure it exists in your resources)
         val src = BitmapFactory.decodeResource(resources, R.drawable.pin)
-
-        // Calculate the width based on the original aspect ratio
         val ratio = src.width.toFloat() / src.height
         val wPx = (hPx * ratio).toInt()
 
-        // Scale the image to the desired size
         val scaled: Bitmap = Bitmap.createScaledBitmap(src, wPx, hPx, true)
 
-        // Recycle the original bitmap if it's not the same as the scaled version
         if (scaled != src) src.recycle()
 
-        // Create the LabelStyle from the scaled bitmap and set the anchor point to the center-bottom
         return LabelStyle.from(scaled).setAnchorPoint(0.5f, 1.0f)
     }
 
-    // Define different pin styles for different usages
-    private val placePinStyle by lazy { makePinStyleDp(18) }  // 18dp height for place pins
-    private val myPinStyle by lazy { makePinStyleDp(20) }     // 20dp height for "my" location pin
-    private val debugPinStyle by lazy { makePinStyleDp(16) }  // 16dp height for debug pins
+    private val placePinStyle by lazy { makePinStyleDp(18) }
+    private val myPinStyle by lazy { makePinStyleDp(20) }
+    private val debugPinStyle by lazy { makePinStyleDp(16) }
 
 
     private fun hasLocationPermission(): Boolean {
