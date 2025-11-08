@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +22,8 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.CommendPlaceActivityBinding
+import kr.ac.duksung.dobongzip.ui.map.MapFragment
+import kr.ac.duksung.dobongzip.ui.threed.ThreeDActivity
 
 class CommendPlaceFragment : Fragment() {
 
@@ -120,10 +123,52 @@ class CommendPlaceFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        binding.placeCard.setOnClickListener {
-            val placeName = binding.tvPlaceName.text
-            Toast.makeText(requireContext(), "$placeName 상세정보로 이동", Toast.LENGTH_SHORT).show()
+        binding.placeCard.setOnClickListener { openThreeDActivity() }
+        binding.initialView.setOnClickListener { openThreeDActivity() }
+        binding.btnViewOnMap.setOnClickListener { openMapFragment() }
+    }
+
+    private fun openThreeDActivity() {
+        val place = viewModel.recommendedPlace.value
+        if (place == null) {
+            Toast.makeText(requireContext(), "추천 데이터를 불러오는 중입니다.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val context = requireContext()
+        val intent = ThreeDActivity.createIntent(
+            context = context,
+            placeId = place.placeId,
+            placeName = place.name,
+            latitude = place.latitude,
+            longitude = place.longitude,
+            address = place.address,
+            description = place.description,
+            openingHours = place.openingHours?.let { ArrayList(it) },
+            priceLevel = place.priceLevel,
+            rating = place.rating,
+            reviewCount = place.reviewCount,
+            phone = place.phone
+        )
+
+        startActivity(intent)
+    }
+
+    private fun openMapFragment() {
+        val place = viewModel.recommendedPlace.value
+        if (place == null) {
+            Toast.makeText(requireContext(), "추천 데이터를 불러오는 중입니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val args = bundleOf(
+            MapFragment.ARG_FOCUS_PLACE_ID to place.placeId,
+            MapFragment.ARG_FOCUS_LAT to place.latitude,
+            MapFragment.ARG_FOCUS_LNG to place.longitude,
+            MapFragment.ARG_THREE_D_PLACE_IDS to arrayListOf(place.placeId)
+        )
+
+        findNavController().navigate(R.id.mapFragment, args)
     }
 
     private fun requestLocationAndRecommend() {

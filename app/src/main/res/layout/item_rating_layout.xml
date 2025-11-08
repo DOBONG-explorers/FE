@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="16dp">
+
+    <!-- 리뷰 헤더 (프로필, 이름, 별점, 메뉴) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- 프로필 이미지 -->
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/prf3"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="12dp" />
+
+        <!-- 사용자 정보 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- 사용자 이름 -->
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="햄찌"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <!-- 별점과 시간 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical">
+
+                <!-- 별점 -->
+                <RatingBar
+                    android:id="@+id/review_rating"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:rating="3.0"
+                    android:tint="#0B79D0"
+                    android:progressTint="#0B79D0"
+                    android:secondaryProgressTint="#0B79D0" />
+
+
+                <!-- 작성 시간 -->
+                <TextView
+                    android:id="@+id/review_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2분 전"
+                    android:textSize="12sp"
+                    android:textColor="#999999"
+                    android:layout_marginStart="8dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 메뉴 버튼 -->
+        <ImageButton
+            android:id="@+id/menu_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_more_dots"
+            android:scaleType="centerInside"
+            android:contentDescription="메뉴" />
+
+    </LinearLayout>
+
+    <!-- 리뷰 내용 -->
+    <TextView
+        android:id="@+id/review_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="리뷰 내용이 여기에 표시됩니다."
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="2dp" />
+
+    <!-- 구분선 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>

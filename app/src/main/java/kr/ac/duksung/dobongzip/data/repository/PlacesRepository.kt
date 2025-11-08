@@ -1,4 +1,3 @@
-// data/repository/PlacesRepository.kt
 package kr.ac.duksung.dobongzip.data.repository
 
 import android.util.Log
@@ -14,30 +13,29 @@ import kr.ac.duksung.dobongzip.data.network.RetrofitProvider
 class PlacesRepository {
 
     private val placesApi = RetrofitProvider.placesApi
-    private val dobongApi = RetrofitProvider.dobongApi
     private val likeApi   = RetrofitProvider.placeLikeApi
     
     private var lastErrorMessage: String? = null
 
-    /** 도봉 명소 목록 */
     suspend fun fetchPlaces(lat: Double, lng: Double, limit: Int): List<PlaceDto> =
         withContext(Dispatchers.IO) {
             val res: ApiResponse<List<PlaceDto>> = placesApi.getPlaces(lat, lng, limit)
             res.data.orEmpty()
         }
 
-    /** 명소 상세 (GET /api/v1/map/getPlaceDetail?placeId=) */
     suspend fun fetchPlaceDetail(placeId: String): PlaceDetailDto =
         withContext(Dispatchers.IO) {
-            val resp = dobongApi.getPlaceDetail(placeId).execute()
-            val body = resp.body()
-            if (!resp.isSuccessful || body?.data == null) {
-                throw IllegalStateException("상세 조회 실패 (${resp.code()}): ${body?.message}")
+            val response = placesApi.getPlaceDetail(placeId)
+            val data = response.data
+            if (response.success && data != null) {
+                data
+            } else {
+                throw IllegalStateException(
+                    response.message ?: "장소 상세 정보를 불러오지 못했습니다."
+                )
             }
-            body.data!!
         }
 
-    /** 추천 장소 가져오기 - /api/v1/mainpage/random-place 엔드포인트 사용 */
     suspend fun getRecommendedPlace(lat: Double, lng: Double): PlaceDto? =
         withContext(Dispatchers.IO) {
             try {
@@ -103,25 +101,21 @@ class PlacesRepository {
     
     fun getLastErrorMessage(): String? = lastErrorMessage
 
-    /** 좋아요 / 좋아요 취소 */
     suspend fun like(placeId: String)   = withContext(Dispatchers.IO) { likeApi.like(placeId) }
     suspend fun unlike(placeId: String) = withContext(Dispatchers.IO) { likeApi.unlike(placeId) }
 
-    /** 좋아요 토글 (현재 상태를 전달받아 반대로 처리) */
     suspend fun toggleLike(placeId: String, isCurrentlyLiked: Boolean) =
         withContext(Dispatchers.IO) {
             if (isCurrentlyLiked) likeApi.unlike(placeId) else likeApi.like(placeId)
         }
 
-    // data/repository/PlacesRepository.kt
     suspend fun likeFirstPlaceFromServer(lat: Double, lng: Double): String? = withContext(Dispatchers.IO) {
-        // 서버 정렬 기본값 기준으로 첫 1개만 가져옴
         val res: ApiResponse<List<PlaceDto>> = placesApi.getPlaces(lat = lat, lng = lng, limit = 1)
         val first = res.data?.firstOrNull() ?: return@withContext null
 
-        val placeId = first.placeId  // ← 필드명이 다르면 first.id 등으로 교체
+        val placeId = first.placeId
 
-        likeApi.like(placeId)        // 서버에 좋아요 등록
+        likeApi.like(placeId)
         return@withContext placeId
     }
 

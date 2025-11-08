@@ -72,4 +72,16 @@
         <item name="android:lineSpacingExtra">4dp</item>
     </style>
 
+
+    <!-- 파란색 레이팅바 스타일 -->
+    <style name="BlueRatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="colorControlActivated">#0B79D0</item>
+    </style>
+
+    <!-- 더 명시적인 레이팅바 스타일 -->
+    <style name="CustomBlueRatingBar">
+        <item name="colorControlActivated">#0B79D0</item>
+        <item name="colorControlNormal">#CCCCCC</item>
+    </style>
+
 </resources>

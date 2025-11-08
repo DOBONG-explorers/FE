@@ -3,10 +3,8 @@ package kr.ac.duksung.dobongzip
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import kr.ac.duksung.dobongzip.databinding.ActivityMainBinding
 
@@ -17,27 +15,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ViewBinding 초기화
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
 
-        // NavHostFragment에서 NavController 가져오기
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navView.setupWithNavController(navController)
 
-        setOf(
-                R.id.navigation_home,
-                R.id.navigation_chat,
-                R.id.navigation_notifications,
-                R.id.navigation_mypage
-            )
+        intent.getIntExtra(EXTRA_TARGET_DESTINATION, -1).takeIf { it != -1 }?.let { targetItemId ->
+            if (navView.selectedItemId != targetItemId) {
+                navView.selectedItemId = targetItemId
+            }
+        }
 
+        navView.setOnItemReselectedListener {}
+    }
 
-
-
+    companion object {
+        const val EXTRA_TARGET_DESTINATION = "extra_target_destination"
     }
 }
 
