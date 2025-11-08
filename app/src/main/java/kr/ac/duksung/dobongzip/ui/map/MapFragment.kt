@@ -45,7 +45,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     private var kakaoMap: KakaoMap? = null
 
     // Layers / Labels
-    private var placesLayer: LodLabelLayer? = null      // 🔁 LodLabelLayer 사용
+    private var placesLayer: LodLabelLayer? = null
     private var myLayer: LabelLayer? = null
     private var debugLayer: LabelLayer? = null
     private val placeLabels = mutableListOf<LodLabel>() // 🔁 LodLabel 리스트로 보관
