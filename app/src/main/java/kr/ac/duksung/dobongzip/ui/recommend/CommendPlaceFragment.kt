@@ -24,6 +24,7 @@ import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.CommendPlaceActivityBinding
 import kr.ac.duksung.dobongzip.ui.map.MapFragment
 import kr.ac.duksung.dobongzip.ui.threed.ThreeDActivity
+import com.google.gson.Gson
 
 class CommendPlaceFragment : Fragment() {
 
@@ -31,6 +32,7 @@ class CommendPlaceFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: RecommendViewModel by viewModels()
+    private val gson = Gson()
     
     private val locationClient by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
     
@@ -165,7 +167,8 @@ class CommendPlaceFragment : Fragment() {
             MapFragment.ARG_FOCUS_PLACE_ID to place.placeId,
             MapFragment.ARG_FOCUS_LAT to place.latitude,
             MapFragment.ARG_FOCUS_LNG to place.longitude,
-            MapFragment.ARG_THREE_D_PLACE_IDS to arrayListOf(place.placeId)
+            MapFragment.ARG_THREE_D_PLACE_IDS to arrayListOf(place.placeId),
+            MapFragment.ARG_RECOMMENDED_PLACE_JSON to gson.toJson(place)
         )
 
         findNavController().navigate(R.id.mapFragment, args)

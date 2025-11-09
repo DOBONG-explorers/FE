@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -55,6 +56,12 @@ class IntroCulturalHeritageActivity : AppCompatActivity() {
         }
     }
 
+    private fun cleanText(raw: String?): String {
+        val trimmed = raw?.replace("\u00A0", " ")?.trim().orEmpty()
+        if (trimmed.isBlank() || trimmed.equals("null", ignoreCase = true)) return ""
+        return HtmlCompat.fromHtml(trimmed, HtmlCompat.FROM_HTML_MODE_LEGACY).toString().trim()
+    }
+
     private fun loadHeritageDetail(id: String) {
         progressBar.visibility = View.VISIBLE
         cardContainer.visibility = View.GONE
@@ -71,27 +78,22 @@ class IntroCulturalHeritageActivity : AppCompatActivity() {
                     if (response.success && response.data != null) {
                         val detail = response.data
                         
-                        android.util.Log.d("Heritage", "VA_F11 raw: \"${detail.VA_F11}\", length: ${detail.VA_F11?.length}")
-                        android.util.Log.d("Heritage", "IMAGE_URL: ${detail.IMAGE_URL?.take(50)}...")
+                        val name = cleanText(detail.SHD_NM)
+                        val subtitle = cleanText(detail.VA_F5)
+                        val description = cleanText(detail.VA_F11)
+                        val address = cleanText(detail.CO_F2)
+                        val designationNumber = cleanText(detail.VA_F2)
+                        val designationDate = cleanText(detail.VA_F3)
+                        val phoneNumber = cleanText(detail.CO_F3)
                         
-                        val name = detail.SHD_NM?.takeIf { it.isNotBlank() } ?: ""
-                        val subtitle = detail.VA_F5?.takeIf { it.isNotBlank() } ?: ""
-                        val description = detail.VA_F11?.takeIf { it.isNotBlank() } ?: ""
-                        val address = detail.CO_F2?.takeIf { it.isNotBlank() } ?: ""
-                        val designationNumber = detail.VA_F2?.takeIf { it.isNotBlank() } ?: ""
-                        val designationDate = detail.VA_F3?.takeIf { it.isNotBlank() } ?: ""
-                        val phoneNumber = detail.CO_F3?.takeIf { it.isNotBlank() } ?: ""
-                        
-                        android.util.Log.d("Heritage", "Processed - name: $name, address: $address, description: ${description.take(50)}...")
-                        
-                        tvHeritageName.text = name
-                        tvHeritageSubtitle.text = subtitle
-                        tvDescription.text = if (description.isNotBlank()) description else "정보 없음"
-                        tvName.text = "이름: $name"
-                        tvAddress.text = "주소: $address"
-                        tvDesignationNumber.text = "지정번호: $designationNumber"
-                        tvDesignationDate.text = "지정일: $designationDate"
-                        tvPhoneNumber.text = "전화번호: $phoneNumber"
+                        tvHeritageName.text = name.ifBlank { "정보 없음" }
+                        tvHeritageSubtitle.text = subtitle.ifBlank { "" }
+                        tvDescription.text = description.ifBlank { "정보 없음" }
+                        tvName.text = name.ifBlank { "정보 없음" }
+                        tvAddress.text = address.ifBlank { "정보 없음" }
+                        tvDesignationNumber.text = designationNumber.ifBlank { "정보 없음" }
+                        tvDesignationDate.text = designationDate.ifBlank { "정보 없음" }
+                        tvPhoneNumber.text = phoneNumber.ifBlank { "정보 없음" }
 
                         if (!detail.IMAGE_URL.isNullOrBlank()) {
                             android.util.Log.d("Heritage", "Loading image: ${detail.IMAGE_URL}")
@@ -102,6 +104,7 @@ class IntroCulturalHeritageActivity : AppCompatActivity() {
                                 .into(ivHeritage)
                         } else {
                             android.util.Log.w("Heritage", "IMAGE_URL is null or blank")
+                            ivHeritage.setImageResource(R.drawable.placeholder)
                         }
                     } else {
                         android.util.Log.e("Heritage", "Response not successful or data is null")

@@ -76,6 +76,9 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation("io.coil-kt:coil:2.6.0")
 
+    // 이미지 처리
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+
     // ✅ 카카오맵 (벡터맵)
     implementation("com.kakao.maps.open:android:2.12.18")
 

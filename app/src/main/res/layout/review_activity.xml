@@ -32,267 +32,49 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:text="창동 문화체육센터"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginStart="16dp" />
+            android:text="창동 문화체육센터"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-    <!-- 스크롤 뷰 (평점 카드) -->
-    <ScrollView
-        android:id="@+id/scrollView_rating"
-        android:layout_width="match_parent"
-        android:layout_height="210dp"
-        app:layout_constraintTop_toBottomOf="@id/header_bar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recyclerView">
 
-        <!-- 평점 정보 카드 (회색 상자) -->
-        <LinearLayout
-            android:id="@+id/rating_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/prf"
-            android:padding="20dp"
-            android:layout_margin="16dp">
 
-            <!-- 왼쪽: 별점 분포 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="end">
-
-                <!-- 5점 행 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="20dp"
-                        android:layout_height="wrap_content"
-                        android:text="5"
-                        android:textSize="15sp"
-                        android:textColor="#666666" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <ProgressBar
-                        android:layout_width="0dp"
-                        android:layout_height="8dp"
-                        android:layout_weight="1"
-                        android:progress="100"
-                        android:progressDrawable="@drawable/progress_bar_bg"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
-                </LinearLayout>
-
-                <!-- 4점 행 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="20dp"
-                        android:layout_height="wrap_content"
-                        android:text="4"
-                        android:textSize="15sp"
-                        android:textColor="#666666" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <ProgressBar
-                        android:layout_width="0dp"
-                        android:layout_height="8dp"
-                        android:layout_weight="1"
-                        android:progress="60"
-                        android:progressDrawable="@drawable/progress_bar_bg"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
-                </LinearLayout>
-
-                <!-- 3점 행 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="20dp"
-                        android:layout_height="wrap_content"
-                        android:text="3"
-                        android:textSize="15sp"
-                        android:textColor="#666666" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <ProgressBar
-                        android:layout_width="0dp"
-                        android:layout_height="8dp"
-                        android:layout_weight="1"
-                        android:progress="35"
-                        android:progressDrawable="@drawable/progress_bar_bg"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
-                </LinearLayout>
-
-                <!-- 2점 행 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="20dp"
-                        android:layout_height="wrap_content"
-                        android:text="2"
-                        android:textSize="15sp"
-                        android:textColor="#666666" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <ProgressBar
-                        android:layout_width="0dp"
-                        android:layout_height="8dp"
-                        android:layout_weight="1"
-                        android:progress="15"
-                        android:progressDrawable="@drawable/progress_bar_bg"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
-                </LinearLayout>
-
-                <!-- 1점 행 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="20dp"
-                        android:layout_height="wrap_content"
-                        android:text="1"
-                        android:textSize="15sp"
-                        android:textColor="#666666" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <ProgressBar
-                        android:layout_width="0dp"
-                        android:layout_height="8dp"
-                        android:layout_weight="1"
-                        android:progress="5"
-                        android:progressDrawable="@drawable/progress_bar_bg"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 오른쪽: 평점 요약 -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginStart="24dp">
-
-                <!-- 평점 숫자 -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4.0"
-                    android:textSize="48sp"
-                    android:textStyle="bold"
-                    android:textColor="#000000" />
-
-                <!-- 레이팅 바 -->
-                <RatingBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:numStars="5"
-                    android:rating="4.0"
-                    android:isIndicator="true"
-                    android:layout_marginTop="8dp"
-                    style="@style/Widget.AppCompat.RatingBar.Small"
-                    android:tint="#0B79D0"
-                    android:progressTint="#0B79D0"
-                    android:secondaryProgressTint="#0B79D0"
-                    />
-
-                <!-- 리뷰 개수 -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="52 리뷰"
-                    android:textSize="12sp"
-                    android:textColor="#000000"
-                    android:layout_marginTop="8dp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <!-- 리사이클러 뷰 (리뷰 목록) -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="16dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/header_bar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrollView_rating" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+    </FrameLayout>
+
+
+
+    <!-- 리뷰 작성 버튼 -->
+    <Button
+        android:id="@+id/write_review_button"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="리뷰 작성하기"
+        android:textSize="17sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:background="@drawable/review_button_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

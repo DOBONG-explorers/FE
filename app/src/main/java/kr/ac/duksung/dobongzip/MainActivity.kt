@@ -11,6 +11,7 @@ import kr.ac.duksung.dobongzip.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var originalNavElevation: Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,42 @@ class MainActivity : AppCompatActivity() {
         }
 
         navView.setOnItemReselectedListener {}
+        
+        originalNavElevation = navView.elevation
     }
+
+    fun enableMapFragmentLayout() {
+        val containerView = binding.navHostFragment
+        val navView = binding.navView
+
+        val params = containerView.layoutParams as? androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+        params?.let {
+            it.bottomToBottom = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+            it.bottomToTop = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
+            containerView.layoutParams = it
+            containerView.requestLayout()
+        }
+
+        navView.elevation = 16f
+        navView.bringToFront()
+    }
+
+    fun restoreNormalLayout() {
+        val containerView = binding.navHostFragment
+        val navView = binding.navView
+        
+        val params = containerView.layoutParams as? androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+        params?.let {
+            it.bottomToBottom = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
+            it.bottomToTop = R.id.nav_view
+            containerView.layoutParams = it
+            containerView.requestLayout()
+        }
+        
+        navView.elevation = originalNavElevation
+    }
+
+    fun getBottomNavHeight(): Int = binding.navView.height
 
     companion object {
         const val EXTRA_TARGET_DESTINATION = "extra_target_destination"

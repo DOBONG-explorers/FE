@@ -87,16 +87,18 @@
 
     </LinearLayout>
 
+
     <!-- 리뷰 내용 -->
     <TextView
         android:id="@+id/review_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="리뷰 내용이 여기에 표시됩니다."
+        android:text="메롱\n리뷰 내용이 여기\n에 표시됩니다."
         android:textSize="13sp"
         android:textColor="#333333"
-        android:layout_marginTop="12dp"
+        android:padding="10dp"
         android:lineSpacingExtra="2dp" />
+
 
     <!-- 구분선 -->
     <View
