@@ -53,6 +53,7 @@ import kr.ac.duksung.dobongzip.ui.threed.ThreeDActivity
 import kotlin.math.pow
 import kotlin.math.sin
 import android.content.res.ColorStateList
+import de.hdodenhof.circleimageview.CircleImageView // CircleImageView import 추가
 
 class MapFragment : Fragment(R.layout.fragment_map) {
 
@@ -452,7 +453,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     private fun haversineKm(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val R = 6371.0
         val dLat = Math.toRadians(lat2 - lat1)
-        val dLon = Math.toRadians(lat2 - lon1)
+        val dLon = Math.toRadians(lon2 - lon1)
         val a = sin(dLat / 2).pow(2.0) +
                 Math.cos(Math.toRadians(lat1)) *
                 Math.cos(Math.toRadians(lat2)) *
@@ -645,7 +646,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         (activity as? MainActivity)?.restoreNormalLayout()
         super.onPause()
     }
-    
+
     override fun onDestroyView() {
         (activity as? MainActivity)?.restoreNormalLayout()
         if (this::mapView.isInitialized) b.mapContainer.removeView(mapView)
