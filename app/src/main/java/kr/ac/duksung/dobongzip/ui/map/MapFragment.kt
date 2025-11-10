@@ -2,6 +2,7 @@ package kr.ac.duksung.dobongzip.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -31,7 +32,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -39,36 +39,48 @@ import com.google.android.material.card.MaterialCardView
 import com.kakao.vectormap.*
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.*
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kr.ac.duksung.dobongzip.MainActivity
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.data.models.PlaceDto
 import kr.ac.duksung.dobongzip.data.repository.PlacesRepository
 import kr.ac.duksung.dobongzip.databinding.FragmentMapBinding
-import kr.ac.duksung.dobongzip.databinding.ViewMarkerBinding
 import kr.ac.duksung.dobongzip.ui.threed.ThreeDActivity
 import kotlin.math.pow
 import kotlin.math.sin
 import android.content.res.ColorStateList
+import android.os.Handler
+import android.os.Looper
+import com.google.android.gms.common.api.ResolvableApiException
 import de.hdodenhof.circleimageview.CircleImageView // CircleImageView import 추가
+import kr.ac.duksung.dobongzip.LoginActivity
+import kr.ac.duksung.dobongzip.MainActivity
+import kr.ac.duksung.dobongzip.data.auth.AuthSession
+import retrofit2.Retrofit
+import retrofit2.Call
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.converter.gson.GsonConverterFactory
+import kr.ac.duksung.dobongzip.data.network.PlaceLikeApi
+import kr.ac.duksung.dobongzip.data.network.RetrofitProvider
+import kr.ac.duksung.dobongzip.databinding.ViewMarkerBinding
 
 class MapFragment : Fragment(R.layout.fragment_map) {
 
     private var _b: FragmentMapBinding? = null
     private val b get() = _b!!
 
+    private var toast: Toast? = null
+
     // Kakao Map
     private lateinit var mapView: MapView
     private var kakaoMap: KakaoMap? = null
 
-    // Layers / Labels
     private var placesLayer: LodLabelLayer? = null
     private var myLayer: LabelLayer? = null
     private var debugLayer: LabelLayer? = null
-    private val placeLabels = mutableListOf<LodLabel>() // 🔁 LodLabel 리스트로 보관
+    private val placeLabels = mutableListOf<LodLabel>()
     private var myLabel: Label? = null
 
     private var focusPlaceId: String? = null
@@ -79,21 +91,20 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
     private lateinit var sheetBehavior: BottomSheetBehavior<MaterialCardView>
 
-    // Constants
-    private val PLACES_LAYER_ID = "places_layer"
-    private val MY_LAYER_ID = "me_layer"
-    private val DEBUG_LAYER_ID = "debug_layer"
     private val dobongCenter = LatLng.from(37.668, 127.047)
 
-    // Location
     private val locationClient by lazy { LocationServices.getFusedLocationProviderClient(requireContext()) }
     private val settingsClient by lazy { LocationServices.getSettingsClient(requireContext()) }
     private val REQUEST_RESOLVE_GPS = 1001
+    private val MY_LAYER_ID = "my_layer"
+    private val DEBUG_LAYER_ID = "debug_layer"
+    private val repository = PlacesRepository()
 
     private val locationPerms = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+
     private val requestLocationPerms = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
@@ -108,53 +119,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gson = Gson()
-        if (savedInstanceState == null) {
-            arguments?.let {
-                focusPlaceId = it.getString(ARG_FOCUS_PLACE_ID)
-
-                if (it.containsKey(ARG_FOCUS_LAT) && it.containsKey(ARG_FOCUS_LNG)) {
-                    val lat = it.getDouble(ARG_FOCUS_LAT)
-                    val lng = it.getDouble(ARG_FOCUS_LNG)
-                    if (!lat.isNaN() && !lng.isNaN()) {
-                        focusLatLng = lat to lng
-                    }
-                }
-
-                val fromArgs = it.getStringArrayList(ARG_THREE_D_PLACE_IDS)
-                if (!fromArgs.isNullOrEmpty()) {
-                    threeDPlaceIds.addAll(fromArgs.filter { id -> id.isNotBlank() })
-                }
-
-                it.getString(ARG_RECOMMENDED_PLACE_JSON)?.let { json ->
-                    runCatching {
-                        gson.fromJson(json, PlaceDto::class.java)
-                    }.getOrNull()?.let { place ->
-                        recommendedPlace = place
-                        if (focusPlaceId.isNullOrBlank()) focusPlaceId = place.placeId
-                        if (focusLatLng == null && !place.latitude.isNaN() && !place.longitude.isNaN()) {
-                            focusLatLng = place.latitude to place.longitude
-                        }
-                        place.mapsUrl?.let { url ->
-                            if (url.contains(THREE_D_WEB_HOST, true)) {
-                                threeDPlaceIds.add(place.placeId)
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            focusPlaceId = savedInstanceState.getString(ARG_FOCUS_PLACE_ID)
-            val lat = savedInstanceState.getDouble(ARG_FOCUS_LAT, Double.NaN)
-            val lng = savedInstanceState.getDouble(ARG_FOCUS_LNG, Double.NaN)
-            if (!lat.isNaN() && !lng.isNaN()) {
-                focusLatLng = lat to lng
-            }
-            val savedList = savedInstanceState.getStringArrayList(ARG_THREE_D_PLACE_IDS)
-            if (!savedList.isNullOrEmpty()) {
-                threeDPlaceIds.addAll(savedList.filter { it.isNotBlank() })
-            }
-        }
+        // 저장된 상태 복원 로직
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -176,31 +141,15 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             adjustPlaceSheetBottomMargin()
             insets
         }
-        b.placeSheet.post { adjustPlaceSheetBottomMargin() }
-
-        b.searchView.apply {
-            layoutDirection = View.LAYOUT_DIRECTION_RTL
-            findViewById<View>(androidx.appcompat.R.id.search_plate)?.setBackgroundResource(android.R.color.transparent)
-            findViewById<View>(androidx.appcompat.R.id.submit_area)?.setBackgroundResource(android.R.color.transparent)
-            findViewById<EditText>(androidx.appcompat.R.id.search_src_text)?.let { editText ->
-                editText.textDirection = View.TEXT_DIRECTION_LTR
-                editText.gravity = Gravity.START or Gravity.CENTER_VERTICAL
-                editText.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
-                editText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.search_hint_text))
-                editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            }
-            listOf(
-                androidx.appcompat.R.id.search_mag_icon,
-                androidx.appcompat.R.id.search_close_btn
-            ).forEach { id ->
-                val icon = findViewById<ImageView>(id)
-                icon?.imageTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(requireContext(), R.color.button_blue)
-                )
-            }
-        }
 
         return b.root
+    }
+
+    // 성공 또는 실패 메시지를 UI 스레드에서 실행하도록 변경
+    private fun showToast(message: String) {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Map init
@@ -221,10 +170,12 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 override fun onMapReady(map: KakaoMap) {
                     kakaoMap = map
 
-                    // ✅ LodLabel 클릭 리스너 (SDK가 제공)
+                    // LodLabel 클릭 리스너 설정 (길게 누르지 않고 클릭하면 좋아요 처리)
                     map.setOnLodLabelClickListener { _, _, lodLabel ->
                         (lodLabel.tag as? PlaceDto)?.let { place ->
                             showPlaceSheet(place)
+                            // 하트 아이콘 클릭 시 좋아요 추가 또는 제거 처리
+                            toggleLike(place)
                             true
                         } ?: false
                     }
@@ -235,17 +186,17 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                         Toast.makeText(context, "레이어 매니저 초기화 실패", Toast.LENGTH_LONG).show()
                         return
                     }
+
                     // LodLabel 전용 레이어
                     placesLayer = lm.lodLayer?.apply { isClickable = true }
-                    // 일반 Label 레이어 (내 위치/디버그)
-                    myLayer     = lm.getLayer(MY_LAYER_ID)     ?: lm.addLayer(LabelLayerOptions.from(MY_LAYER_ID))
-                    debugLayer  = lm.getLayer(DEBUG_LAYER_ID)  ?: lm.addLayer(LabelLayerOptions.from(DEBUG_LAYER_ID))
+                    myLayer = lm.getLayer(MY_LAYER_ID) ?: lm.addLayer(LabelLayerOptions.from(MY_LAYER_ID))
+                    debugLayer = lm.getLayer(DEBUG_LAYER_ID) ?: lm.addLayer(LabelLayerOptions.from(DEBUG_LAYER_ID))
 
-                    // 카메라
+                    // 카메라 설정
                     map.moveCamera(CameraUpdateFactory.newCenterPosition(dobongCenter))
                     map.moveCamera(CameraUpdateFactory.zoomTo(15))
 
-                    // 위치 & 장소 로드
+                    // 위치 정보 및 장소 로드
                     ensureLocationAndMove()
                     val initialCenter = focusLatLng?.let { LatLng.from(it.first, it.second) } ?: dobongCenter
                     loadPlacesAndRender(initialCenter, limit = 30)
@@ -255,6 +206,70 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 override fun getZoomLevel(): Int = 15
             }
         )
+    }
+
+    private fun toggleLike(place: PlaceDto) {
+        val heartIcon = b.imgHeart
+        if (place.isLiked) {
+            // 하트 아이콘 상태를 빈 하트로 변경하고 좋아요 목록에서 제거
+            heartIcon.setImageResource(R.drawable.love)
+            place.isLiked = false
+            removeFromLikedPlaces(place)
+        } else {
+            // 하트 아이콘 상태를 꽉 찬 하트로 변경하고 좋아요 목록에 추가
+            heartIcon.setImageResource(R.drawable.love_fill)
+            place.isLiked = true
+            addToLikedPlaces(place)
+        }
+    }
+
+    private fun addToLikedPlaces(place: PlaceDto) {
+        // 서버에 좋아요 추가 요청
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitProvider.placeLikeApi.like(place.placeId)
+                if (response.success) {
+                    showToast("${place.name} 장소가 좋아요 목록에 추가되었습니다!")
+                } else {
+                    showToast("좋아요 추가 실패: ${response.message}")
+                }
+            } catch (e: Exception) {
+                showToast("좋아요 추가 실패: ${e.message}")
+            }
+        }
+    }
+
+
+    private fun removeFromLikedPlaces(place: PlaceDto) {
+        // 서버에 좋아요 취소 요청
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitProvider.placeLikeApi.unlike(place.placeId)
+                if (response.success) {
+                    showToast("${place.name} 장소가 좋아요 목록에서 제거되었습니다!")
+                } else {
+                    showToast("좋아요 취소 실패: ${response.message}")
+                }
+            } catch (e: Exception) {
+                showToast("좋아요 취소 실패: ${e.message}")
+            }
+        }
+    }
+    private fun loadLikedPlaces() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitProvider.placeLikeApi.getMyLikes(size = 30, order = "latest")
+                if (response.success) {
+                    val likedPlaces = response.data as List<PlaceDto>  // 응답 데이터 처리
+                    // 좋아요 목록을 RecyclerView 등에 표시
+                    showToast("${likedPlaces.size}개의 장소를 좋아요 목록에 추가했습니다.")
+                } else {
+                    showToast("좋아요 목록을 가져오는 데 실패했습니다: ${response.message}")
+                }
+            } catch (e: Exception) {
+                showToast("좋아요 목록을 가져오는 데 실패했습니다: ${e.message}")
+            }
+        }
     }
 
     // Places load & render
@@ -287,7 +302,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         }
     }
 
-    // 🔁 LodLabel 로 마커 렌더링
+    // LodLabel로 마커 렌더링
     private suspend fun renderPlaceMarkers(map: KakaoMap, places: List<PlaceDto>) {
         val layer = placesLayer ?: return
         layer.isClickable = true
@@ -336,6 +351,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         if (matches) threeDPlaceIds.add(place.placeId)
         return matches
     }
+
 
     private fun adjustPlaceSheetBottomMargin() {
         val navHeightRaw = (activity as? MainActivity)?.getBottomNavHeight() ?: 0

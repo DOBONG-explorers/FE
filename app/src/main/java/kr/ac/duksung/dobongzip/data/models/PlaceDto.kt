@@ -15,7 +15,8 @@ data class PlaceDto(
     val mapsUrl: String?,
     val phone: String?,
     val rating: Double?,
-    val reviewCount: Int?
+    val reviewCount: Int?,
+    var isLiked: Boolean = false
 )
 
 data class RandomPlaceDto (

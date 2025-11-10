@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kr.ac.duksung.dobongzip.data.PlaceDetailDto
 import kr.ac.duksung.dobongzip.data.models.ApiResponse
+import kr.ac.duksung.dobongzip.data.network.LikeResponse
 import kr.ac.duksung.dobongzip.data.repository.PlacesRepository
+
 
 class ThreeDViewModel : ViewModel() {
 
@@ -38,7 +40,8 @@ class ThreeDViewModel : ViewModel() {
         val isCurrentlyLiked = _liked.value == true
         viewModelScope.launch {
             try {
-                val response: ApiResponse<Map<String, Any>> = if (isCurrentlyLiked) {
+                // ApiResponse<LikeResponse> 반환
+                val response: ApiResponse<LikeResponse> = if (isCurrentlyLiked) {
                     repository.unlike(placeId)
                 } else {
                     repository.like(placeId)
@@ -59,7 +62,5 @@ class ThreeDViewModel : ViewModel() {
         _error.value = null
     }
 }
-
-
 
 

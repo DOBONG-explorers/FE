@@ -54,7 +54,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
-    implementation ("de.hdodenhof:circularimageview:3.1.0")
+
     // ✅ Activity / Fragment
     implementation("androidx.activity:activity-ktx:1.9.3")
     implementation("androidx.fragment:fragment-ktx:1.8.4")
@@ -63,10 +63,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // ✅ 네트워킹 (Retrofit + OkHttp + Gson)
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")  // Retrofit 버전
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")  // Gson converter 버전
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")  // OkHttp 버전
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")  // OkHttp 로그 인터셉터
 
     // ✅ 코루틴 (백그라운드 API 호출)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
