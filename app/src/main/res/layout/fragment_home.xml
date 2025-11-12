@@ -218,12 +218,16 @@
             </LinearLayout>
 
             <!-- 3. 실시간 인기 장소 살펴보기 -->
-            <LinearLayout
+        <LinearLayout
+                android:id="@+id/btnTopPlaces"
                 android:layout_width="165dp"
                 android:layout_height="165dp"
                 android:layout_margin="12dp"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:background="@drawable/bg_square_green">
 
                 <ImageView

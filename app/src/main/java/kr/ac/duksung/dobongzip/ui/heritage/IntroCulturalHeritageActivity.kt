@@ -80,7 +80,7 @@ class IntroCulturalHeritageActivity : AppCompatActivity() {
                         
                         val name = cleanText(detail.SHD_NM)
                         val subtitle = cleanText(detail.VA_F5)
-                        val description = cleanText(detail.VA_F11)
+                        val description = cleanText(detail.description ?: detail.VA_F11)
                         val address = cleanText(detail.CO_F2)
                         val designationNumber = cleanText(detail.VA_F2)
                         val designationDate = cleanText(detail.VA_F3)

@@ -23,6 +23,7 @@ data class HeritageDetail(
     val NUMBER: Int? = null,
     val SHD_NM: String? = null,
     val IMAGE_URL: String? = null,
+    val description: String? = null,
     val LATITUDE: String? = null,
     val LONGITUDE: String? = null,
     val CO_F1: String? = null,

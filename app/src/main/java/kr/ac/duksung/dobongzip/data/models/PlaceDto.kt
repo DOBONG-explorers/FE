@@ -32,3 +32,17 @@ data class RandomPlaceDto (
     val rating: Double?,
     val reviewCount: Int?
 )
+
+data class TopPlaceDto(
+    val placeId: String,
+    val name: String,
+    val address: String?,
+    val latitude: Double?,
+    val longitude: Double?,
+    val distanceMeters: Int?,
+    val distanceText: String?,
+    val imageUrl: String?,
+    val phone: String?,
+    val rating: Double?,
+    val reviewCount: Int?
+)

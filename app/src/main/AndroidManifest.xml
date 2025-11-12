@@ -45,6 +45,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".ui.heritage.CulturalHeritageActivity" android:exported="false" />
         <activity android:name=".ui.heritage.IntroCulturalHeritageActivity" android:exported="false" />
+        <activity android:name=".ui.home.TopPlacesActivity" android:exported="false" />
         <activity android:name=".ui.threed.ThreeDActivity" android:exported="false" />
 
 

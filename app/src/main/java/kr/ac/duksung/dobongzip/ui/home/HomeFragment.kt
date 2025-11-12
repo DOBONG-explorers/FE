@@ -15,9 +15,9 @@ import androidx.viewpager2.widget.ViewPager2
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentHomeBinding
 import kr.ac.duksung.dobongzip.databinding.ItemPosterBinding
-import kr.ac.duksung.dobongzip.ui.map.MapActivity
 import kr.ac.duksung.dobongzip.ui.map.MapFragment
 import kr.ac.duksung.dobongzip.ui.notice.NoticeListActivity
+import kr.ac.duksung.dobongzip.ui.home.TopPlacesActivity
 import kr.ac.duksung.dobongzip.ui.heritage.CulturalHeritageActivity
 import kotlin.math.abs
 
@@ -42,6 +42,9 @@ class HomeFragment : Fragment() {
     private fun setupListeners() {
         b.btnRandomRecommend.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_recommend)
+        }
+        b.btnTopPlaces.setOnClickListener {
+            startActivity(Intent(requireContext(), TopPlacesActivity::class.java))
         }
     }
 
