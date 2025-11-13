@@ -1,14 +1,15 @@
 package kr.ac.duksung.dobongzip.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import kr.ac.duksung.dobongzip.data.PlaceDetailDto
 import kr.ac.duksung.dobongzip.data.models.ApiResponse
 import kr.ac.duksung.dobongzip.data.models.PlaceDto
 import kr.ac.duksung.dobongzip.data.models.RandomPlaceDto
+import kr.ac.duksung.dobongzip.data.models.TopPlaceDto
 import kr.ac.duksung.dobongzip.data.network.RetrofitProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 class PlacesRepository {
 
@@ -21,6 +22,16 @@ class PlacesRepository {
         withContext(Dispatchers.IO) {
             val res: ApiResponse<List<PlaceDto>> = placesApi.getPlaces(lat, lng, limit)
             res.data.orEmpty()
+        }
+
+    suspend fun fetchTopPlaces(lat: Double, lng: Double, limit: Int = 3): List<TopPlaceDto> =
+        withContext(Dispatchers.IO) {
+            val response = placesApi.getTopPlaces(lat, lng, limit)
+            if (response.success) {
+                response.data.orEmpty()
+            } else {
+                throw IllegalStateException(response.message ?: "인기 장소를 불러오지 못했습니다.")
+            }
         }
 
     suspend fun fetchPlaceDetail(placeId: String): PlaceDetailDto =

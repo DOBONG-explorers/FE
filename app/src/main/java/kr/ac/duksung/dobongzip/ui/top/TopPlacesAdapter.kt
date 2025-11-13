@@ -1,4 +1,4 @@
-package kr.ac.duksung.dobongzip.ui.home
+package kr.ac.duksung.dobongzip.ui.top
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -58,7 +58,7 @@ class TopPlacesAdapter(
                 ?: binding.root.context.getString(R.string.top_place_distance_unknown)
 
             binding.placePhone.text = item.phone?.takeIf { it.isNotBlank() }
-                ?.let { "📞 $it" }
+                ?.let { "번호:  $it" }
                 ?: binding.root.context.getString(R.string.top_place_phone_unknown)
 
             Glide.with(binding.placeImage)

@@ -18,4 +18,5 @@
     <string name="top_place_distance_unknown">내 위치 정보 없음</string>
     <string name="top_place_phone_unknown">전화번호 정보 없음</string>
     <string name="top_place_empty">표시할 인기 장소가 없습니다.</string>
+    <string name="top_place_sort_toggle">정렬 순서를 변경</string>
 </resources>
