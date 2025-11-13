@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.kakao.vectormap.KakaoMapSdk
+import com.kakao.sdk.common.KakaoSdk
 import kr.ac.duksung.dobongzip.data.api.ApiClient
 import kr.ac.duksung.dobongzip.data.local.TokenStore
 
@@ -15,16 +16,20 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // ✅ Kakao 지도 SDK 초기화
+        // ✅ Kakao SDK 초기화
         val appKey = getString(R.string.kakao_native_app_key).trim()
-        KakaoMapSdk.init(this, appKey)
-        Log.i("Dobongzip", "✅ KakaoMapSdk.init() 실행됨 - key: $appKey")
 
+        // Kakao SDK 초기화 (두 번 초기화 방지)
         try {
-            KakaoMapSdk.init(applicationContext, appKey)
-            Log.i("Dobongzip", "✅ KakaoMapSdk 임시 우회 초기화도 성공")
+            // KakaoMapSdk 초기화
+            KakaoMapSdk.init(this, appKey)
+            Log.i("Dobongzip", "✅ KakaoMapSdk.init() 실행됨 - key: $appKey")
+
+            // Kakao SDK 초기화
+            KakaoSdk.init(this, appKey)
+            Log.i("Dobongzip", "✅ KakaoSdk.init() 실행됨 - key: $appKey")
         } catch (e: Exception) {
-            Log.e("Dobongzip", "❌ KakaoMapSdk 임시 초기화 실패", e)
+            Log.e("Dobongzip", "❌ Kakao SDK 초기화 실패", e)
         }
 
         // ✅ TokenStore + Retrofit 초기화
