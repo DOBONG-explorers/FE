@@ -40,4 +40,8 @@ object RetrofitProvider {
         retrofit.create(HeritageApi::class.java)
     }
 
+    val noticeApi: NoticeApi by lazy {
+        retrofit.create(NoticeApi::class.java)
+    }
+
 }

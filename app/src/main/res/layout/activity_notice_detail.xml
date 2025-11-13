@@ -90,6 +90,17 @@
                         android:layout_marginTop="8dp"
                         android:background="#D0E6FA" />
 
+                    <ImageView
+                        android:id="@+id/noticeImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="12dp"
+                        android:visibility="gone"/>
+
                     <!-- 본문 -->
                     <TextView
                         android:id="@+id/tvContent"
@@ -98,7 +109,8 @@
                         android:layout_marginTop="16dp"
                         android:lineSpacingExtra="4dp"
                         android:text="본문이 들어갑니다."
-                        android:textAlignment="center"
+                        android:gravity="start"
+                        android:textAlignment="viewStart"
                         android:textColor="#222222"
                         android:textSize="15sp" />
 

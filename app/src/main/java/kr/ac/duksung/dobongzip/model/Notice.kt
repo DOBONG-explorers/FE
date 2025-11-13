@@ -7,5 +7,7 @@ data class Notice(
     val title: String,
     val date: String,
     val category: NoticeCategory,
-    val content: String
+    val content: String,
+    val remoteId: String? = null,
+    val imageUrl: String? = null
 ) : Serializable

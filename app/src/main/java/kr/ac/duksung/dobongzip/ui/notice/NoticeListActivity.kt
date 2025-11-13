@@ -6,18 +6,31 @@ import android.graphics.Color
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kr.ac.duksung.dobongzip.R
+import kr.ac.duksung.dobongzip.data.repository.NoticeRepository
 import kr.ac.duksung.dobongzip.model.Notice
 import kr.ac.duksung.dobongzip.model.NoticeCategory
+import kotlinx.coroutines.launch
 
 class NoticeListActivity : AppCompatActivity() {
 
     private lateinit var adapter: NoticeAdapter
     private lateinit var btnAll: MaterialButton
     private lateinit var btnEvent: MaterialButton
+    private val noticeRepository = NoticeRepository()
+
+    // 더미 데이터
+    private val staticNotices = listOf(
+        Notice(1, "서비스 개편 안내", "2025-09-01", NoticeCategory.NOTICE, "서비스가 개편됩니다."),
+        Notice(2, "가을 축제 일정", "2025-09-02", NoticeCategory.EVENT, "가을 축제가 열립니다."),
+        Notice(3, "추석 연휴 공지 안내", "2025-10-03", NoticeCategory.NOTICE, "즐거운 추석되세요.")
+    )
+    private var remoteEventNotices: List<Notice> = emptyList()
+    private var currentCategory: NoticeCategory = NoticeCategory.ALL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,17 +42,7 @@ class NoticeListActivity : AppCompatActivity() {
         // RecyclerView
         val rvNotice = findViewById<RecyclerView>(R.id.rvNotice)
 
-        // 더미 데이터 (전체 목록)
-        val allItems = listOf(
-            Notice(1, "서비스 개편 안내", "2025-09-01", NoticeCategory.NOTICE, "서비스가 개편됩니다."),
-            Notice(2, "가을 축제 일정", "2025-09-02", NoticeCategory.EVENT, "가을 축제가 열립니다."),
-            Notice(3, "추석 연휴 공지 안내", "2025-10-03", NoticeCategory.NOTICE, "즐거운 추석되세요.")
-        )
-        // 행사만 필터된 목록
-        val eventItems = allItems.filter { it.category == NoticeCategory.EVENT }
-
-        // 어댑터 연결 (초기: 전체)
-        adapter = NoticeAdapter(allItems) { notice ->
+        adapter = NoticeAdapter(emptyList()) { notice ->
             val intent = Intent(this, NoticeDetailActivity::class.java)
             intent.putExtra("notice", notice) // Notice는 Serializable/Parcelable 구현 필요
             startActivity(intent)
@@ -53,17 +56,21 @@ class NoticeListActivity : AppCompatActivity() {
 
         // 디폴트 선택: 전체
         selectAll(btnAll, btnEvent)
-        adapter.submitList(allItems)
+        submitCurrentList()
 
         // 클릭 리스너
         btnAll.setOnClickListener {
             selectAll(btnAll, btnEvent)
-            adapter.submitList(allItems)
+            currentCategory = NoticeCategory.ALL
+            submitCurrentList()
         }
         btnEvent.setOnClickListener {
             selectEvent(btnAll, btnEvent)
-            adapter.submitList(eventItems)
+            currentCategory = NoticeCategory.EVENT
+            submitCurrentList()
         }
+
+        loadDobongEvents()
     }
 
     // -------------------------------
@@ -94,5 +101,25 @@ class NoticeListActivity : AppCompatActivity() {
 
         btnEvent.setBg(selectedBg); btnEvent.setTxt(selectedTxt)
         btnAll.setBg(unselectedBg); btnAll.setTxt(unselectedTxt)
+    }
+
+    private fun submitCurrentList() {
+        val combined = staticNotices + remoteEventNotices
+        val list = when (currentCategory) {
+            NoticeCategory.EVENT -> combined.filter { it.category == NoticeCategory.EVENT }
+            else -> combined
+        }
+        adapter.submitList(list.sortedByDescending { it.date })
+    }
+
+    private fun loadDobongEvents() {
+        lifecycleScope.launch {
+            runCatching {
+                noticeRepository.fetchDobongEvents()
+            }.onSuccess { events ->
+                remoteEventNotices = events
+                submitCurrentList()
+            }
+        }
     }
 }
