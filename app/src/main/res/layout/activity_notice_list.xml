@@ -90,7 +90,7 @@
         app:cardCornerRadius="18dp"
         app:cardBackgroundColor="#E8F4FF"
 
-        android:padding="12dp">
+        android:padding="16dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvNotice"
