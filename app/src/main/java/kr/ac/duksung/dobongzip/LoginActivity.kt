@@ -50,36 +50,41 @@ class LoginActivity : AppCompatActivity() {
     //  Google Sign-In
     private lateinit var googleSignInClient: GoogleSignInClient
 
-    //  Google 로그인 결과 핸들러
     private val googleLoginLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            // 로그인 결과가 OK인지 확인
             if (result.resultCode != Activity.RESULT_OK) {
-                showError("구글 로그인이 취소되었습니다.")
                 Log.e(TAG, "Google Sign-In was canceled.")
+                showError("구글 로그인이 취소되었습니다.")
                 return@registerForActivityResult
             }
 
-
+            // 로그인 작업이 성공했을 때
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
                 val account = task.getResult(ApiException::class.java)
-                val idToken = account.idToken
+
+                // ID Token을 가져왔는지 확인
+                val idToken = account?.idToken
                 Log.d(TAG, "Google Sign-In successful. ID Token: $idToken")
 
+                // ID Token이 없으면 오류 처리
                 if (idToken.isNullOrBlank()) {
                     Log.e(TAG, "Google ID Token is null or empty.")
                     showError("구글 id_token을 가져오지 못했습니다.")
                     return@registerForActivityResult
                 }
 
-                // 구글 id_token → 서버로 전송
+                // ID Token을 서버로 전송
                 loginWithGoogleOnServer(idToken)
 
             } catch (e: ApiException) {
-                Log.e(TAG, "Google sign in failed: ${e.statusCode}", e)
+                // ApiException 발생 시 오류 로그
+                Log.e(TAG, "Google sign-in failed: ${e.statusCode}", e)
                 showError("구글 로그인 실패: ${e.message}")
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -92,6 +97,7 @@ class LoginActivity : AppCompatActivity() {
         tvGuest = findViewById(R.id.guest_login)
         tvFindPw = findViewById(R.id.find_id_pw)
         tvSignup = findViewById(R.id.signup_text)
+        Log.d("LoginActivity", "tvGuest: $tvGuest")
 
         //  아이콘 연결
         iconKakao = findViewById(R.id.icon1)
@@ -103,6 +109,8 @@ class LoginActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+
 
 
         // ───────────── 이메일 / 비밀번호 로그인 ─────────────
@@ -173,10 +181,16 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
-
+        val tvGuest = findViewById<TextView>(R.id.guest_login)
         tvGuest.setOnClickListener {
-            // TODO 비회원 로직
+            Log.d("LoginActivity", "비회원 로그인 클릭됨") // 로그 추가
+            Log.d("LoginActivity", "tvGuest isClickable: ${tvGuest.isClickable}, tvGuest isFocusable: ${tvGuest.isFocusable}")
+
+            TokenHolder.isLoggedIn = false  // 비회원 상태로 설정
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            finish()  // LoginActivity 종료
         }
+
         tvFindPw.setOnClickListener {
             startActivity(
                 Intent(
@@ -283,52 +297,51 @@ class LoginActivity : AppCompatActivity() {
 
     // ───────────────── 구글 로그인 로직 ─────────────────
     private fun loginWithGoogleOnServer(idToken: String) {
+        Log.d(TAG, "Sending Google ID Token to the server: $idToken")  // 로그 추가
+
         lifecycleScope.launch {
             try {
-                // 구글 로그인 OIDC 요청
+                // 서버에 idToken을 보내 로그인 요청
                 val res = authService.googleOidc(IdTokenRequest(idToken = idToken))
-                Log.d(TAG, "googleOidc resp: success=${res.success}, msg=${res.message}")
+                Log.d(TAG, "googleOidc response: success=${res.success}, msg=${res.message}")
 
-                // 로그인 실패 처리
+                // 성공적으로 로그인 되면 JWT 처리
                 if (!res.success) {
                     showError(res.message.ifBlank { "구글 로그인에 실패했습니다." })
                     return@launch
                 }
 
-                // JWT 토큰이 없으면 처리
                 val jwt = res.data?.jwt().orEmpty()
                 if (jwt.isBlank()) {
                     showError("서버에서 JWT를 받지 못했습니다.")
                     return@launch
                 }
 
-                // 토큰 저장
+                // 토큰 저장 후 화면 전환
                 TokenHolder.accessToken = null
                 tokenStore.saveAccessToken(jwt)
                 TokenHolder.accessToken = jwt
                 AuthSession.setToken(jwt)
 
-                // 프로필 완료 여부 체크
                 val profileCompleted = res.data?.profileCompleted == true
                 if (profileCompleted) {
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                    finish()
                 } else {
                     startActivity(Intent(this@LoginActivity, SignupStep2Activity::class.java))
+                    finish()
                 }
-                finish()
 
             } catch (e: HttpException) {
-                // HTTP 요청 실패 처리
-                val body = e.response()?.errorBody()?.string() ?: "서버 오류"
-                Log.e(TAG, "googleOidc HttpException: code=${e.code()} body=$body", e)
-                showError("구글 로그인 서버 오류(${e.code()}): $body")
+                Log.e(TAG, "googleOidc HttpException: ${e.message}", e)
+                showError("구글 로그인 서버 오류: ${e.message}")
             } catch (e: Exception) {
-                // 네트워크 또는 다른 예외 처리
-                Log.e(TAG, "googleOidc Exception: ${e.message}", e)
+                Log.e(TAG, "Exception: ${e.message}", e)
                 showError("네트워크 오류: ${e.message}")
             }
         }
     }
+
 
     // ✅ 에러 표시
     private fun showError(msg: String) {

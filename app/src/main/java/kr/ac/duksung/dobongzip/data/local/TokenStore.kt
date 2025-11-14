@@ -1,4 +1,3 @@
-// kr/ac/duksung/dobongzip/data/local/TokenStore.kt
 package kr.ac.duksung.dobongzip.data.local
 
 import android.content.Context
@@ -18,9 +17,13 @@ class TokenStore(private val context: Context) {
         private val KEY_EMAIL  = stringPreferencesKey("signup_email")
     }
 
-    /** 앱 시작 시 DataStore → 메모리 캐시에 적재할 때 호출(옵션) */
+    /** 앱 시작 시 DataStore → 메모리 캐시에 적재할 때 호출 */
     suspend fun warmUpCache() {
-        AuthSession.setToken(getAccessToken())
+        // DataStore에서 accessToken을 가져와서 AuthSession에 설정
+        val token = getAccessToken()
+        token?.let {
+            AuthSession.setToken(it)
+        }
     }
 
     // ---------------- Access Token ----------------
