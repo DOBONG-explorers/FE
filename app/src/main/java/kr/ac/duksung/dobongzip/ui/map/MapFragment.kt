@@ -170,12 +170,9 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 override fun onMapReady(map: KakaoMap) {
                     kakaoMap = map
 
-                    // LodLabel 클릭 리스너 설정 (길게 누르지 않고 클릭하면 좋아요 처리)
                     map.setOnLodLabelClickListener { _, _, lodLabel ->
                         (lodLabel.tag as? PlaceDto)?.let { place ->
-                            showPlaceSheet(place)
-                            // 하트 아이콘 클릭 시 좋아요 추가 또는 제거 처리
-                            toggleLike(place)
+                            showPlaceSheet(place)   // 여기서는 바텀시트만 열기
                             true
                         } ?: false
                     }
@@ -209,52 +206,59 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     }
 
     private fun toggleLike(place: PlaceDto) {
-        val heartIcon = b.imgHeart
         if (place.isLiked) {
-            // 하트 아이콘 상태를 빈 하트로 변경하고 좋아요 목록에서 제거
-            heartIcon.setImageResource(R.drawable.love)
-            place.isLiked = false
+            // 현재 좋아요 상태라면 → 해제 요청
             removeFromLikedPlaces(place)
         } else {
-            // 하트 아이콘 상태를 꽉 찬 하트로 변경하고 좋아요 목록에 추가
-            heartIcon.setImageResource(R.drawable.love_fill)
-            place.isLiked = true
+            // 현재 좋아요가 아니라면 → 추가 요청
             addToLikedPlaces(place)
         }
     }
 
+
     private fun addToLikedPlaces(place: PlaceDto) {
-        // 서버에 좋아요 추가 요청
         lifecycleScope.launch {
             try {
                 val response = RetrofitProvider.placeLikeApi.like(place.placeId)
                 if (response.success) {
+                    // ✅ 서버가 성공이라 한 경우에만 상태 변경
+                    place.isLiked = true
+                    b.imgHeart.setImageResource(R.drawable.love_fill)
                     showToast("${place.name} 장소가 좋아요 목록에 추가되었습니다!")
                 } else {
-                    showToast("좋아요 추가 실패: ${response.message}")
+                    val msg = response.errorMessage
+                        ?: (response.data?.message)
+                        ?: "알 수 없는 오류"
+                    showToast("좋아요 추가 실패: $msg")
                 }
             } catch (e: Exception) {
-                //showToast("좋아요 추가 실패: ${e.message}")
+                showToast("좋아요 추가 실패: ${e.message}")
             }
         }
     }
 
 
     private fun removeFromLikedPlaces(place: PlaceDto) {
-        // 서버에 좋아요 취소 요청
         lifecycleScope.launch {
             try {
                 val response = RetrofitProvider.placeLikeApi.unlike(place.placeId)
                 if (response.success) {
+                    // ✅ 서버에서 진짜 좋아요 삭제 성공했을 때만 해제
+                    place.isLiked = false
+                    b.imgHeart.setImageResource(R.drawable.love)
                     showToast("${place.name} 장소가 좋아요 목록에서 제거되었습니다!")
                 } else {
-                    showToast("좋아요 취소 실패: ${response.message}")
+                    val msg = response.errorMessage
+                        ?: (response.data?.message)
+                        ?: "알 수 없는 오류"
+                    showToast("좋아요 취소 실패: $msg")
                 }
             } catch (e: Exception) {
                 showToast("좋아요 취소 실패: ${e.message}")
             }
         }
     }
+
     private fun loadLikedPlaces() {
         lifecycleScope.launch {
             try {
@@ -375,6 +379,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         val ratingLayout = b.layoutRating
         val ratingText = b.txtRating
         val reviewText = b.txtReviewCount
+        val heartIcon = b.imgHeart
 
         adjustPlaceSheetBottomMargin()
 
@@ -430,6 +435,17 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         } else {
             btn3d.setOnClickListener(null)
         }
+
+        // ✅ 현재 좋아요 상태에 따라 하트 모양 세팅
+        heartIcon.setImageResource(
+            if (place.isLiked) R.drawable.love_fill else R.drawable.love
+        )
+
+        // ✅ 하트 클릭 시 좋아요 토글
+        heartIcon.setOnClickListener {
+            toggleLike(place)
+        }
+
 
         b.placeSheet.isVisible = true
         sheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
