@@ -43,6 +43,9 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var tokenStore: TokenStore
     private val TAG = "Login"
+    // ✅ 소셜 로그인으로 받은 이름/이메일 임시 저장용
+    private var socialName: String? = null
+    private var socialEmail: String? = null
 
     // 공개 클라이언트 사용(Authorization 미첨부)
     private val authService by lazy { ApiClient.authServicePublic }

@@ -42,15 +42,28 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".SignupStep2Activity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".SignupActivity" android:exported="false"/>
+        <activity android:name=".SignupStep2Activity" android:exported="false"/>
+        <activity android:name=".MainActivity" android:exported="false"/>
+
         <activity android:name=".ui.heritage.CulturalHeritageActivity" android:exported="false" />
         <activity android:name=".ui.heritage.IntroCulturalHeritageActivity" android:exported="false" />
         <activity android:name=".ui.top.TopPlacesActivity" android:exported="false" />
         <activity android:name=".ui.threed.ThreeDActivity" android:exported="false" />
 
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="oauth"
+                    android:scheme="kakao820287f1ad6ef4c97a1bb080f013dafd" />
+            </intent-filter>
+        </activity>
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_native_app_key" />
