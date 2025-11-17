@@ -4,7 +4,9 @@ data class ApiResponse<T>(
     val success: Boolean,
     val httpStatus: Int?,
     val message: String?,
-    val data: T?
+    val data: T?,
+    val errorMessage: String?
+
 )
 
 data class DobongEventDto(

@@ -5,6 +5,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import kr.ac.duksung.dobongzip.data.api.ApiClient
 
 object RetrofitProvider {
 
@@ -32,8 +33,9 @@ object RetrofitProvider {
         retrofit.create(PlacesApi::class.java)
     }
 
+    // 좋아요 전용은 ApiClient(인증 포함) 사용
     val placeLikeApi: PlaceLikeApi by lazy {
-        retrofit.create(PlaceLikeApi::class.java)
+        ApiClient.create<PlaceLikeApi>()
     }
 
     val heritageApi: HeritageApi by lazy {
@@ -43,5 +45,4 @@ object RetrofitProvider {
     val noticeApi: NoticeApi by lazy {
         retrofit.create(NoticeApi::class.java)
     }
-
 }

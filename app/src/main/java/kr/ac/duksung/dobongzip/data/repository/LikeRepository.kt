@@ -18,15 +18,31 @@ class LikeRepository(
 
     suspend fun like(placeId: String) {
         val res = api.like(placeId)
+
         if (res.success != true) {
-            throw IllegalStateException(res.message ?: "Failed to like: $placeId")
+            // 서버가 실패로 내려준 경우
+            val msg = res.errorMessage
+                ?: res.data?.message
+                ?: "Failed to like: $placeId"
+
+            throw IllegalStateException(msg)
+        }
+
+        // data.success == false 인 경우도 체크 필요
+        if (res.data?.success == false) {
+            val msg = res.data.message ?: "Failed to like: $placeId"
+            throw IllegalStateException(msg)
         }
     }
 
     suspend fun unlike(placeId: String) {
-        val res = api.unlike(placeId)
+        val res = api.like(placeId)
         if (res.success != true) {
-            throw IllegalStateException(res.message ?: "Failed to unlike: $placeId")
+            val msg = res.errorMessage
+                ?: res.data?.message
+                ?: "Failed to like: $placeId"
+            throw IllegalStateException(msg)
         }
     }
+
 }

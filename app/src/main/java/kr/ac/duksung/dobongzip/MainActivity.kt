@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             // 비회원 상태에서 "마이 페이지" 및 "좋아요 페이지" 비활성화
             navView.menu.findItem(R.id.navigation_mypage).isEnabled = false
             navView.menu.findItem(R.id.navigation_notifications).isEnabled = false
-            Toast.makeText(this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show()
         }
 
         intent.getIntExtra(EXTRA_TARGET_DESTINATION, -1).takeIf { it != -1 }?.let { targetItemId ->

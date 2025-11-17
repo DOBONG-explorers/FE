@@ -148,7 +148,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     // 성공 또는 실패 메시지를 UI 스레드에서 실행하도록 변경
     private fun showToast(message: String) {
         Handler(Looper.getMainLooper()).post {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+           // Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -183,7 +183,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     // 레이어 생성/획득
                     val context = context ?: return
                     val lm = map.labelManager ?: run {
-                        Toast.makeText(context, "레이어 매니저 초기화 실패", Toast.LENGTH_LONG).show()
+                        //Toast.makeText(context, "레이어 매니저 초기화 실패", Toast.LENGTH_LONG).show()
                         return
                     }
 
@@ -234,7 +234,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     showToast("좋아요 추가 실패: ${response.message}")
                 }
             } catch (e: Exception) {
-                showToast("좋아요 추가 실패: ${e.message}")
+                //showToast("좋아요 추가 실패: ${e.message}")
             }
         }
     }
