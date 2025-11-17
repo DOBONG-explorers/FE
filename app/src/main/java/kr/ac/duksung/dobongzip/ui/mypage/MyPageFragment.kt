@@ -46,11 +46,11 @@ class MyPageFragment : Fragment() {
         // 서버에서 최신 프로필 + 이미지 로드
         profileViewModel.loadProfileAll()
 
-        // 상태 구독 → UI 반영
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 profileViewModel.profileState.collect { state ->
-                    // 1) 프로필 이미지: 서버 URL 우선 → (편집 중일 때만) 로컬 URI → 기본 이미지
+
+                    // 1) 프로필 이미지 (그대로 유지)
                     when {
                         !state.imageUrl.isNullOrBlank() -> {
                             Glide.with(this@MyPageFragment)
@@ -67,16 +67,32 @@ class MyPageFragment : Fragment() {
                         else -> binding.profileImage.setImageResource(R.drawable.prf3)
                     }
 
-                    // 2) 텍스트 정보
-                    binding.myname.text = state.nickname ?: "입맛까다로운햄스터"
-                    binding.mymail.text = state.email ?: "dobongzip@gmail.com"
+                    // ✅ SharedPreferences에서 소셜 프로필 fallback 가져오기
+                    val spProfile = requireActivity().getSharedPreferences("user_profile", Context.MODE_PRIVATE)
+                    val localNickname = spProfile.getString("nickname", null)
+                    val localEmail = spProfile.getString("email", null)
 
-                    // 전화번호/아이디를 표시할 TextView가 레이아웃에 있다면 여기서 채워 넣으세요.
-                    // 예: binding.myphone?.text = state.phoneNumber ?: "-"
-                    //     binding.myid?.text    = state.userId      ?: "-"
+                    // 2) 텍스트 정보: 서버 값 > 로컬 소셜 프로필 > 기본값
+                    val finalName = when {
+                        !state.nickname.isNullOrBlank() -> state.nickname
+                        !localNickname.isNullOrBlank() -> localNickname
+                        else -> "입맛까다로운햄스터"
+                    }
+
+                    val finalEmail = when {
+                        !state.email.isNullOrBlank() -> state.email
+                        !localEmail.isNullOrBlank() -> localEmail
+                        else -> "dobongzip@gmail.com"
+                    }
+
+                    binding.myname.text = finalName
+                    binding.mymail.text = finalEmail
+
+                    // 전화번호/아이디는 필요하면 여기에 추가
                 }
             }
         }
+
 
         // 네비게이션
         binding.backButton.setOnClickListener { findNavController().popBackStack() }

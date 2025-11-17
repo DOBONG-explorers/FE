@@ -43,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var tokenStore: TokenStore
     private val TAG = "Login"
+
     // ✅ 소셜 로그인으로 받은 이름/이메일 임시 저장용
     private var socialName: String? = null
     private var socialEmail: String? = null
@@ -66,6 +67,11 @@ class LoginActivity : AppCompatActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
                 val account = task.getResult(ApiException::class.java)
+
+                // ✅ 구글 계정 이름/이메일 가져오기
+                socialName = account?.displayName
+                socialEmail = account?.email
+                Log.d(TAG, "Google account: name=$socialName, email=$socialEmail")
 
                 // ID Token을 가져왔는지 확인
                 val idToken = account?.idToken
@@ -113,9 +119,6 @@ class LoginActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-
-
-
         // ───────────── 이메일 / 비밀번호 로그인 ─────────────
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
@@ -154,6 +157,12 @@ class LoginActivity : AppCompatActivity() {
                     TokenHolder.accessToken = jwt
                     AuthSession.setToken(jwt)
 
+                    // ✅ 일반 로그인 = 회원 로그인
+                    TokenHolder.isLoggedIn = true
+                    saveSocialProfileIfNeeded()
+                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                    finish()
+
                     val profileCompleted = res.data?.profileCompleted == true
                     if (profileCompleted) {
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
@@ -184,10 +193,14 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+
         val tvGuest = findViewById<TextView>(R.id.guest_login)
         tvGuest.setOnClickListener {
             Log.d("LoginActivity", "비회원 로그인 클릭됨") // 로그 추가
-            Log.d("LoginActivity", "tvGuest isClickable: ${tvGuest.isClickable}, tvGuest isFocusable: ${tvGuest.isFocusable}")
+            Log.d(
+                "LoginActivity",
+                "tvGuest isClickable: ${tvGuest.isClickable}, tvGuest isFocusable: ${tvGuest.isFocusable}"
+            )
 
             TokenHolder.isLoggedIn = false  // 비회원 상태로 설정
             startActivity(Intent(this@LoginActivity, MainActivity::class.java))
@@ -202,6 +215,7 @@ class LoginActivity : AppCompatActivity() {
                 )
             )
         }
+
         tvSignup.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
         }
@@ -224,7 +238,6 @@ class LoginActivity : AppCompatActivity() {
             if (error != null) {
                 Log.e(TAG, "Kakao login failed", error)
                 showError("카카오 로그인 실패: ${error.message}")
-                // 여기서는 그냥 함수 끝내면 됨
             } else if (token == null) {
                 showError("카카오 토큰이 비어 있습니다.")
             } else {
@@ -233,24 +246,32 @@ class LoginActivity : AppCompatActivity() {
 
                 if (idToken.isNullOrBlank()) {
                     Log.e(TAG, "Kakao id_token을 가져오지 못했습니다.")
-
                     showError("카카오 id_token을 가져오지 못했습니다. (scope에 openid 포함 여부 확인)")
                 } else {
+
+                    // ✅ 카카오 계정 정보 조회 (닉네임/이메일)
+                    UserApiClient.instance.me { user, meError ->
+                        if (meError != null) {
+                            Log.e(TAG, "Kakao me() failed", meError)
+                        } else {
+                            socialName = user?.kakaoAccount?.profile?.nickname
+                            socialEmail = user?.kakaoAccount?.email
+                            Log.d(TAG, "Kakao account: name=$socialName, email=$socialEmail")
+                        }
+                    }
+
                     // 카카오 id_token → 서버로 전송
                     loginWithKakaoOnServer(idToken)
                     Log.d(TAG, "Sending kakao idToken to the server")
-
                 }
             }
         }
 
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
             Log.d(TAG, "KakaoTalk login available. Trying to login with KakaoTalk.")
-
             UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
         } else {
             Log.d(TAG, "KakaoTalk login not available. Trying to login with KakaoAccount.")
-
             UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
         }
     }
@@ -278,13 +299,14 @@ class LoginActivity : AppCompatActivity() {
                 TokenHolder.accessToken = jwt
                 AuthSession.setToken(jwt)
 
-                val profileCompleted = res.data?.profileCompleted == true
-                if (profileCompleted) {
-                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                } else {
-                    // 이메일은 서버 쪽에서 알고 있으니, 여기서는 프로필 2단계로만 보내면 됨
-                    startActivity(Intent(this@LoginActivity, SignupStep2Activity::class.java))
-                }
+                // ✅ 소셜 로그인도 회원 로그인
+                TokenHolder.isLoggedIn = true
+
+                // ✅ 소셜 프로필(별명/이메일) 마이페이지용으로 저장
+                saveSocialProfileIfNeeded()
+
+                // ✅ 카카오 로그인은 바로 메인으로 이동 (비회원 X)
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 finish()
 
             } catch (e: HttpException) {
@@ -326,14 +348,15 @@ class LoginActivity : AppCompatActivity() {
                 TokenHolder.accessToken = jwt
                 AuthSession.setToken(jwt)
 
-                val profileCompleted = res.data?.profileCompleted == true
-                if (profileCompleted) {
-                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                    finish()
-                } else {
-                    startActivity(Intent(this@LoginActivity, SignupStep2Activity::class.java))
-                    finish()
-                }
+                // ✅ 소셜 로그인도 회원 로그인
+                TokenHolder.isLoggedIn = true
+
+                // ✅ 소셜 프로필(별명/이메일) 마이페이지용으로 저장
+                saveSocialProfileIfNeeded()
+
+                // ✅ 구글 로그인도 바로 메인으로 이동
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                finish()
 
             } catch (e: HttpException) {
                 Log.e(TAG, "googleOidc HttpException: ${e.message}", e)
@@ -344,6 +367,28 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun saveSocialProfileIfNeeded() {
+        val email = socialEmail
+        val name = socialName
+
+        // 이메일은 기존에 쓰던 TokenStore에도 저장해두기 (코루틴으로 감싸기)
+        if (!email.isNullOrBlank()) {
+            lifecycleScope.launch {
+                tokenStore.saveSignupEmail(email)
+            }
+        }
+
+        // 마이페이지에서 쓸 프로필 정보 로컬에 저장
+        val sp = getSharedPreferences("user_profile", MODE_PRIVATE)
+        sp.edit()
+            .putString("nickname", name)
+            .putString("email", email)
+            .apply()
+
+        Log.d(TAG, "Saved social profile to SharedPreferences: name=$name, email=$email")
+    }
+
 
 
     // ✅ 에러 표시
