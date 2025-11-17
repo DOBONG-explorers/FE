@@ -126,6 +126,14 @@
                         android:textColor="#333333"
                         android:textSize="13sp" />
 
+                    <Button
+                        android:id="@+id/btnOpenPdf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_button_bl"
+                        android:text="PDF 보기"
+                        android:layout_marginTop="15dp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

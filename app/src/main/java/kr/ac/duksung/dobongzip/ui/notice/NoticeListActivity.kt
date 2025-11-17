@@ -23,8 +23,27 @@ class NoticeListActivity : AppCompatActivity() {
     private lateinit var btnEvent: MaterialButton
     private val noticeRepository = NoticeRepository()
 
+    // PDF 설명용 공지 1개
+    private val pdfNotice = Notice(
+        id = -1, // 서버와 안 겹치게 음수 같은 값
+        title = "도봉마을탐험대 이용 안내(PDF)",
+        date = "2025-11-18",
+        category = NoticeCategory.NOTICE,
+        content = "도봉마을탐험대 서비스 이용 방법을 PDF로 확인하세요.",
+        pdfUrl = "https://drive.google.com/file/d/1nlInHddKBgBmPH7WsobMzNOyAspN0ol_/preview"
+    )
+
+
     // 더미 데이터
     private val staticNotices = listOf(
+        Notice(
+            id = -1,   // 서버와 안 겹치게 음수
+            title = "도봉마을탐험대 사례집 안내(PDF)",
+            date = "2025-11-18",
+            category = NoticeCategory.NOTICE,
+            content = "도봉마을탐험대가 제작한 사례집을 PDF로 확인하세요.",
+            pdfUrl = "https://drive.google.com/file/d/1nlInHddKBgBmPH7WsobMzNOyAspN0ol_/view?usp=drive_link"
+        ),
         Notice(1, "서비스 개편 안내", "2025-09-01", NoticeCategory.NOTICE, "서비스가 개편됩니다."),
         Notice(2, "가을 축제 일정", "2025-09-02", NoticeCategory.EVENT, "가을 축제가 열립니다."),
         Notice(3, "추석 연휴 공지 안내", "2025-10-03", NoticeCategory.NOTICE, "즐거운 추석되세요.")

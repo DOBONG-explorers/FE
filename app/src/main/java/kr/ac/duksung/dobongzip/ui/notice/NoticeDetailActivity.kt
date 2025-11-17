@@ -1,5 +1,6 @@
 package kr.ac.duksung.dobongzip.ui.notice
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -22,6 +23,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
+import android.widget.Button
+
 class NoticeDetailActivity : AppCompatActivity() {
 
     private val noticeRepository = NoticeRepository()
@@ -39,6 +42,8 @@ class NoticeDetailActivity : AppCompatActivity() {
         val tvContact = findViewById<TextView>(R.id.tvContact)
         val imageView = findViewById<ImageView>(R.id.noticeImageView)
 
+        val btnOpenPdf = findViewById<Button>(R.id.btnOpenPdf)
+
         // 뒤로가기 버튼
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
@@ -49,6 +54,20 @@ class NoticeDetailActivity : AppCompatActivity() {
             tvDate.text = item.date
             tvContent.text = item.content.takeIf { it.isNotBlank() } ?: "행사 상세 내용을 불러오는 중..."
             tvContact.visibility = View.GONE
+
+            // ✅ 여기부터 PDF 버튼 처리 추가
+            val pdfUrl = item.pdfUrl
+            if (pdfUrl.isNullOrBlank()) {
+                btnOpenPdf.visibility = View.GONE
+            } else {
+                btnOpenPdf.visibility = View.VISIBLE
+                btnOpenPdf.setOnClickListener {
+                    val intent = Intent(this, PdfViewerActivity::class.java)
+                    intent.putExtra("pdfUrl", pdfUrl)
+                    intent.putExtra("title", item.title)
+                    startActivity(intent)
+                }
+            }
 
             val cleanedImageUrl = sanitizeUrl(item.imageUrl)
             if (cleanedImageUrl.isNullOrBlank()) {
