@@ -34,9 +34,7 @@ class MyPageSetFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        // ⚠️ 레이아웃 파일명에 맞춰서 선택하세요:
-        // - XML 파일이 fragment_mypage.xml 이면 → R.layout.fragment_mypage
-        // - XML 파일이 fragment_my_page.xml 이면 → R.layout.fragment_my_page
+
         val v = inflater.inflate(R.layout.fragment_my_page, container, false)
 
         // XML id 연결

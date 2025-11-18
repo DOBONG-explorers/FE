@@ -2,6 +2,7 @@
 package kr.ac.duksung.dobongzip.ui.mypage
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
+import kr.ac.duksung.dobongzip.LoginActivity
 import kr.ac.duksung.dobongzip.R
 import kr.ac.duksung.dobongzip.databinding.FragmentMyMageRealBinding
 import kr.ac.duksung.dobongzip.ui.common.ProfileViewModel
@@ -108,11 +110,16 @@ class MyPageFragment : Fragment() {
 
         // (선택) 로그아웃 카드가 있다면 처리
         binding.signoutview?.setOnClickListener {
-            // 서버 /api/v1/auth/logout 연동이 필요하면 여기서 호출 후 토큰을 비우세요.
-            // 현재는 토큰만 비우고 로그인 화면으로 유도하는 예시입니다.
+
             TokenHolder.accessToken = null
-            // startActivity(Intent(requireContext(), LoginActivity::class.java))
-            // requireActivity().finish()
+            val sp = requireActivity().getSharedPreferences("user_profile", Context.MODE_PRIVATE)
+            sp.edit().clear().apply()
+
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+
+            requireActivity().finish()
         }
 
         // (참고) 다크모드 스위치 저장 값 불러오기 — 스위치 UI를 쓰지 않아도 로컬 유지 필요 시 사용

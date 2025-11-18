@@ -25,6 +25,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -82,7 +83,7 @@ dependencies {
 
     // ✅ 카카오맵 (벡터맵)
     implementation("com.kakao.maps.open:android:2.12.18")
-
+    //implementation("com.kakao.sdk:v2-map:2.11.0")
     // ✅ 위치
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
