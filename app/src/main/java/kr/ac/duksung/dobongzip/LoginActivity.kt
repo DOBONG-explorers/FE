@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var tokenStore: TokenStore
     private val TAG = "Login"
 
-    // ✅ 소셜 로그인으로 받은 이름/이메일 임시 저장용
+    //  소셜 로그인으로 받은 이름/이메일 임시 저장용
     private var socialName: String? = null
     private var socialEmail: String? = null
 
@@ -299,13 +299,13 @@ class LoginActivity : AppCompatActivity() {
                 TokenHolder.accessToken = jwt
                 AuthSession.setToken(jwt)
 
-                // ✅ 소셜 로그인도 회원 로그인
+                //  소셜 로그인도 회원 로그인
                 TokenHolder.isLoggedIn = true
 
-                // ✅ 소셜 프로필(별명/이메일) 마이페이지용으로 저장
+                // 소셜 프로필(별명/이메일) 마이페이지용으로 저장
                 saveSocialProfileIfNeeded()
 
-                // ✅ 카카오 로그인은 바로 메인으로 이동 (비회원 X)
+                // 카카오 로그인은 바로 메인으로 이동 (비회원 X)
                 startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 finish()
 
@@ -348,13 +348,13 @@ class LoginActivity : AppCompatActivity() {
                 TokenHolder.accessToken = jwt
                 AuthSession.setToken(jwt)
 
-                // ✅ 소셜 로그인도 회원 로그인
+                //  소셜 로그인도 회원 로그인
                 TokenHolder.isLoggedIn = true
 
-                // ✅ 소셜 프로필(별명/이메일) 마이페이지용으로 저장
+                //  소셜 프로필(별명/이메일) 마이페이지용으로 저장
                 saveSocialProfileIfNeeded()
 
-                // ✅ 구글 로그인도 바로 메인으로 이동
+                //  구글 로그인도 바로 메인으로 이동
                 startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 finish()
 
@@ -372,7 +372,6 @@ class LoginActivity : AppCompatActivity() {
         val email = socialEmail
         val name = socialName
 
-        // 이메일은 기존에 쓰던 TokenStore에도 저장해두기 (코루틴으로 감싸기)
         if (!email.isNullOrBlank()) {
             lifecycleScope.launch {
                 tokenStore.saveSignupEmail(email)
@@ -391,7 +390,7 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-    // ✅ 에러 표시
+    //  에러 표시
     private fun showError(msg: String) {
         // 토스트로 에러 메시지 표시
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -405,7 +404,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ 에러 메시지 숨기기
+    //  에러 메시지 숨기기
     private fun clearError() {
         findViewById<TextView>(R.id.tvError)?.isVisible = false
     }

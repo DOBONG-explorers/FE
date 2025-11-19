@@ -99,6 +99,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     private val MY_LAYER_ID = "my_layer"
     private val DEBUG_LAYER_ID = "debug_layer"
     private val repository = PlacesRepository()
+    private var currentPlaces: List<PlaceDto> = emptyList()
 
     private val locationPerms = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -171,11 +172,22 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     kakaoMap = map
 
                     map.setOnLodLabelClickListener { _, _, lodLabel ->
-                        (lodLabel.tag as? PlaceDto)?.let { place ->
-                            showPlaceSheet(place)   // 여기서는 바텀시트만 열기
-                            true
-                        } ?: false
+                        val placeId = lodLabel.tag as? String
+                        if (placeId != null) {
+                            val place = currentPlaces.firstOrNull { it.placeId == placeId }
+                            if (place != null) {
+                                showPlaceSheet(place)
+                                true
+                            } else {
+                                Log.e("MapFragment", "LodLabel click: place not found for id=$placeId")
+                                false
+                            }
+                        } else {
+                            Log.e("MapFragment", "LodLabel click: tag is not String, tag=${lodLabel.tag}")
+                            false
+                        }
                     }
+
 
                     // 레이어 생성/획득
                     val context = context ?: return
@@ -288,19 +300,22 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                         if (none { it.placeId == rec.placeId }) add(rec)
                     }
                 }
+                //현재리스트 저장
+                currentPlaces = combined
+
                 renderPlaceMarkers(map, combined)
                 focusOnTarget(combined)
                 val context = context ?: return@launch
                 if (combined.isEmpty()) {
-                    Toast.makeText(context, "서버 응답 성공, 하지만 0건", Toast.LENGTH_SHORT).show()
+                   // Toast.makeText(context, "서버 응답 성공, 하지만 0건", Toast.LENGTH_SHORT).show()
                     addDebugLabel(center, "0 places")
                 } else {
-                    Toast.makeText(context, "명소 ${combined.size}개 표시", Toast.LENGTH_SHORT).show()
+                   // Toast.makeText(context, "명소 ${combined.size}개 표시", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Log.e("PLACES", "API 실패: ${e.message}", e)
                 val context = context ?: return@launch
-                Toast.makeText(context, "장소 로드 실패: ${e.message}", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context, "장소 로드 실패: ${e.message}", Toast.LENGTH_LONG).show()
                 addDebugLabel(center, "API FAIL")
             }
         }
@@ -325,7 +340,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 .setStyles(style)
                 .setTexts(LabelTextBuilder().setTexts(title))
                 .setClickable(true)
-                .setTag(p)
+                .setTag(p.placeId) //스트링만 넣기
 
             val lodLabel = layer.addLodLabel(options)
             lodLabel?.let { placeLabels += it }

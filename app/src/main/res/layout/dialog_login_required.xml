@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
+    android:gravity="center">
+
+    <!-- 아이콘 -->
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/app_logo"
+        android:layout_marginBottom="12dp" />
+
+    <!-- 타이틀 -->
+    <TextView
+        android:text="로그인이 필요합니다"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 설명 -->
+    <TextView
+        android:text="이 기능은 회원 전용입니다.\n로그인 화면으로 이동할까요?"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:textColor="#555555"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp" />
+
+    <!-- 버튼 영역 -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 닫기 버튼 -->
+        <TextView
+            android:id="@+id/btnCancel"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="아니오"
+            android:textColor="#666666"
+            android:background="@drawable/btn_gray"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- 로그인 버튼 -->
+        <TextView
+            android:id="@+id/btnLogin"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="로그인"
+            android:textColor="@android:color/white"
+            android:background="@drawable/rounded_button_blue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</LinearLayout>
