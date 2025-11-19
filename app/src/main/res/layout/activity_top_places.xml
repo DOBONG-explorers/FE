@@ -56,15 +56,15 @@
         <!-- 삼각형 아이콘 (조회수 내림차순) -->
         <ImageView
             android:id="@+id/imgSortToggle"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_sort"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_marker_pointer"
             android:layout_margin="8dp"
             android:contentDescription="@string/top_place_sort_toggle"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#666666" />
+            app:tint="@color/blue" />
 
         <!-- 정렬 버튼 -->
         <com.google.android.material.button.MaterialButton

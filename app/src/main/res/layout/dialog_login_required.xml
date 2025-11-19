@@ -16,24 +16,23 @@
 
     <!-- 타이틀 -->
     <TextView
-        android:text="로그인이 필요합니다"
+        android:text="로그인이 필요해요!"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="#333333"
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp" />
-
     <!-- 설명 -->
     <TextView
-        android:text="이 기능은 회원 전용입니다.\n로그인 화면으로 이동할까요?"
-        android:textSize="14sp"
+        android:text="이 기능은 회원 전용이에요 🐥\n로그인 하러 갈까요?"
+        android:textSize="15sp"
         android:gravity="center"
-        android:textColor="#555555"
+        android:textColor="#666666"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp" />
-
+        android:layout_marginBottom="22dp" />
     <!-- 버튼 영역 -->
     <LinearLayout
         android:orientation="horizontal"
