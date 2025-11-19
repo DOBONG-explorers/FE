@@ -172,6 +172,8 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     kakaoMap = map
 
                     map.setOnLodLabelClickListener { _, _, lodLabel ->
+                        Toast.makeText(requireContext(), "마커 클릭!", Toast.LENGTH_SHORT).show()
+
                         val placeId = lodLabel.tag as? String
                         if (placeId != null) {
                             val place = currentPlaces.firstOrNull { it.placeId == placeId }
@@ -189,7 +191,11 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     }
 
 
-                    // 레이어 생성/획득
+
+
+
+
+                // 레이어 생성/획득
                     val context = context ?: return
                     val lm = map.labelManager ?: run {
                         //Toast.makeText(context, "레이어 매니저 초기화 실패", Toast.LENGTH_LONG).show()
