@@ -188,7 +188,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _b = FragmentMapBinding.inflate(inflater, container, false)
+        _b = FragmentMapBinding.inflate( inflater, container, false)
         setupSearchView()
         return b.root
     }
@@ -205,14 +205,14 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         val searchEditText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
         searchEditText?.background = null
         searchEditText?.setPadding(0, 0, 0, 0)
-        
+
         val searchCloseButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
         val searchButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon)
-        
+
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             val query = searchView.query?.toString()?.trim().orEmpty()
             val hasText = query.isNotBlank()
-            
+
             if (hasFocus) {
                 searchCloseButton?.visibility = if (hasText) View.VISIBLE else View.GONE
                 searchButton?.visibility = View.GONE
