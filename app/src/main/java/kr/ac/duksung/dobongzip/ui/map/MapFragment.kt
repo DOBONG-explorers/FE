@@ -813,11 +813,17 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         }
     }
 
-    // Lifecycle
     override fun onResume() {
         super.onResume()
         (activity as? MainActivity)?.enableMapFragmentLayout()
-        initMap()
+
+        if (this::mapView.isInitialized) {
+            // 이미 만든 MapView가 있으면 다시 resume만
+            mapView.resume()
+        } else {
+            // 처음 들어올 때만 initMap()
+            initMap()
+        }
     }
 
     override fun onPause() {
