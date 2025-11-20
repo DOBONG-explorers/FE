@@ -403,7 +403,8 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     loadPlacesAndRender(initialCenter, limit = 30)
 
                     if (targetCenter == null && isFirstLaunch) {
-                        ensureLocationAndMove()
+                        ensureLocationAndMove()  // 처음 한 번만 내 위치로 맞추고
+                        isFirstLaunch = false    // 이후에는 다시 호출되지 않도록 막기
                     }
                 }
 
