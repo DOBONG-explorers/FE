@@ -17,6 +17,15 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    // 🔐 1) 릴리즈 keystore 설정
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Users/jiyeong/Downloads/my_new_release_key.jks")     // 예: "C:/Users/너/keystore/my-release-key.jks"
+            storePassword = "123456"
+            keyAlias = "my_new_release_key"
+            keyPassword = "123456"
+        }
+    }
 
     buildTypes {
         release {
@@ -25,7 +34,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
