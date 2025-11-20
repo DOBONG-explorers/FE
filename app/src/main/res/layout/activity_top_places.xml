@@ -21,8 +21,8 @@
         <!-- 뒤로가기 버튼 -->
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:background="@drawable/round_button"
             android:src="@drawable/arrow"
             android:scaleType="centerInside"
@@ -56,10 +56,10 @@
         <!-- 삼각형 아이콘 (조회수 내림차순) -->
         <ImageView
             android:id="@+id/imgSortToggle"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:src="@drawable/ic_marker_pointer"
-            android:layout_margin="8dp"
+            android:layout_margin="15dp"
             android:contentDescription="@string/top_place_sort_toggle"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
