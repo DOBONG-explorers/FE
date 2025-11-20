@@ -341,7 +341,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                                     false
                                 }
                             }
-                        } catch (e: Exception) {
+                        } catch (e: Exception ) {
                             Log.e("MapFragment", "마커 클릭 처리 중 오류: ${e.message}", e)
                             false
                         }
@@ -384,10 +384,12 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                         LabelLayerOptions.from(DEBUG_LAYER_ID)
                     )
 
-                    val targetCenter = focusLatLng?.let { LatLng.from(it.first, it.second) }
-                        ?: recommendedPlace?.let { LatLng.from(it.latitude, it.longitude) }
+                    val targetCenter = focusLatLng?.let { LatLng.from(it.first, it.second)
+                    }
+                        ?: recommendedPlace?.let { LatLng.from(it.latitude, it.longitude)
+                        }
                         ?: null
-                    
+
                     if (targetCenter != null) {
                         val cameraUpdate = CameraUpdateFactory.newCenterPosition(targetCenter)
                         map.moveCamera(cameraUpdate)
@@ -399,7 +401,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     
                     val initialCenter = targetCenter ?: dobongCenter
                     loadPlacesAndRender(initialCenter, limit = 30)
-                    
+
                     if (targetCenter == null && isFirstLaunch) {
                         ensureLocationAndMove()
                     }
@@ -440,7 +442,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             }
             return
         }
-        
+
         lifecycleScope.launch {
             try {
                 val places =
