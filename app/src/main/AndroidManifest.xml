@@ -52,6 +52,10 @@
         <activity android:name=".ui.top.TopPlacesActivity" android:exported="false" />
         <activity android:name=".ui.threed.ThreeDActivity" android:exported="false" />
         <activity android:name=".ui.notice.PdfViewerActivity" />
+        <activity 
+            android:name=".ui.review.ReviewActivity" 
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"

@@ -1,42 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <!-- 📌 프래그먼트 컨테이너 -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        app:navGraph="@navigation/nav_graph"
-        app:defaultNavHost="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/nav_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- 📌 프래그먼트 컨테이너 -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            app:navGraph="@navigation/nav_graph"
+            app:defaultNavHost="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/nav_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 하단바 (둥글고 색 지정된 상태) -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="0dp"
+        <!-- 하단바 (둥글고 색 지정된 상태) -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/nav_background"
+            android:elevation="0dp"
+            app:itemIconTint="@color/selector_nav_text"
+            app:itemTextColor="@color/selector_nav_text"
+            app:itemBackground="@drawable/bottom_nav_item_background"
+            app:itemRippleColor="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:menu="@menu/bottom_nav_menu" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 장소 정보 바텀시트 (메인 액티비티에 배치) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/placeSheet"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/nav_background"
-        android:elevation="0dp"
-        app:itemIconTint="@color/selector_nav_text"
-        app:itemTextColor="@color/selector_nav_text"
-        app:itemBackground="@drawable/bottom_nav_item_background"
-        app:itemRippleColor="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="0dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardElevation="14dp"
+        app:behavior_peekHeight="0dp"
+        app:behavior_hideable="true"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="24dp"
+        app:cardUseCompatPadding="false"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:layout_anchor="@id/nav_view"
+        app:layout_anchorGravity="top|center_horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- 카드 내용 (내부 배치) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <!-- 드래그 핸들 -->
+            <View
+                android:id="@+id/dragHandle"
+                android:layout_width="42dp"
+                android:layout_height="4dp"
+                android:layout_marginBottom="12dp"
+                android:alpha="0.4"
+                android:background="@drawable/rect_handle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- 장소 이미지 -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgPlace"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginTop="12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dragHandle"
+                app:shapeAppearance="@style/ShapeAppearance.Dobong.Small" />
+
+            <!-- 장소 이름 -->
+            <TextView
+                android:id="@+id/txtPlaceName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="창동 문화체육센터"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imgPlace"
+                app:layout_constraintTop_toTopOf="@id/imgPlace" />
+
+            <!-- 좋아요 하트 아이콘 -->
+            <ImageView
+                android:id="@+id/imgHeart"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/love"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtPlaceName"
+                app:tint="@android:color/holo_red_light" />
+
+            <!-- 평점 -->
+            <LinearLayout
+                android:id="@+id/layoutRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/txtPlaceName"
+                app:layout_constraintTop_toBottomOf="@id/txtPlaceName">
+
+                <ImageView
+                    android:id="@+id/imgStar"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_star_filled" />
+
+                <TextView
+                    android:id="@+id/txtRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.5"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtReviewCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="(52)"
+                    android:textColor="#8A8A8A"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- 거리 -->
+            <TextView
+                android:id="@+id/txtDistance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="내 위치로부터 1.2km"
+                android:textColor="#8A8A8A"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/txtPlaceName"
+                app:layout_constraintTop_toBottomOf="@id/layoutRating" />
+
+            <!-- 전화번호 -->
+            <TextView
+                android:id="@+id/txtPhone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:drawableStart="@drawable/ic_phone_24"
+                android:drawablePadding="10dp"
+                android:text="02-201-5000"
+                android:textColor="#8A8A8A"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/txtPlaceName"
+                app:layout_constraintTop_toBottomOf="@id/txtDistance" />
+
+            <!-- 3D 보기 버튼 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnView3D"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:text="3D로 구경하기"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/button_blue"
+                app:cornerRadius="14dp"
+                app:iconPadding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/txtPlaceName"
+                app:layout_constraintTop_toBottomOf="@id/txtPhone" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

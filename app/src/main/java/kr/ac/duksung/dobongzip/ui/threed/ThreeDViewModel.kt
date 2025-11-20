@@ -40,8 +40,7 @@ class ThreeDViewModel : ViewModel() {
         val isCurrentlyLiked = _liked.value == true
         viewModelScope.launch {
             try {
-                // ApiResponse<LikeResponse> 반환
-                val response: ApiResponse<LikeResponse> = if (isCurrentlyLiked) {
+                val response = if (isCurrentlyLiked) {
                     repository.unlike(placeId)
                 } else {
                     repository.like(placeId)

@@ -53,9 +53,11 @@
                     style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="18dp"
-                    android:isIndicator="true"
+                    android:isIndicator="false"
+                    android:enabled="false"
                     android:numStars="5"
                     android:rating="3.0"
+                    android:stepSize="1.0"
                     android:tint="#0B79D0"
                     android:progressTint="#0B79D0"
                     android:secondaryProgressTint="#0B79D0" />
@@ -90,7 +92,7 @@
 
     <!-- 리뷰 내용 -->
     <TextView
-        android:id="@+id/review_content"
+        android:id="@+id/review_content_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="메롱\n리뷰 내용이 여기\n에 표시됩니다."
@@ -98,6 +100,20 @@
         android:textColor="#333333"
         android:padding="10dp"
         android:lineSpacingExtra="2dp" />
+    
+    <!-- 리뷰 편집용 EditText (기본적으로 숨김) -->
+    <EditText
+        android:id="@+id/review_content_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:padding="10dp"
+        android:lineSpacingExtra="2dp"
+        android:minLines="3"
+        android:inputType="textMultiLine"
+        android:background="@android:color/transparent"
+        android:visibility="gone" />
 
 
     <!-- 구분선 -->
