@@ -51,10 +51,16 @@ class MainActivity : AppCompatActivity() {
         
         loadLikedPlaces()
         
-        // 네비게이션 변경 시 바텀시트 숨기기
+        // 네비게이션 변경 시 바텀시트 숨기기 및 배경색 변경
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id != R.id.mapFragment) {
                 hidePlaceSheet()
+            }
+            
+            if (destination.id == R.id.commend_place_fragment) {
+                binding.root.setBackgroundColor(0xFF2d85cd.toInt())
+            } else {
+                binding.root.setBackgroundColor(0xFFFFFFFF.toInt())
             }
         }
 
@@ -210,12 +216,19 @@ class MainActivity : AppCompatActivity() {
             Triple("쌍둥이 전망대", 37.6738502, 127.0291849),
             Triple("원당샘공원", 37.6607694, 127.0219571),
             Triple("원당한옥마을도서관", 37.660552, 127.0215044),
-            Triple("둘리뮤지엄", 37.652158, 127.027661),
+            Triple("둘리뮤지엄", 37.6522772, 127.0275989),
             Triple("원썸35카페", 37.66114, 127.0213),
-            Triple("서울 창업허브", 37.6553721, 127.0480068)
+            Triple("서울 창업허브", 37.6553721, 127.0480068),
+            Triple("도봉집", 0.0, 0.0)
         )
-        return threeDPlacesList.any { (_, lat, lng) ->
-            kotlin.math.abs(place.latitude - lat) < 0.0001 && kotlin.math.abs(place.longitude - lng) < 0.0001
+        return threeDPlacesList.any { (name, lat, lng) ->
+            if (lat == 0.0 && lng == 0.0) {
+                place.name == name
+            } else {
+                kotlin.math.abs(place.latitude - lat) < 0.001 && 
+                kotlin.math.abs(place.longitude - lng) < 0.001 &&
+                (place.name == name || place.name.contains(name, ignoreCase = true))
+            }
         }
     }
     
@@ -238,6 +251,12 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun checkAndUpdateLikeStatus(place: PlaceDto) {
+        if (place.placeId.startsWith("dummy_")) {
+            place.isLiked = likedPlaceIds.contains(place.placeId)
+            updateHeartIcon(place.isLiked)
+            return
+        }
+        
         val isLiked = likedPlaceIds.contains(place.placeId)
         place.isLiked = isLiked
         updateHeartIcon(isLiked)
@@ -272,6 +291,17 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun toggleLike(place: PlaceDto) {
+        if (place.placeId.startsWith("dummy_")) {
+            place.isLiked = !place.isLiked
+            if (place.isLiked) {
+                likedPlaceIds = likedPlaceIds + place.placeId
+            } else {
+                likedPlaceIds = likedPlaceIds - place.placeId
+            }
+            updateHeartIcon(place.isLiked)
+            return
+        }
+        
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val response = if (place.isLiked) {

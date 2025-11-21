@@ -1,7 +1,9 @@
 package kr.ac.duksung.dobongzip.ui.chat
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -79,6 +81,23 @@ class ChatFragment : Fragment() {
                     Toast.makeText(requireContext(), "페이지 로드 실패", Toast.LENGTH_SHORT).show()
                 }
             }
+
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url?.toString() ?: return false
+                
+                if (url.startsWith("http://3.36.34.210:5000/") || url.startsWith("https://3.36.34.210:5000/")) {
+                    return false
+                }
+                
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                    return true
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "링크를 열 수 없습니다", Toast.LENGTH_SHORT).show()
+                    return true
+                }
+            }
         }
 
         webView.webChromeClient = WebChromeClient()
@@ -94,7 +113,6 @@ class ChatFragment : Fragment() {
                     if (webView.canGoBack()) {
                         webView.goBack()
                     } else {
-                        // 더 이상 WebView 히스토리가 없으면 프래그먼트 뒤로가기
                         parentFragmentManager.popBackStack()
                     }
                 }
