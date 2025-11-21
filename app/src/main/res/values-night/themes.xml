@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.Dobongzip" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Dobongzip" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/app_bg</item>
         <item name="android:statusBarColor">#000000</item>
         <item name="android:windowLightStatusBar">false</item>
