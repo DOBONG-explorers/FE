@@ -2,11 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".BlankFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,49 +19,51 @@
                 android:id="@+id/rating_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_margin="16dp"
                 android:background="@drawable/review_card_background"
-                android:padding="20dp"
-                android:layout_margin="16dp">
+                android:orientation="horizontal"
+                android:padding="20dp">
 
                 <!-- 왼쪽: 별점 분포 -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="end">
+                    android:gravity="end"
+                    android:orientation="vertical">
 
                     <!-- 5점 행 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:text="5"
-                            android:textSize="15sp"
-                            android:textColor="#666666" />
+                            android:textColor="#666666"
+                            android:textSize="15sp" />
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_star"
                             android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_star" />
 
                         <ProgressBar
+                            android:id="@+id/progressBar5"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                             android:layout_width="0dp"
                             android:layout_height="8dp"
-                            android:layout_weight="1"
-                            android:progress="100"
-                            android:progressDrawable="@drawable/progress_bar_bg"
                             android:layout_marginEnd="8dp"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_bar_bg" />
 
                     </LinearLayout>
 
@@ -73,32 +71,34 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:text="4"
-                            android:textSize="15sp"
-                            android:textColor="#666666" />
+                            android:textColor="#666666"
+                            android:textSize="15sp" />
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_star"
                             android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_star" />
 
                         <ProgressBar
+                            android:id="@+id/progressBar4"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                             android:layout_width="0dp"
                             android:layout_height="8dp"
-                            android:layout_weight="1"
-                            android:progress="60"
-                            android:progressDrawable="@drawable/progress_bar_bg"
                             android:layout_marginEnd="8dp"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_bar_bg" />
 
                     </LinearLayout>
 
@@ -106,32 +106,34 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:text="3"
-                            android:textSize="15sp"
-                            android:textColor="#666666" />
+                            android:textColor="#666666"
+                            android:textSize="15sp" />
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_star"
                             android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_star" />
 
                         <ProgressBar
+                            android:id="@+id/progressBar3"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                             android:layout_width="0dp"
                             android:layout_height="8dp"
-                            android:layout_weight="1"
-                            android:progress="35"
-                            android:progressDrawable="@drawable/progress_bar_bg"
                             android:layout_marginEnd="8dp"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_bar_bg" />
 
                     </LinearLayout>
 
@@ -139,32 +141,34 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:text="2"
-                            android:textSize="15sp"
-                            android:textColor="#666666" />
+                            android:textColor="#666666"
+                            android:textSize="15sp" />
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_star"
                             android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_star" />
 
                         <ProgressBar
+                            android:id="@+id/progressBar2"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                             android:layout_width="0dp"
                             android:layout_height="8dp"
-                            android:layout_weight="1"
-                            android:progress="15"
-                            android:progressDrawable="@drawable/progress_bar_bg"
                             android:layout_marginEnd="8dp"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_bar_bg" />
 
                     </LinearLayout>
 
@@ -172,31 +176,33 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:text="1"
-                            android:textSize="15sp"
-                            android:textColor="#666666" />
+                            android:textColor="#666666"
+                            android:textSize="15sp" />
 
                         <ImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:src="@drawable/ic_star"
                             android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_star" />
 
                         <ProgressBar
+                            android:id="@+id/progressBar1"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                             android:layout_width="0dp"
                             android:layout_height="8dp"
-                            android:layout_weight="1"
-                            android:progress="5"
-                            android:progressDrawable="@drawable/progress_bar_bg"
                             android:layout_marginEnd="8dp"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_bar_bg" />
 
                     </LinearLayout>
 
@@ -206,62 +212,67 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_marginStart="24dp"
                     android:gravity="center_horizontal"
-                    android:layout_marginStart="24dp">
+                    android:orientation="vertical">
 
                     <!-- 평점 숫자 -->
                     <TextView
+                        android:id="@+id/txtAverageRating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="4.0"
+                        android:textColor="#000000"
                         android:textSize="48sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000" />
+                        android:textStyle="bold" />
 
                     <!-- 레이팅 바 -->
                     <RatingBar
+                        android:id="@+id/ratingSummaryBar"
+                        style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:rating="4.0"
-                        android:isIndicator="true"
                         android:layout_marginTop="8dp"
-                        style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:tint="#0B79D0"
+                        android:isIndicator="true"
+                        android:numStars="5"
                         android:progressTint="#0B79D0"
-                        android:secondaryProgressTint="#0B79D0" />
+                        android:rating="4.0"
+                        android:secondaryProgressTint="#0B79D0"
+                        android:tint="#0B79D0" />
 
                     <!-- 리뷰 개수 -->
                     <TextView
+                        android:id="@+id/txtReviewCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="52 리뷰"
-                        android:textSize="12sp"
                         android:textColor="#000000"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-
         </LinearLayout>
-
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvReview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-
-        </androidx.recyclerview.widget.RecyclerView>
-
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="16dp" />
 
     </LinearLayout>
 
-
+    <TextView
+        android:id="@+id/txtReviewEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="등록된 리뷰가 없습니다."
+        android:textColor="#888888"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
 </FrameLayout>

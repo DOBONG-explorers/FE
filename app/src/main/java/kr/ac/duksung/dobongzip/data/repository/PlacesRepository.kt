@@ -51,9 +51,9 @@ class PlacesRepository {
         withContext(Dispatchers.IO) {
             try {
                 lastErrorMessage = null
-                Log.d("PlacesRepository", "Requesting recommended place from random-place API")
+                Log.d("PlacesRepository", "Requesting recommended place from random-place API with lat=$lat, lon=$lng")
                 
-                val response = placesApi.getRandomPlaces()
+                val response = placesApi.getRandomPlaces(lat = lat, lon = lng)
                 
                 Log.d("PlacesRepository", "Response received: success=${response.success}, data=${response.data}, message=${response.message}")
                 
@@ -112,8 +112,12 @@ class PlacesRepository {
     
     fun getLastErrorMessage(): String? = lastErrorMessage
 
-    suspend fun like(placeId: String)   = withContext(Dispatchers.IO) { likeApi.like(placeId) }
-    suspend fun unlike(placeId: String) = withContext(Dispatchers.IO) { likeApi.unlike(placeId) }
+    suspend fun like(placeId: String): ApiResponse<Any> = withContext(Dispatchers.IO) { 
+        likeApi.like(placeId) 
+    }
+    suspend fun unlike(placeId: String): ApiResponse<Any> = withContext(Dispatchers.IO) { 
+        likeApi.unlike(placeId) 
+    }
 
     suspend fun toggleLike(placeId: String, isCurrentlyLiked: Boolean) =
         withContext(Dispatchers.IO) {

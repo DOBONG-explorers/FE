@@ -1,11 +1,13 @@
 package kr.ac.duksung.dobongzip.data.network
 
+import android.util.Log
+import kr.ac.duksung.dobongzip.data.auth.AuthSession
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import kr.ac.duksung.dobongzip.data.api.ApiClient
 
 object RetrofitProvider {
 
@@ -15,7 +17,19 @@ object RetrofitProvider {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+    private val authInterceptor = Interceptor { chain ->
+        val original = chain.request()
+        val builder = original.newBuilder()
+        val token = AuthSession.getToken()
+        if (!token.isNullOrBlank()) {
+            builder.addHeader("Authorization", "Bearer $token")
+            Log.d("RetrofitProvider", "Added auth token to ${original.url}")
+        }
+        chain.proceed(builder.build())
+    }
+
     private val client: OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(authInterceptor)
         .addInterceptor(logging)
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(20, TimeUnit.SECONDS)
@@ -33,9 +47,12 @@ object RetrofitProvider {
         retrofit.create(PlacesApi::class.java)
     }
 
-    // 좋아요 전용은 ApiClient(인증 포함) 사용
     val placeLikeApi: PlaceLikeApi by lazy {
-        ApiClient.create<PlaceLikeApi>()
+        retrofit.create(PlaceLikeApi::class.java)
+    }
+
+    val placeReviewApi: PlaceReviewApi by lazy {
+        retrofit.create(PlaceReviewApi::class.java)
     }
 
     val heritageApi: HeritageApi by lazy {
@@ -45,4 +62,5 @@ object RetrofitProvider {
     val noticeApi: NoticeApi by lazy {
         retrofit.create(NoticeApi::class.java)
     }
+
 }

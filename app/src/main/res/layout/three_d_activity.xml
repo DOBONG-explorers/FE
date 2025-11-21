@@ -21,8 +21,8 @@
         <!-- 뒤로가기 버튼 -->
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:background="@drawable/round_button"
             android:src="@drawable/arrow"
             android:scaleType="centerInside"
@@ -69,6 +69,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <!-- 모델 로딩 프로그레스바 -->
+        <ProgressBar
+            android:id="@+id/progressBar_model"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="top"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/progress_drawable"
+            android:visibility="gone" />
+
         <!-- 하트 버튼 (오른쪽 아래) -->
         <ImageButton
             android:id="@+id/btn_heart"
@@ -89,7 +101,6 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.Material3.TabLayout"
         android:background="@android:color/white"
         app:tabTextColor="@android:color/darker_gray"
         app:tabSelectedTextColor="#2687D4"

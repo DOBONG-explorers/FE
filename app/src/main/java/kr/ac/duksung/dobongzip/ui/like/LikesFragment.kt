@@ -103,9 +103,9 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
         // 예: onViewCreated 끝부분에 임시 실행 (실서비스에선 버튼에 묶어 호출!)
         val defaultDobongLat = 37.668    // 도봉구 중심 근사값 예시
         val defaultDobongLng = 127.031
-        vm.likeFirstAndRefresh(defaultDobongLat, defaultDobongLng) {
-            Toast.makeText(requireContext(), "첫 장소 좋아요 실패: ${it.message}", Toast.LENGTH_SHORT).show()
-        }
+        //vm.likeFirstAndRefresh(defaultDobongLat, defaultDobongLng) {
+           // Toast.makeText(requireContext(), "첫 장소 좋아요 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+       // }
 
     }
 

@@ -18,7 +18,10 @@ interface PlacesApi {
     ): ApiResponse<List<PlaceDto>>
 
     @GET("/api/v1/mainpage/random-place")
-    suspend fun getRandomPlaces(): ApiResponse<RandomPlaceDto>
+    suspend fun getRandomPlaces(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double
+    ):  ApiResponse<RandomPlaceDto>
 
     @GET("/api/v1/mainpage/top")
     suspend fun getTopPlaces(

@@ -108,7 +108,6 @@ class HomeFragment : Fragment() {
                 }
             }
         })
-        applyPosterItems(fallbackPosterItems)
         loadPosterImages()
         b.btnNotice.setOnClickListener {
             startActivity(Intent(requireContext(), NoticeListActivity::class.java))
@@ -141,27 +140,29 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateCounterByAdapterPos(pos: Int) {
+        val binding = _b ?: return
         val size = posterAdapter.realSize
         if (size == 0) {
-            b.tvCounter.text = "0/0"
+            binding.tvCounter.text = "0/0"
             return
         }
         val real = posterAdapter.realIndex(pos)
-        b.tvCounter.text = "${real + 1}/$size"
+        binding.tvCounter.text = "${real + 1}/$size"
     }
 
     private fun applyPosterItems(items: List<PosterItem>) {
-        val data = items.ifEmpty { fallbackPosterItems }
+        val binding = _b ?: return
+        if (items.isEmpty()) return
         stopAuto()
-        posterAdapter.submitList(data)
+        posterAdapter.submitList(items)
         val size = posterAdapter.realSize
         if (size == 0) {
-            b.tvCounter.text = "0/0"
+            binding.tvCounter.text = "0/0"
             return
         }
         val base = Int.MAX_VALUE / 2
         val start = base - (base % size)
-        b.posterPager.setCurrentItem(start, false)
+        binding.posterPager.setCurrentItem(start, false)
         updateCounterByAdapterPos(start)
         startAuto()
     }
@@ -172,9 +173,10 @@ class HomeFragment : Fragment() {
                 noticeRepository.fetchDobongEventImages()
             }.onSuccess { items ->
                 val mapped = items.map { PosterItem(id = it.id, imageUrl = it.imageUrl) }
-                applyPosterItems(mapped)
+                if (mapped.isNotEmpty()) {
+                    applyPosterItems(mapped)
+                }
             }.onFailure {
-                applyPosterItems(fallbackPosterItems)
             }
         }
     }

@@ -20,13 +20,13 @@ interface PlaceLikeApi {
     @POST("/api/v1/places/{placeId}/like")
     suspend fun like(
         @Path("placeId") placeId: String
-    ): ApiResponse<LikeResponse>
+    ): kr.ac.duksung.dobongzip.data.models.ApiResponse<Any>
 
     // 장소 좋아요 취소
     @DELETE("/api/v1/places/{placeId}/like")
     suspend fun unlike(
         @Path("placeId") placeId: String
-    ): ApiResponse<LikeResponse>
+    ): kr.ac.duksung.dobongzip.data.models.ApiResponse<Any>
 
     // 내가 좋아요한 목록 조회
     @GET("/api/v1/places/likes/me")
