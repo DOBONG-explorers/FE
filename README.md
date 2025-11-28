@@ -1,5 +1,29 @@
 # 도봉마을탐험대 (DoBong Village Explorer)
+# 🏘️ 도봉 마을 탐험대 (Dobong Village Explorers)
+<img width="1030" height="731" alt="image" src="https://github.com/user-attachments/assets/fb2180eb-79fa-4832-a243-ba239ca7b6fc" />
 
+### "도봉구의 숨겨진 매력을 3D 인터랙티브 맵으로 탐험하다."
+
+도봉구의 숨겨진 명소를 3D 모바일 맵으로 구현하고, AI 챗봇을 통해 개인 맞춤형 장소를 추천해 주는 도봉구 로컬 큐레이션 앱입니다.
+
+---
+## 📅 프로젝트 소개
+<img width="1017" height="575" alt="스크린샷 2025-11-23 201438" src="https://github.com/user-attachments/assets/ed6448cb-f931-4944-ac91-7b0f8e21a32b" />
+<img width="1015" height="576" alt="스크린샷 2025-11-23 201528" src="https://github.com/user-attachments/assets/585ae739-292b-4f1d-b284-95743553aa81" />
+<img width="1017" height="573" alt="스크린샷 2025-11-23 201616" src="https://github.com/user-attachments/assets/9634314d-3777-4817-9119-87cd5d1991ee" />
+<img width="1017" height="570" alt="스크린샷 2025-11-23 201840" src="https://github.com/user-attachments/assets/8a2dede3-f65b-4eaa-bb7e-083cf5d9b146" />
+
+---
+## 💡시연영상
+
+---
+## ‍💻 팀원
+
+| FE | FE | BE | DA&AI | 3D Modeler | 3D Modeler |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="https://github.com/ziizero.png" width="100"><br>[@ziizero](https://github.com/ziizero) | <img src="https://github.com/chubin925.png" width="100"><br>[@chubin925](https://github.com/chubin925) | <img src="https://github.com/hyo-lin.png" width="100"><br>[@hyo-lin](https://github.com/hyo-lin) | <img src="https://github.com/lyoonji.png" width="100"><br>[@lyoonji](https://github.com/lyoonji) | <img src="https://github.com/YEJUNfootcleaner.png" width="100"><br>[@YEJUNfootcleaner](https://github.com/YEJUNfootcleaner) | <img src="https://github.com/imperial-girl.png" width="100"><br>[@imperial-girl](https://github.com/imperial-girl) |
+
+---
 ## 🏞️ 프로젝트 개요
 도봉마을탐험대는 **도봉구**의 숨은 명소와 매력을 발견하고,  
 이를 **3D 모델링**, **AI 추천 시스템**, **Kakao Map 연동** 등을 통해 시각화하여  
